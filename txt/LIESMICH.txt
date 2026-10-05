@@ -1,0 +1,20 @@
+Python-Vorlagen für den fischertechnik TXT 4.0 (ROBO Pro Coding)
+================================================================
+
+So bringst du ein Programm auf den TXT:
+1. ROBO Pro Coding öffnen → neues Projekt → Modus "Python" (bzw. ein Blockly-Projekt
+   anlegen und in die Python-Ansicht wechseln).
+2. Unter "Konfiguration" die Bauteile genau so an die Anschlüsse stecken, wie es im
+   Kopf der Datei steht (z. B. M1 Encodermotor, C1 Zähler, I1 Mini-Taster).
+   ROBO Pro Coding erzeugt daraus lib/controller.py mit den Namen TXT_M_...
+3. Den Inhalt der .py-Datei in main.py einfügen und starten.
+
+WICHTIG (Lehrkraft): Die Objekt- und Befehlsnamen entsprechen dem Code, den
+ROBO Pro Coding aus Blockly erzeugt (z. B. TXT_M_M1_encodermotor.set_speed(...)).
+Bitte vor dem Unterricht einmal mit der eigenen Software-Version abgleichen:
+Blockly-Programm bauen → Python-Ansicht → Namen/Methoden vergleichen.
+Der Display-Labelname ("txt_label") hängt vom Display-Editor ab.
+
+Funktionen mit "sim." gibt es nur im Browser-Simulator. In diesen Vorlagen sind
+sie durch Platzhalter-Funktionen ersetzt (# TODO Kamera), die mit dem
+Kamera-Block aus ROBO Pro Coding gefüllt werden.
