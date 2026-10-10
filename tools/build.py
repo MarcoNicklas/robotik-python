@@ -333,10 +333,10 @@ def build_ln_mebis():
              + (' · Gruppenarbeit (2–3 Personen), jede Person gibt ab' if x["group"] else ' · Einzelarbeit') + '</p>',
              f'<p>{e(x["intro"])}</p>',
              '<p><b>Voraussetzung:</b> Vertiefung abgeschlossen in ' + ", ".join(f'{k} {e(byk[k]["title"])}' for k in x["req"]) + '. Dann öffnet sich diese Aufgabe.</p>',
-             ('<h4>So läuft es ab</h4><ol><li>Eure Lehrkraft lost eurer Gruppe einen Werkstattroboter zu.</li>'
-              '<li>Findet und behebt die drei Fehler und füllt das Fehlerprotokoll aus.</li>'
-              '<li>Präsentiert eure Fehlersuche; jede Person beantwortet eine Einzelfrage.</li>'
-              '<li>Jede Person gibt das Fehlerprotokoll unten ab.</li></ol>' if x["group"] else
+             ('<h4>So läuft es ab</h4><ol><li>Eure Lehrkraft lost eurer Gruppe eine Variante zu.</li>'
+              '<li>Sammelt Trainingsdaten, trainiert euer Modell und testet es mit neuen Daten.</li>'
+              '<li>Präsentiert euer Ergebnis; jede Person beantwortet eine Einzelfrage.</li>'
+              '<li>Jede Person gibt die Dokumentation unten ab.</li></ol>' if x["group"] else
               '<h4>So läuft es ab</h4><ol><li>Deine Lehrkraft lost dir eine Variante zu (oder ihr zieht sie im Unterricht).</li>'
               '<li>Baue die Steuerung bzw. den Roboter auf und programmiere sie in Python.</li>'
               + ('<li>Erstelle dein Handlungsprodukt.</li>' if x["product"] else '')
