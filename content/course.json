@@ -1,0 +1,8 @@
+{
+ "title": "Vertiefungskurs Robotik",
+ "short": "Python & Robotik",
+ "course_code": "PY",
+ "prefix": "pylab",
+ "skript": "material/Skript_Python_Robotik_LB3.pdf",
+ "pass": 0.7
+}
