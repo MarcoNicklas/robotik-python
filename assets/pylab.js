@@ -8,7 +8,7 @@ var EX = window.EXERCISES || {};
 function $(sel, root){ return (root||document).querySelector(sel); }
 function el(tag, cls, html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-function store(k,v){ if(window.RProg) k=window.RProg.k(k); try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v);}catch(e){ return null; } }
+function store(k,v){ if(window.LStore) return window.LStore.raw(k,v); if(window.RProg) k=window.RProg.k(k); try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v);}catch(e){ return null; } }
 
 /* ---------------- Status ---------------- */
 function setStatus(state, text){
@@ -245,9 +245,11 @@ Panel.prototype.drawPortal = function(st,t){
 
 /* ---------------- Aufgabe aufbauen ---------------- */
 function stUpd(key, fn) { if (store(key + ":done")) return; var s = {}; try { s = JSON.parse(store(key + ":st") || "{}") || {}; } catch (e) {} s.n = s.n || 0; s.f = s.f || 0; s.h = s.h || 0; fn(s); store(key + ":st", JSON.stringify(s)); }
-function buildExercise(box){
-  var id = box.getAttribute("data-ex"); var d = EX[id]; if(!d) return;
-  var key = "pylab:"+location.pathname.split("/").pop()+":"+id;
+function buildExercise(box, dIn, opts){
+  opts = opts || {};
+  var id = box.getAttribute("data-ex"), d = dIn || EX[id]; if(!d) return;
+  var key = opts.key || ("pylab:"+location.pathname.split("/").pop()+":"+id);
+  var solAfter = opts.solAfter || 0;          // Musterlösung erst nach so vielen erfolglosen Prüfungen
   var grid = el("div","grid"+(d.nosim?" nosim":"")); box.appendChild(grid);
   var left = el("div","edwrap"); grid.appendChild(left);
   var ta = makeEditor(left, d.starter||"", key);
@@ -263,10 +265,18 @@ function buildExercise(box){
   var errb = el("div","errbox"); errb.style.display="none"; outw.appendChild(errb);
   var chks = el("ul","checks"); outw.appendChild(chks);
   if(hints.length){ hintBox=el("div","hint"); outw.appendChild(hintBox); }
-  var solBox=null; if(d.solution){ solBox=el("div","sol"); solBox.innerHTML='<b>Musterlösung</b> (erst selbst versuchen!)<pre class="code"><code>'+esc(d.solution)+'</code></pre><button class="btn" type="button">In den Editor übernehmen</button>'; outw.appendChild(solBox);
+  var solBox=null; if(d.solution){ solBox=el("div","sol"); solBox.innerHTML='<b>Musterlösung</b> – lies sie genau, übernimm sie und prüfe sie mit ✓ Prüfen.<pre class="code"><code>'+esc(d.solution)+'</code></pre><button class="btn" type="button">In den Editor übernehmen</button>'; outw.appendChild(solBox);
     solBox.querySelector("button").onclick=function(){ ta.value=d.solution; ta.dispatchEvent(new Event("input")); }; }
   var panel=null;
   if(!d.nosim){ var right=el("div","simwrap"); grid.appendChild(right); panel=new Panel(right, d.cfg||{}); }
+  function stObj(){ var st={}; try{ st=JSON.parse(store(key+":st")||"{}")||{}; }catch(e){} return st; }
+  function solState(){
+    if(!bSol) return;
+    var st=stObj(), ok=!solAfter || (st.f||0)>=solAfter || !!store(key+":done");
+    bSol.disabled=!ok;
+    bSol.title= ok ? "Musterlösung anzeigen" : "Die Musterlösung gibt es nach "+solAfter+" erfolglosen Prüfungen – probiere es zuerst selbst.";
+    if(!ok && solBox) solBox.classList.remove("show");
+  }
   function exec(withCheck){
     if(!py){ loadPython(); return; }
     bRun.disabled=true; if(bChk) bChk.disabled=true;
@@ -281,22 +291,36 @@ function buildExercise(box){
       chks.innerHTML="";
       (r.checks||[]).forEach(function(c){ var li=el("li", c.ok?"ok":"no"); li.textContent=c.msg; chks.appendChild(li); });
       var allOk = !!(r.checks && r.checks.length && r.checks.every(function(c){return c.ok;})) && !r.err;
+      var wasDone = !!store(key+":done");
       if(withCheck && d.check) stUpd(key, function(st){ st.n++; if(!st.t0) st.t0=Date.now(); if(!allOk) st.f++; else st.t1=Date.now(); });
       if(withCheck && allOk){
         var li=el("li","ok"); li.innerHTML="<b>Super – Aufgabe gelöst!</b>"; chks.appendChild(li); store(key+":done","1"); markDone(box);
       }
-      if(withCheck && d.check) showTries(box, key);
+      if(withCheck && d.check && !allOk && hints.length && hintBox){   // nach Fehlversuchen automatisch Tipps zeigen
+        var hi=Math.min(hints.length, Math.max(0,(stObj().f||0)-1));
+        if(hi>0){ hintBox.classList.add("show"); hintBox.innerHTML=hints.slice(0,hi).map(function(h,i){ return "<div>💡 <b>Tipp "+(i+1)+":</b> "+h+"</div>"; }).join("")+(d.ref?'<div class="muted">📘 '+esc(d.ref)+'</div>':""); }
+      }
+      if(withCheck && d.check){ showTries(box, key); solState();
+        if(opts.onCheck) opts.onCheck({ok:allOk, wasDone:wasDone, checks:(r.checks||[]), err:r.err?(r.err.type+" "+(r.err.line||"")):""}); }
       if(panel) panel.load(r.events, r.t_end);
       bRun.disabled=false; if(bChk) bChk.disabled=false;
     }, 20);
   }
   bRun.onclick=function(){ exec(false); };
   if(bChk) bChk.onclick=function(){ exec(true); };
-  if(bHint) bHint.onclick=function(){ stUpd(key,function(st){ st.h++; }); hintBox.classList.add("show"); hintBox.innerHTML = hints.slice(0,hintIdx+1).map(function(h,i){ return "<div>💡 <b>Tipp "+(i+1)+":</b> "+h+"</div>"; }).join(""); hintIdx=Math.min(hintIdx+1,hints.length-1); };
-  if(bSol) bSol.onclick=function(){ solBox.classList.toggle("show"); if(solBox.classList.contains("show")) stUpd(key,function(st){ st.s=1; }); };
+  if(bHint) bHint.onclick=function(){ stUpd(key,function(st){ st.h++; }); hintBox.classList.add("show"); hintBox.innerHTML = hints.slice(0,hintIdx+1).map(function(h,i){ return "<div>💡 <b>Tipp "+(i+1)+":</b> "+h+"</div>"; }).join("")+(d.ref?'<div class="muted">📘 '+esc(d.ref)+'</div>':""); hintIdx=Math.min(hintIdx+1,hints.length-1); };
+  if(bSol) bSol.onclick=function(){
+    if(bSol.disabled) return;
+    if(solBox.classList.contains("show")){ solBox.classList.remove("show"); return; }
+    if(solAfter && !store(key+":done") && !bSol._armed){ bSol._armed=true; bSol.textContent="Lösung wirklich anzeigen?"; setTimeout(function(){ bSol._armed=false; bSol.textContent="Lösung"; },5000); return; }
+    bSol._armed=false; bSol.textContent="Lösung";
+    solBox.classList.add("show"); stUpd(key,function(st){ st.s=1; }); if(opts.onSolution) opts.onSolution();
+  };
   bReset.onclick=function(){ ta.value=d.starter||""; ta.dispatchEvent(new Event("input")); };
   if(store(key+":done")) markDone(box);
-  showTries(box, key);
+  showTries(box, key); solState();
+  if(py){ bRun.disabled=false; if(bChk) bChk.disabled=false; }
+  return {exec:exec, editor:ta};
 }
 function markDone(box){ var h=box.querySelector(".exh .lvl"); if(h && h.textContent.indexOf("✓")<0) h.textContent="✓ gelöst · "+h.textContent; }
 
@@ -346,15 +370,18 @@ function buildQuiz(q) {   // Ankreuzfragen: Reihenfolge gemischt, Versuche gezä
 
 /* ---------------- Start ---------------- */
 document.addEventListener("DOMContentLoaded", function(){
-  document.querySelectorAll(".ex[data-ex]").forEach(buildExercise);
-  document.querySelectorAll(".quiz").forEach(buildQuiz);
-  if(document.querySelector(".ex[data-ex]")) loadPython().catch(function(){});
+  if(!window.LESSON){
+    document.querySelectorAll(".ex[data-ex]").forEach(function(b){ buildExercise(b); });
+    document.querySelectorAll(".quiz").forEach(buildQuiz);
+  }
+  if(document.querySelector(".ex[data-ex], .ls-py")) loadPython().catch(function(){});
   // Fortschritt auf der Startseite
   document.querySelectorAll("[data-lesson]").forEach(function(card){
-    var f=card.getAttribute("data-lesson"), n=parseInt(card.getAttribute("data-count")||"0",10), done=0;
-    try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf((window.RProg?window.RProg.k("pylab:"):"pylab:")+f+":")===0 && /:done$/.test(k)) done++; } }catch(e){}
+    var f=card.getAttribute("data-lesson"), n=parseInt(card.getAttribute("data-count")||"0",10), done=0, ids=(card.getAttribute("data-ids")||"").split(",").filter(Boolean);
+    try{ if(ids.length){ ids.forEach(function(id){ if(localStorage.getItem((window.RProg?window.RProg.k("pylab:"):"pylab:")+f+":"+id+":done")) done++; }); }
+         else for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf((window.RProg?window.RProg.k("pylab:"):"pylab:")+f+":")===0 && /:done$/.test(k)) done++; } }catch(e){}
     var c=card.querySelector(".prog"); if(c && n){ c.textContent=done+"/"+n+" gelöst"; if(done>=n) c.classList.add("done"); }
   });
 });
-window.PyLab = {loadPython: loadPython};
+window.PyLab = {loadPython: loadPython, mount: function(box, d, opts){ var r = buildExercise(box, d, opts); loadPython().catch(function(){}); return r; }};
 })();
