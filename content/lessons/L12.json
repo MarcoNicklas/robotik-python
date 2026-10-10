@@ -1,0 +1,445 @@
+{
+ "id": "L12",
+ "num": 12,
+ "file": "L12_Spurfolger_und_Regler.html",
+ "title": "Spurfolger und Regler",
+ "sub": "Zweipunktregelung mit IR-Sensoren und P-Regler mit Kamera",
+ "lb": "LB 3",
+ "ds": "DS 13",
+ "fischer_tag": "A8 Spurfolger",
+ "lehrplan": "LB 3: Funktionen (IF/ELSE); Befehle einer Hochsprache",
+ "goals": [
+  "eine Fallunterscheidung für zwei Sensoren aufstellen",
+  "einen Zweipunkt-Spurfolger programmieren",
+  "einen Proportionalregler einstellen"
+ ],
+ "read": {
+  "kap": "12",
+  "title": "Spurfolger und Regelung",
+  "pages": "24–25",
+  "page": 24,
+  "sections": [
+   "12 Tabelle der Fallunterscheidung I1 links / I2 rechts mit Bedeutung und Reaktion (S. 24)",
+   "Programm mit motoren() und der while-Schleife für den Zweipunkt-Spurfolger (S. 24)",
+   "12.1 Der Regelkreis: Abbildung mit Sollwert, Regelabweichung, Regler, Stellgröße, Strecke, Störgröße und Istwert (S. 24)",
+   "Text unter der Abbildung: P-Regler, kp und D-Anteil sowie der Kasten „Am echten TXT 4.0“ (S. 24)"
+  ],
+  "focus": [
+   "Welche Reaktion gehört zu jeder der vier Sensor-Kombinationen – und welcher Motor läuft dabei schnell?",
+   "Welche Größen hat der Regelkreis, und was sind sie beim Spurfolger (Sollwert, Istwert, Stellgröße, Störgröße)?",
+   "Wie berechnet der P-Regler die Geschwindigkeiten links und rechts?",
+   "Was passiert bei zu kleinem und bei zu großem kp – und was macht ein D-Anteil?"
+  ],
+  "skip": "Den Kasten „Ausprobieren im Browser“ (das ist diese Lernseite) und „Teste dich“ auf S. 25 – den bearbeitest du erst am Ende; die Lösungen in Anhang D bitte nicht nachschlagen.",
+  "note": "Am echten TXT 4.0: Spursensor links an I1 (TXT_M_I1_trail_follower), rechts an I2 (TXT_M_I2_trail_follower); get_state() liefert 0 oder 1. Antrieb: M1 links, M2 rechts."
+ },
+ "check": [
+  {
+   "id": "c1",
+   "type": "match",
+   "q": "Ordne die Teile des Regelkreises (Abbildung 12.1) dem zu, was sie beim Spurfolger sind.",
+   "rows": [
+    [
+     "Regler",
+     "das Programm"
+    ],
+    [
+     "Strecke",
+     "Buggy und Motoren"
+    ],
+    [
+     "Stellgröße u",
+     "Motorkorrektur"
+    ],
+    [
+     "Störgröße d",
+     "Kurve der Spur"
+    ],
+    [
+     "Regelabweichung e",
+     "Unterschied zwischen Soll- und Istwert"
+    ]
+   ],
+   "hint": [
+    "Alle Begriffe stehen in der Abbildung „12.1 Der Regelkreis“ auf S. 24 – unter den Kästen und Pfeilen."
+   ],
+   "ref": "S. 24 · 12.1",
+   "tag": "Regelkreis",
+   "sol": "Regler = Programm, Strecke = Buggy + Motoren, Stellgröße = Motorkorrektur, Störgröße = Kurve, Regelabweichung e = Soll − Ist (beim Spurfolger die gemessene Abweichung von der Spur)."
+  },
+  {
+   "id": "c2",
+   "type": "num",
+   "q": "P-Regler mit BASIS = 300 und kp = 25. Die Kamera misst e = −2 cm (die Spur liegt rechts). Welche Geschwindigkeit bekommt der <b>linke</b> Motor?",
+   "a": 350,
+   "tol": 0,
+   "hint": [
+    "Formel unter der Abbildung auf S. 24: links = BASIS − kp·e.",
+    "Achte auf das Minuszeichen: minus mal minus …"
+   ],
+   "ref": "S. 24 · 12.1",
+   "tag": "P-Regler-Rechnung",
+   "sol": "links = 300 − 25 · (−2) = 300 + 50 = 350 (rechts = 300 + 25 · (−2) = 250). Der linke Motor ist schneller, also lenkt der Buggy nach rechts zur Spur."
+  },
+  {
+   "id": "c3",
+   "type": "cloze",
+   "q": "Ergänze die Lücken nach der Tabelle auf S. 24.",
+   "text": "Liefert I1 = 0 und I2 = 1, liegt die Linie [[0]]. Der Buggy lenkt dann [[1]]; dazu läuft der [[2]] Motor schnell. Liefern beide Sensoren 1, ist die Linie [[3]] und der Buggy sucht in der letzten Richtung.",
+   "gaps": [
+    {
+     "opts": [
+      "links",
+      "rechts",
+      "genau in der Mitte"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "nach links",
+      "nach rechts",
+      "geradeaus"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "rechte",
+      "linke",
+      "keiner der beiden"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "verloren",
+      "unter beiden Sensoren",
+      "gerade"
+     ],
+     "a": 0
+    }
+   ],
+   "hint": [
+    "Sieh in der Tabelle die Zeile „0 | 1“ und die Zeile „1 | 1“ an."
+   ],
+   "ref": "S. 24 · 12",
+   "tag": "Sensor-Tabelle",
+   "sol": "0 | 1: Linie liegt links → links lenken (rechts schnell). 1 | 1: Linie verloren → in letzter Richtung suchen."
+  },
+  {
+   "id": "c4",
+   "type": "bug",
+   "q": "Der Zweipunkt-Spurfolger soll der Tabelle auf S. 24 folgen (schnell = 300, langsam = 60). Er verliert aber ständig die Linie. Finde die zwei fehlerhaften Zeilen.",
+   "lines": [
+    "while True:",
+    "    l = TXT_M_I1_trail_follower.get_state()",
+    "    r = TXT_M_I1_trail_follower.get_state()",
+    "    if l == 0 and r == 0:",
+    "        motoren(300, 300)",
+    "    elif l == 1 and r == 0:",
+    "        motoren(60, 300)",
+    "    elif l == 0 and r == 1:",
+    "        motoren(60, 300)",
+    "    time.sleep(0.01)"
+   ],
+   "a": [
+    2,
+    6
+   ],
+   "hint": [
+    "An welchem Eingang hängt der rechte Sensor?",
+    "Linie liegt rechts → rechts lenken. Welcher Motor muss dafür schnell sein?"
+   ],
+   "ref": "S. 24 · 12",
+   "tag": "Zweipunkt-Fehler",
+   "sol": "Zeile 3: der rechte Sensor ist <code>TXT_M_I2_trail_follower</code>. Zeile 7: bei l = 1, r = 0 liegt die Linie rechts → <code>motoren(300, 60)</code> (links schnell)."
+  },
+  {
+   "id": "c5",
+   "type": "mc",
+   "q": "Dein P-geregelter Buggy pendelt selbst auf der Geraden immer wieder hin und her über die Spur. Was änderst du zuerst?",
+   "opts": [
+    "kp verkleinern",
+    "kp vergrößern",
+    "BASIS erhöhen",
+    "auf den Zweipunktregler umstellen"
+   ],
+   "a": 0,
+   "hint": [
+    "Der letzte Absatz auf S. 24 beschreibt, was bei zu kleinem und zu großem kp passiert."
+   ],
+   "ref": "S. 24 · 12.1",
+   "tag": "kp-einstellen",
+   "sol": "Schwingen bedeutet: kp ist zu groß, der Regler lenkt zu stark. Also kp verkleinern (zusätzlich könnte ein D-Anteil dämpfen). Der Zweipunktregler zappelt noch mehr."
+  },
+  {
+   "id": "c6",
+   "type": "tf",
+   "q": "Stimmt das? Entscheide nach Kapitel 12.",
+   "rows": [
+    [
+     "Der Zweipunktregler kennt nur „zu weit links“ oder „zu weit rechts“.",
+     true
+    ],
+    [
+     "Beim P-Regler ist die Korrektur umso größer, je größer die Abweichung e ist.",
+     true
+    ],
+    [
+     "Bei zu kleinem kp schwingt der Buggy stark hin und her.",
+     false
+    ],
+    [
+     "Die IR-Spursensoren messen die Abweichung e in cm.",
+     false
+    ]
+   ],
+   "hint": [
+    "Lies den Text unter der Regelkreis-Abbildung auf S. 24 genau: Womit wird e gemessen?"
+   ],
+   "ref": "S. 24 · 12.1",
+   "tag": "Regler-Fakten",
+   "sol": "Wahr: Zweipunktregler kennt nur zwei Fälle; Korrektur = kp · e. Falsch: zu kleines kp → Spur geht in Kurven verloren (Schwingen kommt bei zu großem kp); e misst die Kamera, die IR-Sensoren liefern nur 0 oder 1."
+  },
+  {
+   "id": "c7",
+   "type": "text",
+   "q": "Wie heißt der Regler, der zusätzlich auf die <i>Änderung</i> der Abweichung e reagiert und so das Schwingen dämpft? (Kurzname)",
+   "accept": [
+    "PD-Regler",
+    "PD",
+    "PD Regler",
+    "PD-Regelung"
+   ],
+   "show": "PD-Regler",
+   "hint": [
+    "Der letzte Satz unter der Abbildung auf S. 24 nennt ihn."
+   ],
+   "ref": "S. 24 · 12.1",
+   "tag": "PD-Regler",
+   "sol": "PD-Regler: P-Anteil (proportional zu e) plus D-Anteil (reagiert auf die Änderung von e)."
+  }
+ ],
+ "deep": [
+  {
+   "id": "v1",
+   "type": "sim",
+   "widget": "pline",
+   "q": "Der Buggy fährt eine Kurvenstrecke ab. Vergleiche den Zweipunktregler (IR-Sensoren) mit dem P-Regler (Kamera) und stelle kp ein.",
+   "cfg": {
+    "m": "two",
+    "k": 20
+   },
+   "predict": {
+    "id": "v1p",
+    "type": "mc",
+    "q": "Was erwartest du beim P-Regler mit einem sehr großen kp (z. B. 100)? (Vermutung)",
+    "opts": [
+     "Der Buggy schwingt hin und her.",
+     "Der Buggy fährt ruhiger als mit kleinem kp.",
+     "Der Buggy lenkt zu schwach und verliert in Kurven die Spur.",
+     "Es ändert sich nichts."
+    ],
+    "a": 0,
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Sieh dir zuerst den Zweipunktregler an. Wähle dann den P-Regler und suche ein kp, mit dem der Buggy ruhig auf der Spur bleibt und die größte Abweichung unter 2 cm liegt. Probiere auch kp = 5 und kp = 100.",
+    "cond": "s.m === 'p' && s.ok && s.maxe < 2",
+    "rec": "'kp = ' + s.k + ': größte Abweichung ' + s.maxe + ' cm, ' + s.sw + ' Richtungswechsel'"
+   },
+   "explain": {
+    "id": "v1x",
+    "type": "num",
+    "q": "BASIS = 300, kp = 30. Die Kamera misst e = 1,5 cm (Spur liegt links). Welche Geschwindigkeit bekommt der <b>rechte</b> Motor nach der Formel im Skript?",
+    "a": 345,
+    "tol": 0,
+    "hint": [
+     "rechts = BASIS + kp·e (S. 24)"
+    ],
+    "ref": "S. 24 · 12.1",
+    "tag": "P-Regler-rechts",
+    "sol": "rechts = 300 + 30 · 1,5 = 345, links = 300 − 45 = 255. Der rechte Motor ist schneller → der Buggy lenkt nach links zur Spur – umso stärker, je größer e ist."
+   },
+   "tag": "P-Regler",
+   "ref": "S. 24",
+   "paper": {
+    "obs": [
+     "Regler / kp",
+     "größte Abweichung (cm)",
+     "Richtungswechsel / Verhalten"
+    ],
+    "rows": 4
+   }
+  },
+  {
+   "id": "v2",
+   "type": "py",
+   "title": "Zweipunkt-Spurfolger (A8, Aufgabe 1)",
+   "q": "Setze die Tabelle in Code um. Schnell = 300, langsam = 60. Merke dir in <code>letzte</code>, wohin zuletzt gelenkt wurde.",
+   "lvl": "Basis",
+   "ref": "S. 24 · 12 (Tabelle)",
+   "tag": "Zweipunkt-Spurfolger",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\ndef motoren(links, rechts):\n    TXT_M_M1_encodermotor.set_speed(int(max(0, min(512, links))), Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(int(max(0, min(512, rechts))), Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    TXT_M_M2_encodermotor.start()\n\nSCHNELL, LANGSAM = 300, 60\nletzte = \"links\"\nstart = time.time()\nwhile time.time() - start < 30:\n    l = TXT_M_I1_trail_follower.get_state()\n    r = TXT_M_I2_trail_follower.get_state()\n    if l == 0 and r == 0:\n        motoren(SCHNELL, SCHNELL)\n    # TODO: die drei anderen Fälle\n\n    time.sleep(0.01)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I1_trail_follower",
+       "port": 1,
+       "kind": "ir",
+       "label": "IR links",
+       "src": {
+        "side": "left"
+       }
+      },
+      {
+       "name": "TXT_M_I2_trail_follower",
+       "port": 2,
+       "kind": "ir",
+       "label": "IR rechts",
+       "src": {
+        "side": "right"
+       }
+      }
+     ],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       50,
+       0
+      ],
+      "heading": 90,
+      "view": [
+       -65,
+       -65,
+       65,
+       65
+      ],
+      "track": {
+       "type": "circle",
+       "c": [
+        0,
+        0
+       ],
+       "r": 50,
+       "w": 2
+      }
+     },
+     "limit_t": 35,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nps = poses()\ndev = max(abs((p[\"x\"]**2 + p[\"y\"]**2) ** 0.5 - 50) for p in ps[5:])\nok(dev < 6, \"Buggy bleibt an der Spur (max. Abweichung %.1f cm)\" % dev, \"Buggy verliert die Spur (Abweichung %.1f cm)\" % dev)\nweg = sum(((b[\"x\"]-a[\"x\"])**2 + (b[\"y\"]-a[\"y\"])**2) ** 0.5 for a, b in zip(ps, ps[1:]))\nok(weg > 150, \"Strecke: %.0f cm\" % weg, \"Buggy kommt kaum voran (%.0f cm)\" % weg)\n",
+    "solution": "import time\nfrom lib.controller import *\n\ndef motoren(links, rechts):\n    TXT_M_M1_encodermotor.set_speed(int(max(0, min(512, links))), Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(int(max(0, min(512, rechts))), Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    TXT_M_M2_encodermotor.start()\n\nSCHNELL, LANGSAM = 300, 60\nletzte = \"links\"\nstart = time.time()\nwhile time.time() - start < 30:\n    l = TXT_M_I1_trail_follower.get_state()\n    r = TXT_M_I2_trail_follower.get_state()\n    if l == 0 and r == 0:\n        motoren(SCHNELL, SCHNELL)\n    elif l == 1 and r == 0:\n        motoren(SCHNELL, LANGSAM)      # nach rechts\n        letzte = \"rechts\"\n    elif l == 0 and r == 1:\n        motoren(LANGSAM, SCHNELL)      # nach links\n        letzte = \"links\"\n    else:\n        if letzte == \"links\":\n            motoren(LANGSAM, SCHNELL)\n        else:\n            motoren(SCHNELL, LANGSAM)\n    time.sleep(0.01)\n",
+    "hints": [
+     "Nach rechts lenken heißt: linker Motor schnell, rechter langsam."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v3",
+   "type": "py",
+   "title": "P-Regler (A8, Experimentieraufgabe 2)",
+   "q": "<code>sim.spur_abweichung()</code> liefert e (positiv = Spur links). Linker Motor: <code>BASIS - kp * e</code>, rechter: <code>BASIS + kp * e</code>. Finde ein kp, mit dem der Buggy ruhig und dicht (&lt; 2 cm) an der Spur bleibt. Starte mit kp = 1.",
+   "lvl": "Basis",
+   "ref": "S. 24 · 12.1",
+   "tag": "P-Regler",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\ndef motoren(links, rechts):\n    TXT_M_M1_encodermotor.set_speed(int(max(0, min(512, links))), Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(int(max(0, min(512, rechts))), Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    TXT_M_M2_encodermotor.start()\n\nimport sim\nBASIS = 300\nkp = 1          # TODO: ausprobieren und verbessern\n\nstart = time.time()\nwhile time.time() - start < 30:\n    e = sim.spur_abweichung()\n    korrektur = kp * e\n    motoren(BASIS - korrektur, BASIS + korrektur)\n    time.sleep(0.02)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       50,
+       0
+      ],
+      "heading": 90,
+      "view": [
+       -65,
+       -65,
+       65,
+       65
+      ],
+      "track": {
+       "type": "circle",
+       "c": [
+        0,
+        0
+       ],
+       "r": 50,
+       "w": 2
+      }
+     },
+     "limit_t": 35,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nps = poses()\ndev = max(abs((p[\"x\"]**2 + p[\"y\"]**2) ** 0.5 - 50) for p in ps[10:])\nok(dev < 2, \"Buggy bleibt dicht an der Spur (max. %.1f cm)\" % dev, \"Abweichung %.1f cm – kp vergrößern\" % dev)\n",
+    "solution": "import time\nfrom lib.controller import *\n\ndef motoren(links, rechts):\n    TXT_M_M1_encodermotor.set_speed(int(max(0, min(512, links))), Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(int(max(0, min(512, rechts))), Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    TXT_M_M2_encodermotor.start()\n\nimport sim\nBASIS = 300\nkp = 40\n\nstart = time.time()\nwhile time.time() - start < 30:\n    e = sim.spur_abweichung()\n    korrektur = kp * e\n    motoren(BASIS - korrektur, BASIS + korrektur)\n    time.sleep(0.02)\n",
+    "hints": [
+     "Probiere kp = 10, 20, 40, 80. Wird der Buggy unruhig, ist kp zu groß."
+    ],
+    "nosim": false
+   }
+  }
+ ],
+ "close": {
+  "merke": [
+   "Zwei Sensoren ergeben vier Fälle: 0|0 geradeaus, 1|0 rechts lenken, 0|1 links lenken, 1|1 in der letzten Richtung suchen.",
+   "Ein Regler vergleicht ständig Sollwert (0 cm Abweichung) und Istwert (gemessene Lage der Spur) und greift über die Stellgröße ein.",
+   "P-Regler: Korrektur = kp · e; links = BASIS − kp·e, rechts = BASIS + kp·e.",
+   "kp zu klein → Spur geht in Kurven verloren; kp zu groß → Schwingen; ein D-Anteil (PD-Regler) dämpft."
+  ],
+  "praxis": "Fischer-Aufgabe A8 „Spurfolger“: Löse die Programmieraufgaben 1–4 mit den Spursensoren an I1/I2. Bearbeite danach die Experimentieraufgaben zum P- und PD-Regler mit der Kamera und notiere für drei kp-Werte, wie ruhig der Buggy fährt."
+ }
+}

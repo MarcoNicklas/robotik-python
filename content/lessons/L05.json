@@ -1,0 +1,480 @@
+{
+ "id": "L05",
+ "num": 5,
+ "file": "L05_Funktionen_und_Zeitsteuerung.html",
+ "title": "Funktionen und Zeitsteuerung",
+ "sub": "def, Parameter, return – Ampel und Blinklicht, nebenläufige Abläufe",
+ "lb": "LB 3",
+ "ds": "DS 5",
+ "fischer_tag": "A3 Ampel und Blinklicht",
+ "lehrplan": "LB 3: Funktionen; Befehle einer Hochsprache",
+ "goals": [
+  "eigene Funktionen mit Parametern und Rückgabewert schreiben",
+  "zeitgesteuerte Abläufe (Ampel, Blinklicht) programmieren",
+  "das Prinzip nebenläufiger Prozesse (Threads) erklären"
+ ],
+ "read": {
+  "kap": "5",
+  "title": "Funktionen, Zeitsteuerung und Threads",
+  "pages": "11–12",
+  "page": 11,
+  "sections": [
+   "5.1 Funktionen – die drei Beispiele <code>rot()</code>, <code>blinken(anzahl, dauer)</code>, <code>impulse_fuer_winkel(winkel)</code> und der Text darunter (S. 11)",
+   "5.2 Zwei Dinge gleichzeitig – Weg 1: Thread mit <code>threading</code> (S. 11)",
+   "5.2 Weg 2: Zeitscheiben mit <code>time.time()</code> (S. 11)",
+   "Kasten „Am echten TXT 4.0“ (S. 12)"
+  ],
+  "focus": [
+   "Worin unterscheiden sich eine Funktion ohne Parameter, mit Parametern und mit Rückgabewert?",
+   "Wozu braucht man das Schlüsselwort <code>global</code>?",
+   "Warum kann das Programm während <code>time.sleep()</code> nichts anderes tun?",
+   "Woran erkennt die Zeitscheiben-Schleife, dass sie die LED umschalten muss?"
+  ],
+  "skip": "Kasten „Ausprobieren im Browser“ (das machst du in der Vertiefung) und „Teste dich“ – die Lösungen in Anhang D bitte nicht nachschlagen.",
+  "note": "Auf dem TXT 4.0 heißen die Bauteile wie in lib/controller.py, z. B. <code>TXT_M_O1_led</code> und <code>TXT_M_M1_encodermotor</code>. Die Vorlage A3_Ampel_Blinklicht_Thread.py nutzt Weg 1 (Thread)."
+ },
+ "check": [
+  {
+   "id": "c1",
+   "type": "match",
+   "q": "Ordne jedem Codeteil aus Kapitel 5 die passende Beschreibung zu.",
+   "rows": [
+    [
+     "<code>def rot():</code>",
+     "Funktion ohne Parameter"
+    ],
+    [
+     "<code>blinken(5, 0.5)</code>",
+     "Aufruf mit zwei Parametern"
+    ],
+    [
+     "<code>return round(winkel / 90 * 64)</code>",
+     "liefert einen Rückgabewert"
+    ],
+    [
+     "<code>global</code>",
+     "Variable von außerhalb in der Funktion verändern"
+    ],
+    [
+     "<code>threading.Thread(…).start()</code>",
+     "startet einen nebenläufigen Prozess"
+    ]
+   ],
+   "extra": [
+    "wartet eine feste Zeit, ohne etwas anderes zu tun"
+   ],
+   "hint": [
+    "Lies die Kommentare hinter den drei Funktionen in 5.1 (S. 11).",
+    "Der Text unter dem Code in 5.1 erklärt <code>global</code>, 5.2 Weg 1 zeigt den Thread."
+   ],
+   "ref": "S. 11 · 5.1/5.2",
+   "tag": "Funktionsarten",
+   "sol": "<code>rot()</code> hat keine Parameter, <code>blinken(5, 0.5)</code> übergibt zwei Parameter, <code>return</code> gibt ein Ergebnis zurück, <code>global</code> kennzeichnet Variablen von außerhalb, <code>threading.Thread(…).start()</code> startet den Thread."
+  },
+  {
+   "id": "c2",
+   "type": "num",
+   "q": "Welchen Wert liefert <code>impulse_fuer_winkel(135)</code> mit der Funktion aus 5.1?",
+   "a": 96,
+   "tol": 0,
+   "unit": "Impulse",
+   "hint": [
+    "Schau dir die <code>return</code>-Zeile von <code>impulse_fuer_winkel</code> an (S. 11): 90° entsprechen 64 Impulsen."
+   ],
+   "ref": "S. 11 · 5.1",
+   "tag": "Rueckgabewert",
+   "sol": "135 / 90 = 1,5 und 1,5 · 64 = 96 → <code>round(96.0)</code> = 96 Impulse."
+  },
+  {
+   "id": "c3",
+   "type": "cloze",
+   "q": "Ergänze den Text zu Funktionen.",
+   "text": "<code>[[0]] blinken(anzahl, dauer):</code> legt eine Funktion an. <code>anzahl</code> und <code>dauer</code> nennt man [[1]]. Mit <code>[[2]]</code> gibt eine Funktion ein Ergebnis an den Aufrufer zurück. In Blockly entsprechen Funktionen den [[3]].",
+   "gaps": [
+    {
+     "opts": [
+      "function",
+      "def",
+      "func"
+     ],
+     "a": 1
+    },
+    {
+     "opts": [
+      "Parameter",
+      "Rückgabewerte",
+      "globale Variablen"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "print",
+      "global",
+      "return"
+     ],
+     "a": 2
+    },
+    {
+     "opts": [
+      "Schleifen",
+      "Variablen",
+      "Unterprogrammen („definiere …“)"
+     ],
+     "a": 2
+    }
+   ],
+   "hint": [
+    "Alle Begriffe stehen in 5.1 – im Code und im Text darunter (S. 11)."
+   ],
+   "ref": "S. 11 · 5.1",
+   "tag": "def-Parameter-return",
+   "sol": "<code>def</code> legt die Funktion an, <code>anzahl</code> und <code>dauer</code> sind Parameter, <code>return</code> liefert den Rückgabewert, in Blockly heißen Funktionen Unterprogramme („definiere …“)."
+  },
+  {
+   "id": "c4",
+   "type": "tf",
+   "q": "Richtig oder falsch?",
+   "rows": [
+    [
+     "Solange <code>time.sleep(3)</code> läuft, kann das Programm nebenher eine LED umschalten.",
+     false
+    ],
+    [
+     "Ein Thread ist ein nebenläufiger Prozess: Das Blinklicht läuft unabhängig vom Hauptprogramm.",
+     true
+    ],
+    [
+     "Bei der Zeitscheiben-Methode wartet die Schleife nie lange, sondern schaut mit <code>time.time()</code> auf die Uhr.",
+     true
+    ],
+    [
+     "Im Thread-Beispiel blinkt die LED, solange <code>blinken_aktiv</code> den Wert <code>False</code> hat.",
+     false
+    ]
+   ],
+   "hint": [
+    "Lies den ersten Satz von 5.2 und vergleiche Weg 1 und Weg 2 (S. 11).",
+    "Achte im Thread-Code darauf, was bei <code>if blinken_aktiv:</code> und bei <code>else:</code> passiert."
+   ],
+   "ref": "S. 11 · 5.2",
+   "tag": "Gleichzeitigkeit",
+   "sol": "Während <code>time.sleep()</code> tut das Programm nichts anderes (falsch). Thread und Zeitscheiben sind richtig beschrieben. Die LED blinkt nur, wenn <code>blinken_aktiv</code> <code>True</code> ist – sonst wartet der Thread 0,05 s (falsch)."
+  },
+  {
+   "id": "c5",
+   "type": "bug",
+   "q": "Das Programm soll die LED an O1 3-mal blinken lassen (je 0,5 s) und danach den Motor um die Impulse für 60° drehen. Welche Zeilen sind fehlerhaft?",
+   "lines": [
+    "import time",
+    "from lib.controller import *",
+    "def blinken(anzahl, dauer):",
+    "    for i in range(dauer):",
+    "        TXT_M_O1_led.set_brightness(512); time.sleep(dauer)",
+    "        TXT_M_O1_led.set_brightness(0);   time.sleep(dauer)",
+    "def impulse_fuer_winkel(winkel):",
+    "    print(round(winkel / 90 * 64))",
+    "blinken(3, 0.5)",
+    "zahl = impulse_fuer_winkel(60)",
+    "TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)",
+    "TXT_M_M1_encodermotor.set_distance(zahl)"
+   ],
+   "a": [
+    3,
+    7
+   ],
+   "hint": [
+    "Vergleiche mit <code>blinken</code> und <code>impulse_fuer_winkel</code> in 5.1 (S. 11).",
+    "Welcher Parameter gibt an, wie oft geblinkt wird? Und wie kommt ein Ergebnis aus einer Funktion heraus?"
+   ],
+   "ref": "S. 11 · 5.1",
+   "tag": "Funktion-Fehler",
+   "sol": "In der <code>for</code>-Zeile muss <code>range(anzahl)</code> stehen – <code>range(0.5)</code> bricht mit einem Fehler ab. In <code>impulse_fuer_winkel</code> muss <code>return</code> statt <code>print</code> stehen, sonst ist <code>zahl</code> <code>None</code>. Richtig: 60 / 90 · 64 ≈ 42,7 → 43 Impulse."
+  },
+  {
+   "id": "c6",
+   "type": "order",
+   "q": "Bringe die Schritte der Zeitscheiben-Methode (Weg 2) in die richtige Reihenfolge.",
+   "items": [
+    "Startzeit merken: <code>letztes = time.time()</code>",
+    "Schleife, solange der Motor läuft: <code>while TXT_M_M1_encodermotor.is_running():</code>",
+    "prüfen, ob seit <code>letztes</code> mindestens 0,5 s vergangen sind",
+    "LED umschalten: <code>umschalten()</code>",
+    "neuen Umschaltzeitpunkt merken: <code>letztes = time.time()</code>",
+    "ganz kurz warten: <code>time.sleep(0.01)</code>"
+   ],
+   "hint": [
+    "Der Code steht in 5.2 unter „Weg 2: Zeitscheiben“ (S. 11) – geh ihn Zeile für Zeile durch."
+   ],
+   "ref": "S. 11 · 5.2",
+   "tag": "Zeitscheiben-Ablauf",
+   "sol": "Erst Startzeit merken, dann die Schleife: Uhr prüfen → umschalten → Zeitpunkt merken → 0,01 s warten. So wartet die Schleife nie lange."
+  },
+  {
+   "id": "c7",
+   "type": "mc",
+   "q": "<code>TXT_M_M1_encodermotor.set_distance(64)</code> öffnet die Schranke (Fahrt ca. 3 s). Danach folgen <code>time.sleep(3)</code> und <code>blinken(6, 0.5)</code>. Was beobachtest du?",
+   "opts": [
+    "Das Warnlicht blinkt erst, wenn die Schranke schon offen ist.",
+    "Das Warnlicht blinkt, während die Schranke fährt.",
+    "Das Warnlicht blinkt gar nicht, weil <code>time.sleep()</code> das Programm beendet.",
+    "Die Schranke fährt erst los, wenn das Blinken fertig ist."
+   ],
+   "a": 0,
+   "hint": [
+    "Was tut das Programm, solange <code>time.sleep()</code> läuft? (5.2, S. 11)"
+   ],
+   "ref": "S. 11 · 5.2",
+   "tag": "sleep-blockiert",
+   "sol": "Der Motor fährt los, das Programm wartet 3 s ohne etwas anderes zu tun und blinkt erst danach. Damit es gleichzeitig blinkt, brauchst du einen Thread oder Zeitscheiben (5.2)."
+  }
+ ],
+ "deep": [
+  {
+   "id": "v1",
+   "type": "sim",
+   "widget": "timeslice",
+   "q": "Die Schranke fährt einige Sekunden, das Warnlicht soll dabei blinken. Der Zeitstrahl zeigt, wann Motor und LED aktiv sind – je nachdem, wie das Programm gebaut ist.",
+   "cfg": {
+    "m": "sleep",
+    "t": 3,
+    "i": 0.5
+   },
+   "predict": {
+    "id": "v1p",
+    "type": "mc",
+    "q": "Das Programm wartet erst mit <code>time.sleep(3)</code>, bis die Schranke offen ist, und blinkt danach. Wie oft schaltet die LED um, während der Motor läuft? (Vermutung)",
+    "opts": [
+     "gar nicht",
+     "3-mal",
+     "6-mal"
+    ],
+    "a": 0,
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Vergleiche die drei Programme bei Fahrzeit 3 s und Blinktakt 0,5 s. Stelle dann „Zeitscheiben“ ein und finde Fahrzeit und Blinktakt, bei denen die LED während der Fahrt genau 8-mal umschaltet.",
+    "cond": "s.m==='slice' && s.during===8",
+    "rec": "'Zeitscheiben: Fahrzeit ' + s.T + ' s, Takt ' + s.iv + ' s → ' + s.during + ' Umschaltungen'"
+   },
+   "explain": {
+    "id": "v1x",
+    "type": "num",
+    "q": "Zeitscheiben-Programm, Fahrzeit 5 s, Blinktakt 0,75 s: Wie oft schaltet die LED um, während der Motor läuft?",
+    "a": 7,
+    "tol": 0,
+    "unit": "Umschaltungen",
+    "hint": [
+     "Die LED schaltet bei 0 s, 0,75 s, 1,5 s … um – solange der Motor noch läuft (5.2 Weg 2, S. 11).",
+     "Zähle alle Zeitpunkte kleiner als 5 s."
+    ],
+    "ref": "S. 11 · 5.2",
+    "tag": "Umschaltungen-zaehlen",
+    "sol": "Umschalten bei 0; 0,75; 1,5; 2,25; 3; 3,75; 4,5 s → 7-mal (5 : 0,75 ≈ 6,7, aufgerundet 7). Mit <code>time.sleep(5)</code> wären es 0."
+   },
+   "tag": "Zeitscheiben",
+   "ref": "S. 11 · 5.2",
+   "paper": {
+    "obs": [
+     "Programm",
+     "Fahrzeit / Takt",
+     "Umschaltungen während der Fahrt"
+    ],
+    "rows": 3
+   }
+  },
+  {
+   "id": "v2",
+   "type": "py",
+   "title": "Blinklicht (A3, Experimentieraufgabe 1)",
+   "q": "Nach dem Drücken des Tasters I1 soll die rote LED an O1 <b>5-mal</b> je 0,5 s an und 0,5 s aus gehen. Schreibe dafür die Funktion <code>blinken(anzahl)</code>.",
+   "lvl": "Basis",
+   "ref": "S. 11 · 5.1",
+   "tag": "Blinklicht",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\ndef blinken(anzahl):\n    pass   # TODO\n\n# warten bis Taster gedrückt\nwhile not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)\nblinken(5)\n",
+    "cfg": {
+     "inputs": [
+      {
+       "name": "TXT_M_I1_mini_switch",
+       "port": 1,
+       "kind": "switch",
+       "label": "Taster",
+       "src": {
+        "type": "schedule",
+        "on": [
+         [
+          1.5,
+          1.8
+         ]
+        ]
+       }
+      }
+     ],
+     "leds": [
+      {
+       "name": "TXT_M_O1_led",
+       "port": 1,
+       "color": "red"
+      }
+     ],
+     "limit_t": 15,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\niv = led_intervals(1)\nok(len(iv) == 5, \"LED blinkt genau 5-mal\", \"LED blinkt %d-mal\" % len(iv))\nok(all(abs((b-a) - 0.5) < 0.06 for a, b in iv), \"jeweils 0,5 s an\", \"Die Leuchtdauer soll 0,5 s sein\")\nok(iv and iv[0][0] >= 1.5, \"Blinken startet erst nach dem Tastendruck\", \"Blinken beginnt vor dem Tastendruck\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\ndef blinken(anzahl):\n    for i in range(anzahl):\n        TXT_M_O1_led.set_brightness(512)\n        time.sleep(0.5)\n        TXT_M_O1_led.set_brightness(0)\n        time.sleep(0.5)\n\nwhile not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)\nblinken(5)\n",
+    "hints": [
+     "Nutze eine <code>for i in range(anzahl):</code>-Schleife wie in <code>blinken(anzahl, dauer)</code> (S. 11).",
+     "In der Schleife: LED an (512), <code>time.sleep(0.5)</code>, LED aus (0), <code>time.sleep(0.5)</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v3",
+   "type": "py",
+   "title": "Bedarfsampel (A3, Programmieraufgabe 1)",
+   "q": "Rote LED O3, grüne LED O4, Bedarfstaster I1. Ruhezustand: rot. Taster gedrückt → nach 3 s grün → nach 5 s wieder rot. Das Programm läuft 30 s. Schreibe die Funktionen <code>rot()</code> und <code>gruen()</code>.",
+   "lvl": "Basis",
+   "ref": "S. 11 · 5.1",
+   "tag": "Bedarfsampel",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\ndef rot():\n    TXT_M_O3_led.set_brightness(512)\n    TXT_M_O4_led.set_brightness(0)\n\ndef gruen():\n    pass   # TODO\n\nrot()\nstart = time.time()\nwhile time.time() - start < 30:\n    if TXT_M_I1_mini_switch.is_closed():\n        pass   # TODO: 3 s warten, grün, 5 s warten, rot\n    time.sleep(0.02)\n",
+    "cfg": {
+     "inputs": [
+      {
+       "name": "TXT_M_I1_mini_switch",
+       "port": 1,
+       "kind": "switch",
+       "label": "Bedarf",
+       "src": {
+        "type": "schedule",
+        "on": [
+         [
+          2,
+          2.3
+         ],
+         [
+          15,
+          15.3
+         ]
+        ]
+       }
+      }
+     ],
+     "leds": [
+      {
+       "name": "TXT_M_O3_led",
+       "port": 3,
+       "color": "red",
+       "label": "rot"
+      },
+      {
+       "name": "TXT_M_O4_led",
+       "port": 4,
+       "color": "green",
+       "label": "grün"
+      }
+     ],
+     "limit_t": 35,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\ng = led_intervals(4)\nok(len(g) == 2, \"Ampel wird 2-mal grün\", \"Grünphasen: %d (erwartet 2)\" % len(g))\nok(g and abs(g[0][0] - 5.0) < 0.3, \"Grün 3 s nach dem Tastendruck\", \"Grün soll 3 s nach dem Drücken kommen\")\nok(g and all(abs((b-a) - 5) < 0.3 for a, b in g), \"Grünphase dauert 5 s\", \"Grünphase soll 5 s dauern\")\nok(led_at(3, 1) > 0 and led_at(3, 12) > 0 and led_at(3, 4) > 0, \"sonst rot\", \"Im Ruhezustand muss Rot leuchten\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\ndef rot():\n    TXT_M_O3_led.set_brightness(512)\n    TXT_M_O4_led.set_brightness(0)\n\ndef gruen():\n    TXT_M_O3_led.set_brightness(0)\n    TXT_M_O4_led.set_brightness(512)\n\nrot()\nstart = time.time()\nwhile time.time() - start < 30:\n    if TXT_M_I1_mini_switch.is_closed():\n        time.sleep(3)\n        gruen()\n        time.sleep(5)\n        rot()\n    time.sleep(0.02)\n",
+    "hints": [
+     "<code>gruen()</code> ist das Gegenstück zu <code>rot()</code>: O3 auf 0, O4 auf 512.",
+     "Im <code>if</code>: <code>time.sleep(3)</code>, <code>gruen()</code>, <code>time.sleep(5)</code>, <code>rot()</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v4",
+   "type": "py",
+   "title": "Funktion mit Rückgabewert",
+   "q": "Schreibe <code>impulse_fuer_winkel(winkel)</code>: 90° entsprechen 64 Impulsen. Ergebnis als ganze Zahl (<code>round</code>).",
+   "lvl": "Basis",
+   "ref": "S. 11 · 5.1",
+   "tag": "Funktion mit Rückgabewert",
+   "ex": {
+    "starter": "def impulse_fuer_winkel(winkel):\n    return 0   # TODO\n\nprint(impulse_fuer_winkel(90))\nprint(impulse_fuer_winkel(45))\nprint(impulse_fuer_winkel(30))\n",
+    "cfg": {},
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(impulse_fuer_winkel(90) == 64 and impulse_fuer_winkel(45) == 32 and impulse_fuer_winkel(30) == 21, \"Werte stimmen (64, 32, 21)\", \"Erwartet: 90° → 64, 45° → 32, 30° → 21\")\n",
+    "solution": "def impulse_fuer_winkel(winkel):\n    return round(winkel / 90 * 64)\n\nprint(impulse_fuer_winkel(90))\nprint(impulse_fuer_winkel(45))\nprint(impulse_fuer_winkel(30))\n",
+    "hints": [
+     "Erst ausrechnen, welcher Teil von 90° der Winkel ist (<code>winkel / 90</code>), dann mit 64 malnehmen und mit <code>round()</code> runden."
+    ],
+    "nosim": true
+   }
+  },
+  {
+   "id": "v5",
+   "type": "py",
+   "title": "Blinken während die Schranke öffnet (A3, Experimentieraufgabe 2)",
+   "q": "Öffne die Schranke langsam (Geschwindigkeit 100, 64 Impulse). <b>Während</b> der Motor läuft, soll die LED O1 alle 0,5 s umschalten. Danach LED aus.",
+   "lvl": "Profi · freiwillig",
+   "ref": "S. 11 · 5.2",
+   "tag": "Blinken während die Schranke öffnet",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nTXT_M_M1_encodermotor.set_speed(100, Motor.CCW)\nTXT_M_M1_encodermotor.set_distance(64)\n\nan = False\nletztes_umschalten = time.time()\nwhile TXT_M_M1_encodermotor.is_running():\n    if time.time() - letztes_umschalten >= 0.5:\n        an = not an                       # umschalten\n        # TODO: LED je nach \"an\" setzen und Zeitpunkt merken\n\n    time.sleep(0.01)\nTXT_M_O1_led.set_brightness(0)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I1_mini_switch",
+       "port": 1,
+       "kind": "switch",
+       "label": "unten",
+       "src": {
+        "type": "gate_down"
+       }
+      }
+     ],
+     "leds": [
+      {
+       "name": "TXT_M_O1_led",
+       "port": 1,
+       "color": "orange",
+       "label": "Warn"
+      }
+     ],
+     "world": {
+      "type": "gate",
+      "start_angle": 0
+     },
+     "limit_t": 15,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\niv = led_intervals(1)\nok(len(iv) >= 2, \"LED blinkt während der Fahrt (%d-mal)\" % len(iv), \"LED blinkt nicht\")\na = gate_angles()\nok(a and a[-1][1] >= 88, \"Schranke ist offen\", \"Schranke ist nicht offen\")\nok(led_at(1, T_END) == 0, \"LED am Ende aus\", \"LED ist am Ende noch an\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\nTXT_M_M1_encodermotor.set_speed(100, Motor.CCW)\nTXT_M_M1_encodermotor.set_distance(64)\n\nan = False\nletztes_umschalten = time.time()\nwhile TXT_M_M1_encodermotor.is_running():\n    if time.time() - letztes_umschalten >= 0.5:\n        an = not an\n        if an:\n            TXT_M_O1_led.set_brightness(512)\n        else:\n            TXT_M_O1_led.set_brightness(0)\n        letztes_umschalten = time.time()\n    time.sleep(0.01)\nTXT_M_O1_led.set_brightness(0)\n",
+    "hints": [
+     "<code>if an: … else: …</code> und danach <code>letztes_umschalten = time.time()</code>"
+    ],
+    "nosim": false
+   },
+   "opt": true
+  }
+ ],
+ "close": {
+  "merke": [
+   "Eine Funktion (<code>def</code>) fasst Befehle unter einem Namen zusammen: Parameter sind Eingabewerte, <code>return</code> liefert ein Ergebnis zurück.",
+   "Funktionen machen Programme kürzer, lesbarer und wiederverwendbar – wie Unterprogramme in Blockly.",
+   "Während <code>time.sleep()</code> tut das Programm nichts anderes.",
+   "Zwei Dinge gleichzeitig: Thread (nebenläufiger Prozess) oder Zeitscheiben – auf die Uhr schauen mit <code>time.time()</code>."
+  ],
+  "praxis": "Bearbeite am echten TXT 4.0 die Fischer-Aufgabe A3 „Ampel und Blinklicht“ – erst in Blockly, dann in Python. Starte mit der Vorlage 06_TXT_Programme/A3_Ampel_Blinklicht_Thread.py und lass das Warnlicht im Thread blinken, während die Schranke fährt."
+ }
+}

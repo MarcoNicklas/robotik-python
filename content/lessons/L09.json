@@ -1,0 +1,570 @@
+{
+ "id": "L09",
+ "num": 9,
+ "file": "L09_Hindernisse_und_Zustandsautomaten.html",
+ "title": "Hindernisse erkennen – Zustandsautomaten",
+ "sub": "Taster, Ultraschall und IR-Sensoren steuern den Buggy",
+ "lb": "LB 3",
+ "ds": "DS 9",
+ "fischer_tag": "A6 Buggy",
+ "lehrplan": "LB 3: leiten aus Schaltungen den Code ab; Funktionen (IF, ELSE)",
+ "goals": [
+  "ein Zustandsübergangsdiagramm mit if/elif umsetzen",
+  "Hindernisse mit Taster und Ultraschall erkennen",
+  "ein Ausweichmanöver als Unterprogramm schreiben"
+ ],
+ "read": {
+  "kap": "9",
+  "title": "Sensorgesteuertes Fahren: Hindernisse",
+  "pages": "19",
+  "page": 19,
+  "sections": [
+   "Einstieg: Zustandsautomat mit den Stoßstangen-Tastern I7 und I8 (Code oben auf S. 19)",
+   "9.1 Ultraschall – Formel für den Abstand und das Ausweichmanöver aus Material 3.3 (S. 19)",
+   "9.2 IR-Spursensoren – welche Werte auf Weiß und auf Schwarz geliefert werden (S. 19)"
+  ],
+  "focus": [
+   "Wie wechselt der Automat zwischen FAHREN und den beiden Ausweich-Zuständen, und welcher Taster löst welchen Zustand aus?",
+   "Warum wird beim Ultraschall durch 2 geteilt?",
+   "In welcher Reihenfolge fährt der Buggy das „halbe Rechteck“, und warum steht die Kantenlänge in einer Variablen?",
+   "Welchen Wert liefert ein IR-Spursensor auf weißem Untergrund und welchen auf einer schwarzen Linie?"
+  ],
+  "skip": "Den Kasten „Ausprobieren im Browser“ kannst du überspringen (das machst du gleich in der Vertiefung). „Teste dich“ bearbeitest du erst nach der Verständnisprüfung – die Lösungen in Anhang D bitte nicht nachschlagen.",
+  "note": "Am echten TXT 4.0 (lib/controller.py): Taster TXT_M_I7_mini_switch / TXT_M_I8_mini_switch mit is_closed(), Ultraschall TXT_M_I3_ultrasonic_distance_meter.get_distance() (in cm), IR-Spursensoren TXT_M_I1_trail_follower / TXT_M_I2_trail_follower mit get_state()."
+ },
+ "check": [
+  {
+   "id": "c1",
+   "type": "cloze",
+   "q": "Ergänze den Zustandsautomaten des Stoßstangen-Buggys.",
+   "text": "<code>if zustand == \"FAHREN\":</code> – der Buggy fährt geradeaus. Wird die linke Stoßstange gedrückt, liefert <code>TXT_M_I7_mini_switch.[[0]]()</code> den Wert True und das Programm setzt <code>zustand = [[1]]</code>. Dort fährt er 10 cm zurück, dreht 45° und setzt danach <code>zustand = [[2]]</code>.",
+   "gaps": [
+    {
+     "opts": [
+      "is_closed",
+      "get_distance",
+      "get_state",
+      "is_running"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "\"AUSWEICHEN_RECHTS\"",
+      "\"AUSWEICHEN_LINKS\"",
+      "\"FAHREN\""
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "\"FAHREN\"",
+      "\"STOPP\"",
+      "\"AUSWEICHEN_LINKS\""
+     ],
+     "a": 0
+    }
+   ],
+   "hint": [
+    "Sieh dir den Code oben auf S. 19 an – die Kommentare verraten, welcher Taster links sitzt."
+   ],
+   "ref": "S. 19 · 9",
+   "tag": "Stossstangen-Automat",
+   "sol": "Taster werden mit <code>is_closed()</code> abgefragt. Stoßstange links (I7) → <code>\"AUSWEICHEN_RECHTS\"</code> (weg vom Hindernis). Nach dem Ausweichen kehrt der Automat mit <code>zustand = \"FAHREN\"</code> in den Grundzustand zurück."
+  },
+  {
+   "id": "c2",
+   "type": "num",
+   "q": "Der Ultraschallsensor empfängt das Echo nach 4,0 ms. Wie weit ist das Hindernis entfernt?",
+   "a": 68.6,
+   "tol": 0.2,
+   "unit": "cm",
+   "hint": [
+    "Formel aus 9.1: Abstand = t · 343 m/s ÷ 2.",
+    "Rechne 4,0 ms in Sekunden um (0,004 s) und das Ergebnis von m in cm."
+   ],
+   "ref": "S. 19 · 9.1",
+   "tag": "Echo-Abstand",
+   "sol": "Abstand = 0,004 s · 343 m/s ÷ 2 = 0,686 m = 68,6 cm. Durch 2 wird geteilt, weil der Schall hin und zurück läuft."
+  },
+  {
+   "id": "c3",
+   "type": "bug",
+   "q": "Der Buggy soll geradeaus fahren und bei einem Abstand ≤ 20 cm das Hindernis als „halbes Rechteck“ umfahren (Material 3.3). Welche Zeilen sind fehlerhaft?",
+   "lines": [
+    "distance = 40",
+    "def umfahren():",
+    "    rechts(90)",
+    "    vor(distance)",
+    "    links(90)",
+    "    vor(distance)",
+    "    rechts(90)",
+    "    vor(distance)",
+    "    rechts(90)",
+    "while True:",
+    "    abstand = TXT_M_I3_ultrasonic_distance_meter.get_distance()",
+    "    if abstand >= 20:",
+    "        umfahren()",
+    "    else:",
+    "        geradeaus()",
+    "    time.sleep(0.02)"
+   ],
+   "a": [
+    6,
+    11
+   ],
+   "hint": [
+    "Vergleiche umfahren() Schritt für Schritt mit der Reihenfolge in 9.1.",
+    "Prüfe auch die Bedingung: Wann soll ausgewichen werden?"
+   ],
+   "ref": "S. 19 · 9.1",
+   "tag": "Umfahren-Fehler",
+   "sol": "Zeile 7: Die zweite Drehung nach der zweiten Kante muss <code>links(90)</code> sein (90° rechts, 40 cm, 90° links, 40 cm, 90° links, 40 cm, 90° rechts). Zeile 12: Ausweichen soll bei kleinem Abstand passieren: <code>if abstand &lt;= 20:</code>. Mit <code>&gt;= 20</code> würde der Buggy im freien Raum ständig ausweichen und auf das Hindernis auffahren."
+  },
+  {
+   "id": "c4",
+   "type": "match",
+   "q": "Ordne jeder Situation die passende Reaktion bzw. den passenden Sensorwert zu.",
+   "rows": [
+    [
+     "IR-Spursensor über weißem Untergrund",
+     "liefert 1"
+    ],
+    [
+     "IR-Spursensor über einer schwarzen Linie",
+     "liefert 0"
+    ],
+    [
+     "Taster an I7 (Stoßstange links) gedrückt",
+     "Zustand AUSWEICHEN_RECHTS"
+    ],
+    [
+     "Taster an I8 (Stoßstange rechts) gedrückt",
+     "Zustand AUSWEICHEN_LINKS"
+    ],
+    [
+     "Ultraschall misst 15 cm (Material 3.3)",
+     "Hindernis als halbes Rechteck umfahren"
+    ]
+   ],
+   "extra": [
+    "Buggy fährt schneller"
+   ],
+   "hint": [
+    "Taster: Code oben auf S. 19. Ultraschall: 9.1. IR-Sensoren: 9.2."
+   ],
+   "ref": "S. 19 · 9–9.2",
+   "tag": "Sensoren-Reaktionen",
+   "sol": "IR: weiß → 1, schwarze Linie (oder Tischkante) → 0. Stoßstange links (I7) → AUSWEICHEN_RECHTS, rechts (I8) → AUSWEICHEN_LINKS. 15 cm ≤ 20 cm → Hindernis als halbes Rechteck umfahren."
+  },
+  {
+   "id": "c5",
+   "type": "order",
+   "q": "Bringe die Schritte einer Ultraschall-Abstandsmessung mit Ausweich-Entscheidung in die richtige Reihenfolge.",
+   "items": [
+    "Der Sensor sendet einen Ultraschall-Ping.",
+    "Der Schall läuft zum Hindernis.",
+    "Das Echo wird reflektiert und läuft zum Sensor zurück.",
+    "Der Sensor misst die Zeit t bis zum Echo.",
+    "Abstand = t · 343 m/s ÷ 2 wird berechnet.",
+    "<code>if abstand &lt;= 20:</code> entscheidet, ob ausgewichen wird."
+   ],
+   "hint": [
+    "Lies den ersten Satz von 9.1 genau: Was passiert mit dem Schall, bevor gerechnet wird?"
+   ],
+   "ref": "S. 19 · 9.1",
+   "tag": "Ultraschall-Ablauf",
+   "sol": "Ping senden → Schall läuft hin → Echo läuft zurück → Zeit t messen → Abstand = t · 343 m/s ÷ 2 → Vergleich mit 20 cm entscheidet über das Ausweichen."
+  },
+  {
+   "id": "c6",
+   "type": "multi",
+   "q": "Welche Aussagen zum Zustandsautomaten auf S. 19 stimmen? Wähle alle passenden.",
+   "opts": [
+    "Die Variable <code>zustand</code> speichert immer genau einen aktuellen Zustand.",
+    "Im Zustand FAHREN ruft das Programm <code>geradeaus()</code> auf und prüft die beiden Taster.",
+    "Nach dem Ausweichen wird <code>zustand</code> wieder auf \"FAHREN\" gesetzt.",
+    "In jedem Schleifendurchlauf werden beide Ausweich-Zustände nacheinander ausgeführt.",
+    "<code>time.sleep(0.02)</code> wird nur im Zustand FAHREN ausgeführt."
+   ],
+   "a": [
+    0,
+    1,
+    2
+   ],
+   "hint": [
+    "Achte im Code auf die if/elif-Kette und auf die Einrückung der letzten Zeile."
+   ],
+   "ref": "S. 19 · 9",
+   "tag": "Automat-Aussagen",
+   "sol": "Richtig: zustand hat genau einen Wert; in FAHREN wird geradeaus() aufgerufen und I7/I8 geprüft; nach dem Ausweichen geht es zurück nach FAHREN. Falsch: Durch if/elif wird pro Durchlauf nur der Zweig des aktuellen Zustands ausgeführt. Falsch: time.sleep(0.02) steht auf der Ebene der while-Schleife und läuft in jedem Durchlauf."
+  },
+  {
+   "id": "c7",
+   "type": "mc",
+   "q": "Der Buggy soll auf einem weißen Tisch bleiben. Plötzlich liefert der linke IR-Sensor 0, der rechte 1. Was ist die richtige Reaktion?",
+   "opts": [
+    "weiterfahren, denn 0 bedeutet weißer Untergrund",
+    "ein Stück zurückfahren und nach links drehen",
+    "ein Stück zurückfahren und nach rechts drehen",
+    "erst anhalten, wenn beide Sensoren 1 liefern"
+   ],
+   "a": 2,
+   "hint": [
+    "Was bedeutet der Wert 0 laut 9.2? Auf welcher Seite ist also die Kante?"
+   ],
+   "ref": "S. 19 · 9.2",
+   "tag": "Tischkante-Transfer",
+   "sol": "0 bedeutet schwarze Linie oder Tischkante – die Kante ist links. Also zurückfahren und nach rechts drehen, weg von der Kante (so wie bei den Stoßstangen: links berührt → nach rechts ausweichen)."
+  }
+ ],
+ "deep": [
+  {
+   "id": "v1",
+   "type": "sim",
+   "widget": "echo",
+   "q": "Der Ultraschallsensor sendet einen Impuls und misst, wann das Echo zurückkommt. Du stellst den Abstand zum Hindernis und die Schwelle für <code>if abstand &lt;= …</code> ein.",
+   "cfg": {
+    "d": 60,
+    "g": 20
+   },
+   "predict": {
+    "id": "v1p",
+    "type": "num",
+    "q": "Das Hindernis steht genau 20 cm vor dem Sensor. Nach wie vielen Millisekunden kommt das Echo zurück? (Vermutung)",
+    "a": 1.17,
+    "tol": 0.05,
+    "unit": "ms",
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Stelle „Ausweichen ab“ auf 20 cm, schiebe das Hindernis auf genau 20 cm und sende einen Impuls. Prüfe: Weicht der Buggy gerade noch aus?",
+    "cond": "s.g === 20 && s.d === 20 && s.measured != null && s.ausweichen",
+    "rec": "'d = ' + s.d + ' cm → Echo nach ' + s.t + ' ms → ausweichen: ' + (s.ausweichen ? 'ja' : 'nein')"
+   },
+   "explain": {
+    "id": "v1x",
+    "type": "num",
+    "q": "Ein anderes Echo kommt schon nach 0,70 ms. Wie weit ist das Hindernis entfernt?",
+    "a": 12.0,
+    "tol": 0.1,
+    "unit": "cm",
+    "hint": [
+     "Abstand = t · 343 m/s ÷ 2 (9.1); 0,70 ms = 0,0007 s."
+    ],
+    "ref": "S. 19 · 9.1",
+    "sol": "0,0007 s · 343 m/s ÷ 2 = 0,120 m = 12,0 cm. Das ist ≤ 20 cm, also weicht der Buggy aus.",
+    "tag": "Echo-0,70ms"
+   },
+   "tag": "Echo",
+   "ref": "S. 19 · 9.1",
+   "paper": {
+    "obs": [
+     "Abstand d (cm)",
+     "Echozeit t (ms)",
+     "ausweichen?"
+    ],
+    "rows": 3
+   }
+  },
+  {
+   "id": "v2",
+   "type": "py",
+   "title": "Stoßstangen-Buggy",
+   "q": "Ergänze die Zustände. Bei Berührung links: 10 cm zurück, 45° nach rechts drehen, dann wieder FAHREN (rechts entsprechend gespiegelt).",
+   "lvl": "Basis",
+   "ref": "S. 19 · 9",
+   "tag": "Stoßstangen-Buggy",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nL, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor\n\ndef bewege(impulse, richtung_links, richtung_rechts, speed=350):\n    L.set_speed(speed, richtung_links)\n    R.set_speed(speed, richtung_rechts)\n    L.set_distance(round(impulse), R)\n    while L.is_running():\n        time.sleep(0.01)\n\ndef vor(cm):     bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)\ndef zurueck(cm): bewege(cm * IMPULSE_PRO_CM, Motor.CW, Motor.CW)\ndef rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)\ndef links(grad):  bewege(grad * IMPULSE_PRO_GRAD, Motor.CW, Motor.CCW)\n\ndef geradeaus(speed=350):\n    L.set_speed(speed, Motor.CCW)\n    R.set_speed(speed, Motor.CCW)\n    L.start_sync(R)\n\nzustand = \"FAHREN\"\nstart = time.time()\nwhile time.time() - start < 40:\n    if zustand == \"FAHREN\":\n        geradeaus()\n        if TXT_M_I7_mini_switch.is_closed():\n            zustand = \"AUSWEICHEN_RECHTS\"\n        elif TXT_M_I8_mini_switch.is_closed():\n            zustand = \"AUSWEICHEN_LINKS\"\n    elif zustand == \"AUSWEICHEN_RECHTS\":\n        pass   # TODO: zurück, rechts drehen, zustand = \"FAHREN\"\n    elif zustand == \"AUSWEICHEN_LINKS\":\n        pass   # TODO\n    time.sleep(0.02)\nL.stop_sync(R)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I7_mini_switch",
+       "port": 7,
+       "kind": "switch",
+       "label": "links",
+       "src": {
+        "type": "bumper",
+        "side": "left"
+       }
+      },
+      {
+       "name": "TXT_M_I8_mini_switch",
+       "port": 8,
+       "kind": "switch",
+       "label": "rechts",
+       "src": {
+        "type": "bumper",
+        "side": "right"
+       }
+      }
+     ],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 25,
+      "view": [
+       -70,
+       -70,
+       70,
+       70
+      ],
+      "obstacles": [
+       [
+        -64,
+        -64,
+        64,
+        -60
+       ],
+       [
+        -64,
+        60,
+        64,
+        64
+       ],
+       [
+        -64,
+        -64,
+        -60,
+        64
+       ],
+       [
+        60,
+        -64,
+        64,
+        64
+       ],
+       [
+        15,
+        20,
+        35,
+        40
+       ]
+      ]
+     },
+     "limit_t": 45,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nps = poses()\nweg = sum(((b[\"x\"]-a[\"x\"])**2 + (b[\"y\"]-a[\"y\"])**2) ** 0.5 for a, b in zip(ps, ps[1:]))\nok(weg > 250, \"Buggy fährt weiter herum (%.0f cm Strecke)\" % weg, \"Buggy bleibt hängen – nur %.0f cm gefahren\" % weg)\nrueck = sum(1 for e in E if e[1] == \"motor\" and e[2][\"m\"] == 1 and e[2][\"d\"] == \"cw\" and e[2][\"r\"])\nok(rueck >= 3, \"mehrere Ausweichmanöver (%d)\" % rueck, \"Zu wenige Ausweichmanöver\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nL, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor\n\ndef bewege(impulse, richtung_links, richtung_rechts, speed=350):\n    L.set_speed(speed, richtung_links)\n    R.set_speed(speed, richtung_rechts)\n    L.set_distance(round(impulse), R)\n    while L.is_running():\n        time.sleep(0.01)\n\ndef vor(cm):     bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)\ndef zurueck(cm): bewege(cm * IMPULSE_PRO_CM, Motor.CW, Motor.CW)\ndef rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)\ndef links(grad):  bewege(grad * IMPULSE_PRO_GRAD, Motor.CW, Motor.CCW)\n\ndef geradeaus(speed=350):\n    L.set_speed(speed, Motor.CCW)\n    R.set_speed(speed, Motor.CCW)\n    L.start_sync(R)\n\nzustand = \"FAHREN\"\nstart = time.time()\nwhile time.time() - start < 40:\n    if zustand == \"FAHREN\":\n        geradeaus()\n        if TXT_M_I7_mini_switch.is_closed():\n            zustand = \"AUSWEICHEN_RECHTS\"\n        elif TXT_M_I8_mini_switch.is_closed():\n            zustand = \"AUSWEICHEN_LINKS\"\n    elif zustand == \"AUSWEICHEN_RECHTS\":\n        zurueck(10)\n        rechts(45)\n        zustand = \"FAHREN\"\n    elif zustand == \"AUSWEICHEN_LINKS\":\n        zurueck(10)\n        links(45)\n        zustand = \"FAHREN\"\n    time.sleep(0.02)\nL.stop_sync(R)\n",
+    "hints": [
+     "Im Zustand <code>\"AUSWEICHEN_RECHTS\"</code>: <code>zurueck(10)</code>, <code>rechts(45)</code>, dann <code>zustand = \"FAHREN\"</code>.",
+     "Der Zustand <code>\"AUSWEICHEN_LINKS\"</code> ist gespiegelt: <code>zurueck(10)</code>, <code>links(45)</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v3",
+   "type": "py",
+   "title": "Hindernis umfahren (Material 3.3)",
+   "q": "Schreibe das Unterprogramm <code>umfahren()</code> mit der Variablen <code>distance = 40</code>. Das Hauptprogramm fährt geradeaus, bis der Abstand ≤ 20 cm ist, und ruft dann <code>umfahren()</code> auf.",
+   "lvl": "Basis",
+   "ref": "S. 19 · 9.1",
+   "tag": "Hindernis umfahren",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nL, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor\n\ndef bewege(impulse, richtung_links, richtung_rechts, speed=350):\n    L.set_speed(speed, richtung_links)\n    R.set_speed(speed, richtung_rechts)\n    L.set_distance(round(impulse), R)\n    while L.is_running():\n        time.sleep(0.01)\n\ndef vor(cm):     bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)\ndef zurueck(cm): bewege(cm * IMPULSE_PRO_CM, Motor.CW, Motor.CW)\ndef rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)\ndef links(grad):  bewege(grad * IMPULSE_PRO_GRAD, Motor.CW, Motor.CCW)\n\ndef geradeaus(speed=350):\n    L.set_speed(speed, Motor.CCW)\n    R.set_speed(speed, Motor.CCW)\n    L.start_sync(R)\n\ndistance = 40      # Kantenlänge des Ausweichmanövers (keine \"Magic Numbers\"!)\n\ndef umfahren():\n    L.stop_sync(R)\n    # TODO: 7 Bewegungsschritte, jeweils kurze Pause time.sleep(0.5)\n    pass\n\nstart = time.time()\nwhile time.time() - start < 35:\n    if TXT_M_I3_ultrasonic_distance_meter.get_distance() > 20:\n        geradeaus()\n    else:\n        umfahren()\n    time.sleep(0.02)\nL.stop_sync(R)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I3_ultrasonic_distance_meter",
+       "port": 3,
+       "kind": "ultra",
+       "label": "Ultraschall",
+       "src": {
+        "type": "world"
+       }
+      }
+     ],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 0,
+      "view": [
+       -10,
+       -60,
+       220,
+       40
+      ],
+      "obstacles": [
+       [
+        88,
+        -12,
+        95,
+        12
+       ]
+      ],
+      "pen": true,
+      "targets": [
+       [
+        200,
+        0
+       ]
+      ]
+     },
+     "limit_t": 45,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nps = poses()\nok(ps[-1][\"x\"] > 180 and abs(ps[-1][\"y\"]) < 6, \"Buggy ist hinter dem Hindernis wieder auf seiner Spur\", \"Endposition (%.0f | %.0f)\" % (ps[-1][\"x\"], ps[-1][\"y\"]))\nhit = any(84 <= p[\"x\"] <= 99 and -16 <= p[\"y\"] <= 16 for p in ps)\nok(not hit, \"kein Zusammenstoß\", \"Buggy ist gegen das Hindernis gefahren\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nL, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor\n\ndef bewege(impulse, richtung_links, richtung_rechts, speed=350):\n    L.set_speed(speed, richtung_links)\n    R.set_speed(speed, richtung_rechts)\n    L.set_distance(round(impulse), R)\n    while L.is_running():\n        time.sleep(0.01)\n\ndef vor(cm):     bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)\ndef zurueck(cm): bewege(cm * IMPULSE_PRO_CM, Motor.CW, Motor.CW)\ndef rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)\ndef links(grad):  bewege(grad * IMPULSE_PRO_GRAD, Motor.CW, Motor.CCW)\n\ndef geradeaus(speed=350):\n    L.set_speed(speed, Motor.CCW)\n    R.set_speed(speed, Motor.CCW)\n    L.start_sync(R)\n\ndistance = 40\n\ndef umfahren():\n    L.stop_sync(R)\n    rechts(90);        time.sleep(0.5)\n    vor(distance);     time.sleep(0.5)\n    links(90);         time.sleep(0.5)\n    vor(distance);     time.sleep(0.5)\n    links(90);         time.sleep(0.5)\n    vor(distance);     time.sleep(0.5)\n    rechts(90);        time.sleep(0.5)\n\nstart = time.time()\nwhile time.time() - start < 35:\n    if TXT_M_I3_ultrasonic_distance_meter.get_distance() > 20:\n        geradeaus()\n    else:\n        umfahren()\n    time.sleep(0.02)\nL.stop_sync(R)\n",
+    "hints": [
+     "Reihenfolge: rechts(90), vor(distance), links(90), vor(distance), links(90), vor(distance), rechts(90)."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v4",
+   "type": "py",
+   "title": "Im Kreis bleiben (A6, Aufgabe 7)",
+   "q": "Der Buggy fährt innerhalb der schwarzen Kreislinie. Erkennt der linke Sensor die Linie: 5 cm zurück und 120° nach rechts; rechter Sensor: 5 cm zurück und 120° nach links. Er darf den Kreis nie verlassen.",
+   "lvl": "Basis",
+   "ref": "S. 19 · 9.2",
+   "tag": "Im Kreis bleiben",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nL, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor\n\ndef bewege(impulse, richtung_links, richtung_rechts, speed=350):\n    L.set_speed(speed, richtung_links)\n    R.set_speed(speed, richtung_rechts)\n    L.set_distance(round(impulse), R)\n    while L.is_running():\n        time.sleep(0.01)\n\ndef vor(cm):     bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)\ndef zurueck(cm): bewege(cm * IMPULSE_PRO_CM, Motor.CW, Motor.CW)\ndef rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)\ndef links(grad):  bewege(grad * IMPULSE_PRO_GRAD, Motor.CW, Motor.CCW)\n\ndef geradeaus(speed=350):\n    L.set_speed(speed, Motor.CCW)\n    R.set_speed(speed, Motor.CCW)\n    L.start_sync(R)\n\nstart = time.time()\nwhile time.time() - start < 40:\n    links_sw = TXT_M_I1_trail_follower.get_state()     # 1 = weiß, 0 = schwarz\n    rechts_sw = TXT_M_I2_trail_follower.get_state()\n    # TODO: if / elif / else\n\n    time.sleep(0.02)\nL.stop_sync(R)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I1_trail_follower",
+       "port": 1,
+       "kind": "ir",
+       "label": "IR links",
+       "src": {
+        "side": "left"
+       }
+      },
+      {
+       "name": "TXT_M_I2_trail_follower",
+       "port": 2,
+       "kind": "ir",
+       "label": "IR rechts",
+       "src": {
+        "side": "right"
+       }
+      }
+     ],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 30,
+      "view": [
+       -80,
+       -80,
+       80,
+       80
+      ],
+      "track": {
+       "type": "ring",
+       "c": [
+        0,
+        0
+       ],
+       "r": 70,
+       "w": 2
+      }
+     },
+     "limit_t": 45,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nps = poses()\nok(all((p[\"x\"]**2 + p[\"y\"]**2) ** 0.5 < 71 for p in ps), \"Buggy bleibt im Kreis\", \"Buggy hat den Kreis verlassen\")\nweg = sum(((b[\"x\"]-a[\"x\"])**2 + (b[\"y\"]-a[\"y\"])**2) ** 0.5 for a, b in zip(ps, ps[1:]))\nok(weg > 200, \"Buggy ist unterwegs (%.0f cm)\" % weg, \"Buggy fährt zu wenig (%.0f cm)\" % weg)\n",
+    "solution": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nL, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor\n\ndef bewege(impulse, richtung_links, richtung_rechts, speed=350):\n    L.set_speed(speed, richtung_links)\n    R.set_speed(speed, richtung_rechts)\n    L.set_distance(round(impulse), R)\n    while L.is_running():\n        time.sleep(0.01)\n\ndef vor(cm):     bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)\ndef zurueck(cm): bewege(cm * IMPULSE_PRO_CM, Motor.CW, Motor.CW)\ndef rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)\ndef links(grad):  bewege(grad * IMPULSE_PRO_GRAD, Motor.CW, Motor.CCW)\n\ndef geradeaus(speed=350):\n    L.set_speed(speed, Motor.CCW)\n    R.set_speed(speed, Motor.CCW)\n    L.start_sync(R)\n\nstart = time.time()\nwhile time.time() - start < 40:\n    links_sw = TXT_M_I1_trail_follower.get_state()\n    rechts_sw = TXT_M_I2_trail_follower.get_state()\n    if links_sw == 0:\n        L.stop_sync(R)\n        zurueck(5)\n        rechts(120)\n    elif rechts_sw == 0:\n        L.stop_sync(R)\n        zurueck(5)\n        links(120)\n    else:\n        geradeaus()\n    time.sleep(0.02)\nL.stop_sync(R)\n",
+    "hints": [
+     "Lies beide Sensoren mit <code>TXT_M_I1_trail_follower.get_state()</code> bzw. <code>TXT_M_I2_trail_follower.get_state()</code> – der Wert 0 bedeutet schwarze Linie.",
+     "Linker Sensor 0: <code>L.stop_sync(R)</code>, <code>zurueck(5)</code>, <code>rechts(120)</code>; sonst mit <code>elif</code> den rechten Sensor prüfen, im <code>else</code> <code>geradeaus()</code>."
+    ],
+    "nosim": false
+   }
+  }
+ ],
+ "close": {
+  "merke": [
+   "Ein Zustandsautomat hat immer genau einen Zustand (Variable <code>zustand</code>); Sensoren lösen Übergänge aus, umgesetzt mit einer if/elif-Kette in der Hauptschleife.",
+   "Ultraschall: Abstand = t · 343 m/s ÷ 2 – geteilt durch 2, weil der Schall hin und zurück läuft.",
+   "Ausweichmanöver gehören in ein Unterprogramm; Werte wie die Kantenlänge stehen in einer Variablen (keine „Magic Numbers“).",
+   "IR-Spursensoren liefern 1 auf Weiß und 0 auf einer schwarzen Linie oder an einer Tischkante."
+  ],
+  "praxis": "Bearbeite am echten TXT 4.0 die Fischer-Aufgabe A6 „Buggy“, Aufgaben 6 und 7 (Stoßstangen-Buggy, im Bereich bleiben), und das Umfahren eines Hindernisses mit Ultraschall aus Material 3.3. Teste das Ausweichen mit verschiedenen Hindernissen."
+ }
+}

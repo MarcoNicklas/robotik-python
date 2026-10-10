@@ -1,0 +1,516 @@
+{
+ "id": "L04",
+ "num": 4,
+ "file": "L04_Schleifen_und_Zustaende.html",
+ "title": "Schleifen, Zähler und Zustände",
+ "sub": "while, for, break – die Parkhausschranke als Zustandsautomat",
+ "lb": "LB 3",
+ "ds": "DS 4",
+ "fischer_tag": "A2 Parkhausschranke",
+ "lehrplan": "LB 3: Befehle einer Hochsprache; leiten aus Schaltungen den Code ab",
+ "goals": [
+  "while- und for-Schleifen gezielt einsetzen",
+  "ein Zustandsübergangsdiagramm in Code übersetzen",
+  "Zähler und Encoder-Impulse nutzen"
+ ],
+ "read": {
+  "kap": "4",
+  "title": "Schleifen und Zustandsautomaten",
+  "pages": "9–10",
+  "page": 9,
+  "sections": [
+   "4.1 Schleifen – for, while mit Bedingung, while True mit break (S. 9)",
+   "4.2 Zustandsautomaten – Text und Programm der Parkhausschranke (S. 9)",
+   "Kasten „Zähler“ (S. 10)"
+  ],
+  "focus": [
+   "Wann nimmst du for, wann while mit Bedingung, wann while True mit break?",
+   "Welche Werte nimmt i bei for i in range(3) an?",
+   "Welche vier Zustände hat die Parkhausschranke, und welches Ereignis führt jeweils in den nächsten Zustand?",
+   "Wie erhöhst du einen Zähler, und wie liest du einen Encoder-Zähler bzw. setzt ihn zurück?"
+  ],
+  "skip": "Kästen „Ausprobieren im Browser“ und „Teste dich“ (S. 10): Die Teste-dich-Fragen selbst beantworten, die Lösungen in Anhang D nicht nachschlagen.",
+  "note": "Am echten TXT 4.0: schliessen() im Programm auf S. 9 ist eine eigene Funktion (Motor CW bis Endlagentaster I1) – mehr zu Funktionen in Lektion 5. Der Encoder an C1 heißt TXT_M_C1_motor_step_counter; 64 Impulse entsprechen 90°."
+ },
+ "check": [
+  {
+   "id": "c1",
+   "type": "num",
+   "q": "Die Schranke läuft mit dem Zustandsautomaten von S. 9 genau <b>3 vollständige Zyklen</b>. Wie viele Sekunden wartet das Programm dabei insgesamt mit <code>time.sleep</code> in den Zuständen GESCHLOSSEN und OFFEN?",
+   "a": 45,
+   "tol": 0,
+   "unit": "s",
+   "hint": [
+    "Sieh im Programm auf S. 9 nach, wie lange in GESCHLOSSEN und in OFFEN gewartet wird."
+   ],
+   "ref": "S. 9 · 4.2",
+   "tag": "Wartezeit-Zyklen",
+   "sol": "Je Zyklus: 10 s (GESCHLOSSEN) + 5 s (OFFEN) = 15 s. 3 · 15 s = 45 s."
+  },
+  {
+   "id": "c2",
+   "type": "order",
+   "q": "Die Parkhausschranke startet in ihrem Startzustand. Bringe die Zustände eines Zyklus in die richtige Reihenfolge.",
+   "items": [
+    "SCHLIESSEN – Motor CW bis Endlagentaster I1",
+    "GESCHLOSSEN – 10 s warten",
+    "OEFFNEN – Motor CCW, 64 Impulse",
+    "OFFEN – 5 s warten"
+   ],
+   "hint": [
+    "Das Programm in 4.2 (S. 9) beginnt mit <code>zustand = \"SCHLIESSEN\"</code> – folge den Zuweisungen an zustand."
+   ],
+   "ref": "S. 9 · 4.2",
+   "tag": "Zustandsfolge",
+   "sol": "Start ist SCHLIESSEN (unbekannte Startlage → zuerst schließen), dann GESCHLOSSEN, OEFFNEN, OFFEN – und danach wieder SCHLIESSEN."
+  },
+  {
+   "id": "c3",
+   "type": "cloze",
+   "q": "Welche Schleife passt?",
+   "text": "Genau 5-mal blinken: [[0]] · Warten, solange der Taster an I1 nicht gedrückt ist: [[1]] · Endlos wiederholen, Ausstieg mit break: [[2]]",
+   "gaps": [
+    {
+     "opts": [
+      "for i in range(5):",
+      "while True:",
+      "for i in range(6):",
+      "while i < 5"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "while not TXT_M_I1_mini_switch.is_closed():",
+      "while TXT_M_I1_mini_switch.is_closed():",
+      "for i in range(1):",
+      "if not TXT_M_I1_mini_switch.is_closed():"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "while True:",
+      "while False:",
+      "for i in range(100):",
+      "if True:"
+     ],
+     "a": 0
+    }
+   ],
+   "hint": [
+    "Abschnitt 4.1 (S. 9) zeigt alle drei Schleifenarten mit Kommentar."
+   ],
+   "ref": "S. 9 · 4.1",
+   "tag": "Schleifenwahl",
+   "sol": "Feste Anzahl → <code>for i in range(5):</code>. Warten auf ein Ereignis → <code>while not TXT_M_I1_mini_switch.is_closed():</code>. Endlos → <code>while True:</code> mit <code>break</code>."
+  },
+  {
+   "id": "c4",
+   "type": "bug",
+   "q": "Das Programm soll die Autos zählen, die durch die Lichtschranke an I3 fahren, und nach jeder Durchfahrt die Gesamtzahl anzeigen. Welche Zeilen sind fehlerhaft?",
+   "lines": [
+    "durchfahrten = 0",
+    "while True:",
+    "    durchfahrten = 0",
+    "    while not TXT_M_I3_photo_transistor.is_dark():   # warten bis Auto kommt",
+    "        time.sleep(0.01)",
+    "    while TXT_M_I3_photo_transistor.is_dark():       # warten bis Auto durch ist",
+    "        time.sleep(0.01)",
+    "    durchfahrten + 1",
+    "    display.set_attr(\"txt_label.text\", \"Durchfahrten: \" + str(durchfahrten))"
+   ],
+   "a": [
+    2,
+    7
+   ],
+   "hint": [
+    "Kasten „Zähler“ (S. 10): Wie wird ein Zähler erhöht?",
+    "Wo darf der Startwert 0 gesetzt werden – vor oder in der Schleife?"
+   ],
+   "ref": "S. 10 · Zähler",
+   "tag": "Fehlersuche-Zaehler",
+   "sol": "Zeile 3: Der Zähler würde bei jedem Durchlauf wieder auf 0 gesetzt – die Zeile muss weg (Startwert nur vor der Schleife). Zeile 8: <code>durchfahrten + 1</code> rechnet nur, speichert aber nichts; richtig ist <code>durchfahrten = durchfahrten + 1</code> bzw. <code>durchfahrten += 1</code>."
+  },
+  {
+   "id": "c5",
+   "type": "tf",
+   "q": "Richtig oder falsch?",
+   "rows": [
+    [
+     "Ein Zustandsautomat befindet sich immer in genau einem Zustand.",
+     true
+    ],
+    [
+     "<code>while True:</code> läuft so lange, bis die Bedingung True wird.",
+     false
+    ],
+    [
+     "Mit <code>TXT_M_C1_motor_step_counter.reset()</code> setzt man den Encoder-Zähler zurück.",
+     true
+    ],
+    [
+     "Bei <code>for i in range(3):</code> nimmt i die Werte 1, 2 und 3 an.",
+     false
+    ]
+   ],
+   "hint": [
+    "Lies die Kommentare in 4.1 (S. 9), den Text in 4.2 und den Kasten „Zähler“ (S. 10)."
+   ],
+   "ref": "S. 9–10 · 4.1/4.2",
+   "tag": "Fakten-Kap4",
+   "sol": "Richtig: immer genau ein Zustand. Falsch: while True läuft endlos, der Ausstieg geht nur mit break. Richtig: reset() setzt den Zähler zurück, get_count() liest ihn. Falsch: range(3) liefert 0, 1, 2."
+  },
+  {
+   "id": "c6",
+   "type": "match",
+   "q": "Ordne jeder Codezeile ihren Zweck zu.",
+   "rows": [
+    [
+     "<code>time.sleep(0.01)</code> in einer Warteschleife",
+     "kurz warten, CPU schonen"
+    ],
+    [
+     "<code>break</code>",
+     "Endlosschleife verlassen"
+    ],
+    [
+     "<code>durchfahrten += 1</code>",
+     "Zähler um 1 erhöhen"
+    ],
+    [
+     "<code>TXT_M_C1_motor_step_counter.get_count()</code>",
+     "Encoder-Impulse lesen"
+    ],
+    [
+     "<code>TXT_M_M1_encodermotor.set_distance(64)</code>",
+     "Motor um 64 Impulse (90°) drehen"
+    ]
+   ],
+   "extra": [
+    "Zustand wechseln"
+   ],
+   "hint": [
+    "Die Kommentare in 4.1 und 4.2 (S. 9) und der Kasten „Zähler“ (S. 10) erklären jede dieser Zeilen."
+   ],
+   "ref": "S. 9–10 · 4.1/4.2",
+   "tag": "Code-Zweck",
+   "sol": "sleep(0.01) schont die CPU, break beendet while True, += 1 erhöht den Zähler, get_count() liest den Encoder, set_distance(64) dreht 64 Impulse = 90°."
+  },
+  {
+   "id": "c7",
+   "type": "mc",
+   "q": "Die Schranke soll künftig nur um <b>45°</b> öffnen. Wie muss die geänderte Zeile im Zustand OEFFNEN lauten?",
+   "opts": [
+    "<code>TXT_M_M1_encodermotor.set_distance(32)</code>",
+    "<code>TXT_M_M1_encodermotor.set_distance(128)</code>",
+    "<code>TXT_M_M1_encodermotor.set_speed(150, Motor.CCW)</code>",
+    "<code>time.sleep(2.5)</code>"
+   ],
+   "a": 0,
+   "hint": [
+    "Im Programm auf S. 9 steht als Kommentar, wie viele Impulse 90° sind."
+   ],
+   "ref": "S. 9 · 4.2",
+   "tag": "Impulse-Winkel",
+   "sol": "64 Impulse = 90°, also 45° = 64 : 2 = 32 Impulse. Die Geschwindigkeit ändert nur, wie schnell, nicht wie weit der Motor dreht."
+  }
+ ],
+ "deep": [
+  {
+   "id": "v1",
+   "type": "sim",
+   "widget": "statemachine",
+   "q": "Im Zustandsdiagramm der Parkhausschranke löst du Ereignisse per Knopf aus. Nur das passende Ereignis führt in den nächsten Zustand.",
+   "cfg": {
+    "start": "SCHLIESSEN"
+   },
+   "predict": {
+    "id": "v1p",
+    "type": "mc",
+    "q": "Die Schranke ist im Zustand GESCHLOSSEN. Der Endlagentaster I1 meldet noch einmal „gedrückt“. Was passiert? (Vermutung)",
+    "opts": [
+     "Kein Übergang – der Automat bleibt in GESCHLOSSEN.",
+     "Er springt nach OEFFNEN.",
+     "Er springt zurück nach SCHLIESSEN.",
+     "Das Programm stürzt ab."
+    ],
+    "a": 0,
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Durchlaufe vom Start einen vollständigen Zyklus, bis die Schranke wieder GESCHLOSSEN ist. Löse unterwegs mindestens ein falsches Ereignis aus und beobachte, was passiert.",
+    "cond": "s.cycles >= 1 && s.wrong >= 1",
+    "rec": "'Zyklen: ' + s.cycles + ', Ereignisse ohne Übergang: ' + s.wrong + ', Zustand: ' + s.z"
+   },
+   "explain": {
+    "id": "v1x",
+    "type": "num",
+    "q": "Wie viele passende Ereignisse braucht man mindestens, um vom Start (SCHLIESSEN) aus <b>2</b> vollständige Zyklen zu durchlaufen – jeweils bis die Schranke wieder GESCHLOSSEN ist?",
+    "a": 9,
+    "tol": 0,
+    "unit": "Ereignisse",
+    "hint": [
+     "Zähle zuerst, wie viele Ereignisse vom Start bis zum ersten GESCHLOSSEN nötig sind.",
+     "Ein ganzer Kreis durch alle vier Zustände braucht 4 Ereignisse (Diagramm 4.2, S. 9)."
+    ],
+    "ref": "S. 9 · 4.2",
+    "tag": "Ereignisse-zaehlen",
+    "sol": "Vom Start: 1 Ereignis (Endlagentaster) bis GESCHLOSSEN. Jeder Zyklus GESCHLOSSEN → OEFFNEN → OFFEN → SCHLIESSEN → GESCHLOSSEN braucht 4 Ereignisse. 1 + 4 + 4 = 9."
+   },
+   "tag": "Zustandsautomat",
+   "ref": "S. 9 · 4.2",
+   "paper": {
+    "obs": [
+     "Zustand vorher",
+     "Ereignis",
+     "Zustand nachher"
+    ],
+    "rows": 5
+   }
+  },
+  {
+   "id": "v2",
+   "type": "py",
+   "title": "Countdown mit for",
+   "q": "Gib einen Countdown 5, 4, 3, 2, 1, „Schranke öffnet!“ aus. <code>range(5, 0, -1)</code> zählt rückwärts.",
+   "lvl": "Basis",
+   "ref": "S. 9 · 4.1",
+   "tag": "Countdown mit for",
+   "ex": {
+    "starter": "for i in range(5, 0, -1):\n    print(i)\n# TODO: Abschlussmeldung\n",
+    "cfg": {},
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(OUT.split()[:5] == [\"5\",\"4\",\"3\",\"2\",\"1\"], \"Countdown korrekt\", \"Countdown soll 5 4 3 2 1 lauten\")\nok(\"öffnet\" in OUT, \"Abschlussmeldung vorhanden\", \"Gib „Schranke öffnet!“ aus\")\n",
+    "solution": "for i in range(5, 0, -1):\n    print(i)\nprint(\"Schranke öffnet!\")\n",
+    "hints": [
+     "<code>range(5, 0, -1)</code> zählt 5, 4, 3, 2, 1 – die 0 ist nicht mehr dabei.",
+     "Die Abschlussmeldung gehört <b>nicht</b> eingerückt unter die Schleife, sonst erscheint sie nach jeder Zahl."
+    ],
+    "nosim": true
+   }
+  },
+  {
+   "id": "v3",
+   "type": "py",
+   "title": "Automatische Schranke mit Endlagentastern (A2, Aufgabe 1)",
+   "q": "Endlage unten = I1, Endlage oben = I2. Die Schranke soll zuerst schließen, dann <b>3-mal</b>: 3 s geschlossen bleiben, öffnen, 2 s offen bleiben, schließen. (Im Unterricht: 10 s bzw. 5 s.) Schreibe zwei Funktionen <code>schliessen()</code> und <code>oeffnen()</code>.",
+   "lvl": "Basis",
+   "ref": "S. 9 · 4.1/4.2",
+   "tag": "Automatische Schranke mit Endlagentaster",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    pass   # TODO: wie schliessen(), aber Motor.CCW und Taster I2\n\nschliessen()\nfor zyklus in range(3):\n    # TODO\n    pass\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I1_mini_switch",
+       "port": 1,
+       "kind": "switch",
+       "label": "unten",
+       "src": {
+        "type": "gate_down"
+       }
+      },
+      {
+       "name": "TXT_M_I2_mini_switch",
+       "port": 2,
+       "kind": "switch",
+       "label": "oben",
+       "src": {
+        "type": "gate_up"
+       }
+      }
+     ],
+     "leds": [],
+     "world": {
+      "type": "gate",
+      "start_angle": 35
+     },
+     "limit_t": 40,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\na = gate_angles()\nopens = sum(1 for (t1,x),(t2,y) in zip(a, a[1:]) if x < 89 and y >= 89)\ncloses = sum(1 for (t1,x),(t2,y) in zip(a, a[1:]) if x > 1 and y <= 1)\nok(opens == 3, \"Schranke öffnet genau 3-mal\", \"Schranke öffnet %d-mal (soll 3)\" % opens)\nok(closes >= 4 and a[-1][1] <= 1, \"Schranke schließt jedes Mal und endet geschlossen\", \"Schranke schließt nicht vollständig/endet offen\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I2_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\nschliessen()\nfor zyklus in range(3):\n    time.sleep(3)\n    oeffnen()\n    time.sleep(2)\n    schliessen()\n",
+    "hints": [
+     "Im <code>for</code>-Rumpf: <code>time.sleep(3)</code>, <code>oeffnen()</code>, <code>time.sleep(2)</code>, <code>schliessen()</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v4",
+   "type": "py",
+   "title": "Öffnen mit dem Encoder (A2, Aufgabe 3)",
+   "q": "Der obere Taster entfällt. Der Encoder liefert 63,9 ≈ <b>64 Impulse</b> für eine Vierteldrehung (90°). Öffne die Schranke mit <code>set_distance(64)</code> und warte, bis der Motor fertig ist. Gib danach den Zählerstand C1 aus.",
+   "lvl": "Basis",
+   "ref": "S. 9 · 4.2 (OEFFNEN)",
+   "tag": "Öffnen mit dem Encoder",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\n# Schranke zuerst schließen\nTXT_M_M1_encodermotor.set_speed(300, Motor.CW)\nTXT_M_M1_encodermotor.start()\nwhile not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)\nTXT_M_M1_encodermotor.stop()\ntime.sleep(1)\n\nTXT_M_C1_motor_step_counter.reset()\nTXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n# TODO: set_distance(...) und warten, solange is_running()\n\nprint(\"Impulse:\", TXT_M_C1_motor_step_counter.get_count())\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I1_mini_switch",
+       "port": 1,
+       "kind": "switch",
+       "label": "unten",
+       "src": {
+        "type": "gate_down"
+       }
+      }
+     ],
+     "leds": [],
+     "world": {
+      "type": "gate",
+      "start_angle": 35
+     },
+     "limit_t": 20,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\na = gate_angles()\nok(a and a[-1][1] >= 88, \"Schranke steht senkrecht (≈ 90°)\", \"Schranke ist nicht ganz offen (%.0f°)\" % (a[-1][1] if a else 0))\nok(\"Impulse: 64\" in OUT, \"64 Impulse gezählt\", \"Es sollten 64 Impulse sein\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\nTXT_M_M1_encodermotor.set_speed(300, Motor.CW)\nTXT_M_M1_encodermotor.start()\nwhile not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)\nTXT_M_M1_encodermotor.stop()\ntime.sleep(1)\n\nTXT_M_C1_motor_step_counter.reset()\nTXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\nTXT_M_M1_encodermotor.set_distance(64)\nwhile TXT_M_M1_encodermotor.is_running():\n    time.sleep(0.01)\n\nprint(\"Impulse:\", TXT_M_C1_motor_step_counter.get_count())\n",
+    "hints": [
+     "<code>TXT_M_M1_encodermotor.set_distance(64)</code> startet den Motor für 64 Impulse.",
+     "<code>while TXT_M_M1_encodermotor.is_running(): time.sleep(0.01)</code>"
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v5",
+   "type": "py",
+   "title": "Schranke mit Bedarfstaster, Lichtschranke und Zähler (A2, Experimentieraufgaben 1–3)",
+   "q": "Bedarfstaster I2, Lichtschranke I3 (<code>is_dark()</code> = unterbrochen). Ablauf je Fahrzeug: Taster gedrückt → 3 s warten → öffnen (64 Impulse) → warten bis Lichtschranke unterbrochen und wieder frei → 1 s → schließen → Zähler + 1 → „Durchfahrten: n“ anzeigen. Das Programm läuft 60 s.",
+   "lvl": "Profi · freiwillig",
+   "ref": "S. 10 · Zähler",
+   "tag": "Schranke mit Bedarfstaster, Lichtschrank",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\nfrom lib.display import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n    TXT_M_M1_encodermotor.set_distance(64)\n    while TXT_M_M1_encodermotor.is_running():\n        time.sleep(0.01)\n\ndurchfahrten = 0\nschliessen()\nstart = time.time()\nwhile time.time() - start < 60:\n    if TXT_M_I2_mini_switch.is_closed():\n        # TODO: Ablauf für ein Fahrzeug\n        pass\n    time.sleep(0.02)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      }
+     ],
+     "inputs": [
+      {
+       "name": "TXT_M_I1_mini_switch",
+       "port": 1,
+       "kind": "switch",
+       "label": "unten",
+       "src": {
+        "type": "gate_down"
+       }
+      },
+      {
+       "name": "TXT_M_I2_mini_switch",
+       "port": 2,
+       "kind": "switch",
+       "label": "Bedarf",
+       "src": {
+        "type": "schedule",
+        "on": [
+         [
+          2,
+          2.4
+         ],
+         [
+          20,
+          20.4
+         ],
+         [
+          40,
+          40.5
+         ]
+        ]
+       }
+      },
+      {
+       "name": "TXT_M_I3_photo_transistor",
+       "port": 3,
+       "kind": "photo",
+       "label": "Lichtschr.",
+       "src": {
+        "type": "schedule",
+        "on": [
+         [
+          0,
+          8
+         ],
+         [
+          10,
+          26
+         ],
+         [
+          28.5,
+          46
+         ],
+         [
+          48,
+          999
+         ]
+        ]
+       }
+      }
+     ],
+     "leds": [],
+     "world": {
+      "type": "gate",
+      "start_angle": 35
+     },
+     "limit_t": 70,
+     "display": true
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(\"Durchfahrten: 3\" in disp_last(), \"3 Durchfahrten gezählt\", \"Anzeige am Ende: „%s“ – erwartet „Durchfahrten: 3“\" % disp_last())\na = gate_angles()\nopens = sum(1 for (t1,x),(t2,y) in zip(a, a[1:]) if x < 88 and y >= 88)\nok(opens == 3, \"Schranke öffnete 3-mal\", \"Schranke öffnete %d-mal\" % opens)\n",
+    "solution": "import time\nfrom lib.controller import *\nfrom lib.display import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n    TXT_M_M1_encodermotor.set_distance(64)\n    while TXT_M_M1_encodermotor.is_running():\n        time.sleep(0.01)\n\ndurchfahrten = 0\nschliessen()\nstart = time.time()\nwhile time.time() - start < 60:\n    if TXT_M_I2_mini_switch.is_closed():\n        time.sleep(3)\n        oeffnen()\n        while not TXT_M_I3_photo_transistor.is_dark():   # warten bis Auto kommt\n            time.sleep(0.02)\n        while TXT_M_I3_photo_transistor.is_dark():       # warten bis Auto durch ist\n            time.sleep(0.02)\n        time.sleep(1)\n        schliessen()\n        durchfahrten = durchfahrten + 1\n        display.set_attr(\"txt_label.text\", \"Durchfahrten: \" + str(durchfahrten))\n    time.sleep(0.02)\n",
+    "hints": [
+     "Zwei Warteschleifen hintereinander: erst warten bis <code>is_dark()</code>, dann warten bis nicht mehr dunkel.",
+     "Zähler erhöhen: <code>durchfahrten = durchfahrten + 1</code> (oder <code>+= 1</code>)."
+    ],
+    "nosim": false
+   },
+   "opt": true
+  }
+ ],
+ "close": {
+  "merke": [
+   "for i in range(n): genau n-mal (i = 0 … n−1); while Bedingung: solange sie gilt; while True: endlos, Ausstieg mit break.",
+   "In Warteschleifen kurz warten (time.sleep(0.01)) – das schont die CPU.",
+   "Zustandsautomat: immer genau ein Zustand, Ereignisse lösen Übergänge aus; im Code wird jeder Zustand ein Zweig der if/elif-Kette. Startzustand festlegen!",
+   "Zähler: durchfahrten += 1. Encoder: get_count() liest, reset() setzt zurück; 64 Impulse = 90°."
+  ],
+  "praxis": "Fischer-Aufgabe A2 „Parkhausschranke“ – zuerst in Blockly (DS 3, Arbeitsblatt 3), dann in Python (DS 4, Arbeitsblatt 4). Setze den Zustandsautomaten von S. 9 am Modell um und ergänze einen Zähler für die Durchfahrten."
+ }
+}

@@ -1,0 +1,361 @@
+{
+ "id": "L07",
+ "num": 7,
+ "file": "L07_Texte_und_Woerterbuecher.html",
+ "title": "Texte und Wörterbücher",
+ "sub": "Strings, Dictionaries – Morse-Code senden und Nachrichten verschlüsseln",
+ "lb": "LB 3",
+ "ds": "DS 7",
+ "fischer_tag": "A5 Morse-Code",
+ "lehrplan": "LB 3: Binärcode; Befehle einer Hochsprache",
+ "goals": [
+  "Texte zeichenweise verarbeiten",
+  "Wörterbücher (dict) als Übersetzungstabellen nutzen",
+  "einen Code zeitgesteuert über eine LED senden",
+  "Caesar-Verschlüsselung programmieren"
+ ],
+ "read": {
+  "kap": "7",
+  "title": "Texte, Wörterbücher und Verschlüsselung",
+  "pages": "15–16",
+  "page": 15,
+  "sections": [
+   "7.1 Strings und Dictionaries – <code>len</code>, Index, <code>upper()</code>, Schleife über Zeichen und das Wörterbuch <code>morse</code> (S. 15)",
+   "7.2 Morse-Code über eine Lichtstrecke – Kommunikationskanal, Takt und die Funktionen <code>signal()</code> und <code>sende()</code> (S. 15)",
+   "7.3 Verschlüsselung – Caesar mit <code>ord()</code>, <code>chr()</code> und Modulo 26, Vigenère (S. 15)",
+   "Kasten „Am echten TXT 4.0“ (S. 15)"
+  ],
+  "focus": [
+   "Wie greifst du auf ein einzelnes Zeichen eines Textes zu – und wie auf einen Wert im Wörterbuch?",
+   "Aus welchen drei Teilen besteht ein Kommunikationskanal?",
+   "Wie lang sind dit, dah und die Pausen – und wo entstehen sie in <code>signal()</code> und <code>sende()</code>?",
+   "Warum ist die Caesar-Chiffre leicht zu knacken?"
+  ],
+  "skip": "Kasten „Ausprobieren im Browser“ (das machst du in der Vertiefung) und „Teste dich“ auf S. 16 – die Lösungen in Anhang D bitte nicht nachschlagen.",
+  "note": "Am TXT 4.0 sendet die LED an O1 (<code>TXT_M_O1_led</code>); empfangen wird mit einem Fototransistor an einem Eingang I des zweiten TXT. Vorlage: 06_TXT_Programme/A5_Morse_Sender.py."
+ },
+ "check": [
+  {
+   "id": "c1",
+   "type": "mc",
+   "q": "<code>text = \"Kamera\"</code> – Was gibt <code>print(text[2], len(text))</code> aus?",
+   "opts": [
+    "m 6",
+    "a 6",
+    "m 5",
+    "K 6"
+   ],
+   "a": 0,
+   "hint": [
+    "Wie in 7.1 (S. 15): Der Index beginnt bei 0, <code>len()</code> zählt alle Zeichen."
+   ],
+   "ref": "S. 15 · 7.1",
+   "tag": "String-Index",
+   "sol": "K = Index 0, a = 1, m = 2 → <code>text[2]</code> ist „m“; „Kamera“ hat 6 Zeichen."
+  },
+  {
+   "id": "c2",
+   "type": "match",
+   "q": "Ordne die Teile der Lichtstrecke aus 7.2 zu.",
+   "rows": [
+    [
+     "Sender",
+     "LED"
+    ],
+    [
+     "Übertragungsweg",
+     "Licht"
+    ],
+    [
+     "Empfänger",
+     "Fototransistor"
+    ],
+    [
+     "gemeinsamer Takt",
+     "<code>DIT = 0.1</code>"
+    ]
+   ],
+   "extra": [
+    "Encodermotor"
+   ],
+   "hint": [
+    "Der erste Satz von 7.2 (S. 15) nennt alle Teile eines Kommunikationskanals."
+   ],
+   "ref": "S. 15 · 7.2",
+   "tag": "Kommunikationskanal",
+   "sol": "Sender = LED, Übertragungsweg = Licht, Empfänger = Fototransistor; den Takt legt <code>DIT</code> fest."
+  },
+  {
+   "id": "c3",
+   "type": "num",
+   "q": "Bei <code>DIT = 0.15</code>: Wie viele Sekunden dauert <code>sende(\"A\")</code> (A = <code>.-</code>) mit dem Programm aus 7.2 – einschließlich der Pause nach dem Buchstaben?",
+   "a": 1.2,
+   "tol": 0.01,
+   "unit": "s",
+   "hint": [
+    "<code>signal()</code> macht nach jedem Zeichen 1 DIT Pause, <code>sende()</code> nach jedem Buchstaben noch 2 DIT (7.2, S. 15).",
+    "Zähle zuerst die Einheiten und rechne dann mal 0,15 s."
+   ],
+   "ref": "S. 15 · 7.2",
+   "tag": "Morse-Dauer",
+   "sol": "dit 1 + Pause 1 + dah 3 + Pause 1 + Buchstabenpause 2 = 8 Einheiten; 8 · 0,15 s = 1,2 s."
+  },
+  {
+   "id": "c4",
+   "type": "cloze",
+   "q": "Ergänze die Funktion <code>sende(text)</code> aus 7.2.",
+   "text": "<code>for buchstabe in text.[[0]]():</code> macht alle Buchstaben groß. <code>for z in [[1]][buchstabe]:</code> schlägt das Morsezeichen im Wörterbuch nach. Ein dah ruft <code>signal([[2]])</code> auf. Nach jedem Buchstaben folgt <code>time.sleep([[3]])</code> – zusammen mit der Pause aus <code>signal()</code> sind das 3 Einheiten.",
+   "gaps": [
+    {
+     "opts": [
+      "lower",
+      "upper",
+      "split"
+     ],
+     "a": 1
+    },
+    {
+     "opts": [
+      "morse",
+      "rueck",
+      "text"
+     ],
+     "a": 0
+    },
+    {
+     "opts": [
+      "DIT",
+      "2 * DIT",
+      "3 * DIT"
+     ],
+     "a": 2
+    },
+    {
+     "opts": [
+      "DIT",
+      "2 * DIT",
+      "3 * DIT",
+      "7 * DIT"
+     ],
+     "a": 1
+    }
+   ],
+   "hint": [
+    "Vergleiche mit dem Code von <code>sende()</code> in 7.2 (S. 15) und dem Takt im Text darüber."
+   ],
+   "ref": "S. 15 · 7.2",
+   "tag": "sende-Funktion",
+   "sol": "<code>text.upper()</code>, <code>morse[buchstabe]</code>, dah = <code>3 * DIT</code>, Buchstabenpause <code>time.sleep(2 * DIT)</code> (+ 1 DIT aus <code>signal()</code> = 3)."
+  },
+  {
+   "id": "c5",
+   "type": "bug",
+   "q": "Die Funktion soll mit der Caesar-Chiffre verschlüsseln; <code>caesar(\"Zug\", 2)</code> soll <code>BWI</code> ausgeben. Welche Zeilen sind fehlerhaft?",
+   "lines": [
+    "def caesar(text, k):",
+    "    ergebnis = \"\"",
+    "    for b in text.lower():",
+    "        ergebnis = ergebnis + chr((ord(b) - 65 + k) % 25 + 65)",
+    "    return ergebnis",
+    "print(caesar(\"Zug\", 2))"
+   ],
+   "a": [
+    2,
+    3
+   ],
+   "hint": [
+    "Vergleiche mit <code>caesar</code> in 7.3 (S. 15): Mit welcher Zahl rechnet man Modulo?",
+    "Die Formel funktioniert nur für Großbuchstaben (A = 65)."
+   ],
+   "ref": "S. 15 · 7.3",
+   "tag": "Caesar-Fehler",
+   "sol": "Die Schleife muss <code>for b in text.upper():</code> lauten – die Formel mit 65 (= „A“) passt nur zu Großbuchstaben. Und es muss <code>% 26</code> heißen – das Alphabet hat 26 Buchstaben."
+  },
+  {
+   "id": "c6",
+   "type": "order",
+   "q": "Bringe die Schritte in die richtige Reihenfolge, mit denen <code>caesar()</code> einen Buchstaben verschlüsselt.",
+   "items": [
+    "Buchstaben groß schreiben: <code>upper()</code>",
+    "mit <code>ord()</code> in eine Zahl umwandeln (A = 65)",
+    "65 abziehen → Position 0 … 25",
+    "Schlüssel <code>k</code> addieren",
+    "Modulo 26 rechnen, damit man im Alphabet bleibt",
+    "65 addieren und mit <code>chr()</code> zurück in einen Buchstaben umwandeln"
+   ],
+   "hint": [
+    "Lies die Formel <code>chr((ord(b) - 65 + k) % 26 + 65)</code> in 7.3 (S. 15) von innen nach außen."
+   ],
+   "ref": "S. 15 · 7.3",
+   "tag": "Caesar-Ablauf",
+   "sol": "upper → ord → −65 → +k → % 26 → +65 und chr. So wird z. B. Z mit k = 3 zu C."
+  },
+  {
+   "id": "c7",
+   "type": "text",
+   "q": "Verschlüssele „TXT“ mit der Caesar-Chiffre und k = 5.",
+   "accept": [
+    "YCY"
+   ],
+   "show": "YCY",
+   "hint": [
+    "Zähle im Alphabet 5 Stellen weiter; nach Z geht es mit A weiter (Modulo 26, 7.3, S. 15)."
+   ],
+   "ref": "S. 15 · 7.3",
+   "tag": "Caesar-anwenden",
+   "sol": "T → Y (19 + 5 = 24), X → C (23 + 5 = 28, 28 % 26 = 2) → „YCY“."
+  }
+ ],
+ "deep": [
+  {
+   "id": "v1",
+   "type": "sim",
+   "widget": "morse",
+   "q": "Gib einen Text ein und stelle die Länge eines DIT ein. Der Zeitstrahl zeigt, wann die LED leuchtet – genau wie bei <code>sende()</code> aus 7.2.",
+   "cfg": {
+    "t": "E",
+    "d": 0.1
+   },
+   "predict": {
+    "id": "v1p",
+    "type": "num",
+    "q": "Wie viele Einheiten dauert <code>sende(\"SOS\")</code> insgesamt – mit allen Pausen? (Vermutung)",
+    "a": 30,
+    "tol": 0,
+    "unit": "Einheiten",
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Sende „SOS“ und finde den DIT-Wert, bei dem die ganze Nachricht genau 4,5 s dauert.",
+    "cond": "s.text==='SOS' && Math.abs(s.dur-4.5)<0.01",
+    "rec": "'SOS bei DIT ' + s.dit + ' s: ' + s.dur + ' s (' + s.units + ' Einheiten)'"
+   },
+   "explain": {
+    "id": "v1x",
+    "type": "num",
+    "q": "Wie viele Sekunden dauert <code>sende(\"OK\")</code> bei <code>DIT = 0.2</code>? (O = <code>---</code>, K = <code>-.-</code>)",
+    "a": 5.2,
+    "tol": 0.01,
+    "unit": "s",
+    "hint": [
+     "Jedes Zeichen: Leuchtdauer + 1 Einheit Pause; nach jedem Buchstaben 2 weitere Einheiten (7.2, S. 15).",
+     "Erst Einheiten zählen, dann mal 0,2 s."
+    ],
+    "ref": "S. 15 · 7.2",
+    "tag": "Morse-Dauer-Transfer",
+    "sol": "O = 3 · (3 + 1) + 2 = 14, K = (3 + 1) + (1 + 1) + (3 + 1) + 2 = 12 → 26 Einheiten · 0,2 s = 5,2 s."
+   },
+   "tag": "Morse-Takt",
+   "ref": "S. 15 · 7.2",
+   "paper": {
+    "obs": [
+     "Text",
+     "DIT (s)",
+     "Einheiten / Dauer"
+    ],
+    "rows": 3
+   }
+  },
+  {
+   "id": "v2",
+   "type": "py",
+   "title": "Text → Morse",
+   "q": "Schreibe <code>zu_morse(text)</code>: jeden Buchstaben nachschlagen, die Morsezeichen mit Leerzeichen trennen. <code>zu_morse(\"sos\")</code> → <code>\"... --- ...\"</code>.",
+   "lvl": "Basis",
+   "ref": "S. 15 · 7.1",
+   "tag": "Text → Morse",
+   "ex": {
+    "starter": "morse = {\n    \"A\": \".-\",     \"B\": \"-...\",     \"C\": \"-.-.\",     \"D\": \"-..\",     \"E\": \".\",     \"F\": \"..-.\",\n    \"G\": \"--.\",     \"H\": \"....\",     \"I\": \"..\",     \"J\": \".---\",     \"K\": \"-.-\",     \"L\": \".-..\",\n    \"M\": \"--\",     \"N\": \"-.\",     \"O\": \"---\",     \"P\": \".--.\",     \"Q\": \"--.-\",     \"R\": \".-.\",\n    \"S\": \"...\",     \"T\": \"-\",     \"U\": \"..-\",     \"V\": \"...-\",     \"W\": \".--\",     \"X\": \"-..-\",\n    \"Y\": \"-.--\",     \"Z\": \"--..\", \n}\n\ndef zu_morse(text):\n    teile = []\n    for buchstabe in text.upper():\n        pass   # TODO: morse[buchstabe] an teile anhängen\n    return \" \".join(teile)\n\nprint(zu_morse(\"sos\"))\nprint(zu_morse(\"TXT\"))\n",
+    "cfg": {},
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(zu_morse(\"sos\") == \"... --- ...\", \"SOS korrekt\", \"zu_morse('sos') ergibt: \" + repr(zu_morse(\"sos\")))\nok(zu_morse(\"TXT\") == \"- -..- -\", \"TXT korrekt\", \"zu_morse('TXT') stimmt nicht\")\n",
+    "solution": "morse = {\n    \"A\": \".-\",     \"B\": \"-...\",     \"C\": \"-.-.\",     \"D\": \"-..\",     \"E\": \".\",     \"F\": \"..-.\",\n    \"G\": \"--.\",     \"H\": \"....\",     \"I\": \"..\",     \"J\": \".---\",     \"K\": \"-.-\",     \"L\": \".-..\",\n    \"M\": \"--\",     \"N\": \"-.\",     \"O\": \"---\",     \"P\": \".--.\",     \"Q\": \"--.-\",     \"R\": \".-.\",\n    \"S\": \"...\",     \"T\": \"-\",     \"U\": \"..-\",     \"V\": \"...-\",     \"W\": \".--\",     \"X\": \"-..-\",\n    \"Y\": \"-.--\",     \"Z\": \"--..\", \n}\n\ndef zu_morse(text):\n    teile = []\n    for buchstabe in text.upper():\n        teile.append(morse[buchstabe])\n    return \" \".join(teile)\n\nprint(zu_morse(\"sos\"))\nprint(zu_morse(\"TXT\"))\n",
+    "hints": [
+     "<code>morse[buchstabe]</code> liefert das Morsezeichen – mit <code>teile.append(…)</code> hängst du es an die Liste."
+    ],
+    "nosim": true
+   }
+  },
+  {
+   "id": "v3",
+   "type": "py",
+   "title": "Morse-Sender (A5, Programmieraufgabe 3)",
+   "q": "Sende das Wort mit der LED an O1. Ergänze <code>signal(dauer)</code> und die Schleife in <code>sende(text)</code>.",
+   "lvl": "Basis",
+   "ref": "S. 15 · 7.2",
+   "tag": "Morse-Sender",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nmorse = {\n    \"A\": \".-\",     \"B\": \"-...\",     \"C\": \"-.-.\",     \"D\": \"-..\",     \"E\": \".\",     \"F\": \"..-.\",\n    \"G\": \"--.\",     \"H\": \"....\",     \"I\": \"..\",     \"J\": \".---\",     \"K\": \"-.-\",     \"L\": \".-..\",\n    \"M\": \"--\",     \"N\": \"-.\",     \"O\": \"---\",     \"P\": \".--.\",     \"Q\": \"--.-\",     \"R\": \".-.\",\n    \"S\": \"...\",     \"T\": \"-\",     \"U\": \"..-\",     \"V\": \"...-\",     \"W\": \".--\",     \"X\": \"-..-\",\n    \"Y\": \"-.--\",     \"Z\": \"--..\", \n}\n\nDIT = 0.1\n\ndef signal(dauer):\n    pass   # TODO: LED an, dauer warten, LED aus, 1 DIT Pause\n\ndef sende(text):\n    for buchstabe in text.upper():\n        for zeichen in morse[buchstabe]:\n            pass   # TODO: \".\" -> signal(DIT), \"-\" -> signal(3 * DIT)\n        time.sleep(2 * DIT)      # + 1 DIT aus signal() = 3 DIT Buchstabenpause\n\nsende(\"SOS\")\n",
+    "cfg": {
+     "leds": [
+      {
+       "name": "TXT_M_O1_led",
+       "port": 1,
+       "color": "white",
+       "label": "Sende-LED"
+      }
+     ],
+     "limit_t": 20,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\niv = led_intervals(1)\nd = [round(b - a, 2) for a, b in iv]\nok(len(iv) == 9, \"9 Lichtsignale gesendet\", \"Anzahl Signale: %d (erwartet 9)\" % len(iv))\nok(len(d) == 9 and all(abs(x - 0.1) < 0.02 for x in d[0:3] + d[6:9]) and all(abs(x - 0.3) < 0.02 for x in d[3:6]),\n   \"Signallängen stimmen (dit 0,1 s, dah 0,3 s)\", \"Signallängen: %s\" % d)\ngaps = [round(iv[i+1][0] - iv[i][1], 2) for i in range(len(iv) - 1)]\nok(len(gaps) == 8 and abs(gaps[2] - 0.3) < 0.02 and abs(gaps[0] - 0.1) < 0.02, \"Pausen stimmen\", \"Pausen: %s\" % gaps)\n",
+    "solution": "import time\nfrom lib.controller import *\n\nmorse = {\n    \"A\": \".-\",     \"B\": \"-...\",     \"C\": \"-.-.\",     \"D\": \"-..\",     \"E\": \".\",     \"F\": \"..-.\",\n    \"G\": \"--.\",     \"H\": \"....\",     \"I\": \"..\",     \"J\": \".---\",     \"K\": \"-.-\",     \"L\": \".-..\",\n    \"M\": \"--\",     \"N\": \"-.\",     \"O\": \"---\",     \"P\": \".--.\",     \"Q\": \"--.-\",     \"R\": \".-.\",\n    \"S\": \"...\",     \"T\": \"-\",     \"U\": \"..-\",     \"V\": \"...-\",     \"W\": \".--\",     \"X\": \"-..-\",\n    \"Y\": \"-.--\",     \"Z\": \"--..\", \n}\n\nDIT = 0.1\n\ndef signal(dauer):\n    TXT_M_O1_led.set_brightness(512)\n    time.sleep(dauer)\n    TXT_M_O1_led.set_brightness(0)\n    time.sleep(DIT)\n\ndef sende(text):\n    for buchstabe in text.upper():\n        for zeichen in morse[buchstabe]:\n            if zeichen == \".\":\n                signal(DIT)\n            else:\n                signal(3 * DIT)\n        time.sleep(2 * DIT)\n\nsende(\"SOS\")\n",
+    "hints": [
+     "<code>signal()</code> steht im Skript (7.2): LED an, <code>time.sleep(dauer)</code>, LED aus, <code>time.sleep(DIT)</code>.",
+     "In der Schleife: bei <code>\".\"</code> <code>signal(DIT)</code>, sonst <code>signal(3 * DIT)</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v4",
+   "type": "py",
+   "title": "Empfänger: Signaldauern dekodieren (A5, Experimentieraufgabe 1/2)",
+   "q": "Der Fototransistor des Empfängers hat diese Leuchtdauern (s) gemessen; <code>None</code> markiert eine Buchstabenpause. Kurz (&lt; 0,2 s) = „.“, lang = „-“. Dekodiere die Nachricht (umgekehrtes Wörterbuch!).",
+   "lvl": "Profi · freiwillig",
+   "ref": "S. 15 · 7.1",
+   "tag": "Empfänger: Signaldauern dekodieren",
+   "ex": {
+    "starter": "morse = {\n    \"A\": \".-\",     \"B\": \"-...\",     \"C\": \"-.-.\",     \"D\": \"-..\",     \"E\": \".\",     \"F\": \"..-.\",\n    \"G\": \"--.\",     \"H\": \"....\",     \"I\": \"..\",     \"J\": \".---\",     \"K\": \"-.-\",     \"L\": \".-..\",\n    \"M\": \"--\",     \"N\": \"-.\",     \"O\": \"---\",     \"P\": \".--.\",     \"Q\": \"--.-\",     \"R\": \".-.\",\n    \"S\": \"...\",     \"T\": \"-\",     \"U\": \"..-\",     \"V\": \"...-\",     \"W\": \".--\",     \"X\": \"-..-\",\n    \"Y\": \"-.--\",     \"Z\": \"--..\", \n}\n\nmessung = [0.1, 0.3, None, 0.3, 0.1, 0.3, 0.1, None, 0.1, 0.1, 0.1, None, 0.1, 0.3, 0.1, None, 0.1]\nrueck = {wert: schluessel for schluessel, wert in morse.items()}   # \".-\" -> \"A\"\n\ntext = \"\"\nzeichen = \"\"\nfor dauer in messung + [None]:\n    if dauer is None:\n        pass   # TODO: zeichen über rueck übersetzen, an text anhängen, zeichen leeren\n    else:\n        pass   # TODO: \".\" oder \"-\" an zeichen anhängen\nprint(text)\n",
+    "cfg": {},
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(text == \"ACSRE\" or text == \"ACSRE\".lower(), \"Nachricht „ACSRE“ dekodiert\", \"Ergebnis: \" + repr(text))\n",
+    "solution": "morse = {\n    \"A\": \".-\",     \"B\": \"-...\",     \"C\": \"-.-.\",     \"D\": \"-..\",     \"E\": \".\",     \"F\": \"..-.\",\n    \"G\": \"--.\",     \"H\": \"....\",     \"I\": \"..\",     \"J\": \".---\",     \"K\": \"-.-\",     \"L\": \".-..\",\n    \"M\": \"--\",     \"N\": \"-.\",     \"O\": \"---\",     \"P\": \".--.\",     \"Q\": \"--.-\",     \"R\": \".-.\",\n    \"S\": \"...\",     \"T\": \"-\",     \"U\": \"..-\",     \"V\": \"...-\",     \"W\": \".--\",     \"X\": \"-..-\",\n    \"Y\": \"-.--\",     \"Z\": \"--..\", \n}\n\nmessung = [0.1, 0.3, None, 0.3, 0.1, 0.3, 0.1, None, 0.1, 0.1, 0.1, None, 0.1, 0.3, 0.1, None, 0.1]\nrueck = {wert: schluessel for schluessel, wert in morse.items()}\n\ntext = \"\"\nzeichen = \"\"\nfor dauer in messung + [None]:\n    if dauer is None:\n        text = text + rueck[zeichen]\n        zeichen = \"\"\n    else:\n        if dauer < 0.2:\n            zeichen = zeichen + \".\"\n        else:\n            zeichen = zeichen + \"-\"\nprint(text)\n",
+    "hints": [
+     "Bei <code>None</code>: <code>text = text + rueck[zeichen]</code>, danach <code>zeichen = \"\"</code>.",
+     "Sonst: <code>dauer &lt; 0.2</code> → <code>\".\"</code> anhängen, andernfalls <code>\"-\"</code>."
+    ],
+    "nosim": true
+   },
+   "opt": true
+  },
+  {
+   "id": "v5",
+   "type": "py",
+   "title": "Caesar-Verschlüsselung (A5, Experimentieraufgabe 4)",
+   "q": "Schreibe <code>caesar(text, k)</code> für Großbuchstaben A–Z. Tipp: <code>(ord(b) - 65 + k) % 26 + 65</code>. Entschlüsseln = verschlüsseln mit <code>-k</code>.",
+   "lvl": "Basis",
+   "ref": "S. 15 · 7.3",
+   "tag": "Caesar-Verschlüsselung",
+   "ex": {
+    "starter": "def caesar(text, k):\n    ergebnis = \"\"\n    for b in text.upper():\n        pass   # TODO\n    return ergebnis\n\ngeheim = caesar(\"ROBOTIK\", 3)\nprint(geheim)\nprint(caesar(geheim, -3))\n",
+    "cfg": {},
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(caesar(\"ROBOTIK\", 3) == \"URERWLN\", \"ROBOTIK → URERWLN\", \"caesar('ROBOTIK', 3) ergibt \" + repr(caesar(\"ROBOTIK\", 3)))\nok(caesar(\"XYZ\", 3) == \"ABC\", \"Ende des Alphabets (XYZ → ABC) korrekt\", \"XYZ sollte ABC ergeben – Modulo 26!\")\nok(caesar(caesar(\"TXT\", 5), -5) == \"TXT\", \"Entschlüsseln funktioniert\", \"Entschlüsseln klappt nicht\")\n",
+    "solution": "def caesar(text, k):\n    ergebnis = \"\"\n    for b in text.upper():\n        ergebnis = ergebnis + chr((ord(b) - 65 + k) % 26 + 65)\n    return ergebnis\n\ngeheim = caesar(\"ROBOTIK\", 3)\nprint(geheim)\nprint(caesar(geheim, -3))\n",
+    "hints": [
+     "Im <code>for</code>: <code>ergebnis = ergebnis + chr(…)</code> mit der Formel aus 7.3."
+    ],
+    "nosim": true
+   }
+  }
+ ],
+ "close": {
+  "merke": [
+   "Texte sind Zeichenfolgen: <code>text[0]</code> ist das erste Zeichen, <code>len(text)</code> die Länge, <code>for z in text</code> geht jedes Zeichen durch.",
+   "Ein Wörterbuch ordnet einem Schlüssel einen Wert zu: <code>morse[\"O\"]</code> liefert <code>\"---\"</code>.",
+   "Sender und Empfänger brauchen einen gemeinsamen Code und Takt: dit 1, dah 3, Pause im Zeichen 1, zwischen Buchstaben 3, zwischen Wörtern 7 Einheiten.",
+   "Caesar verschiebt um k Stellen (<code>ord</code>, <code>chr</code>, <code>% 26</code>) – nur 25 Schlüssel, leicht zu knacken; Vigenère mit Schlüsselwort ist deutlich sicherer."
+  ],
+  "praxis": "Bearbeite am echten TXT 4.0 die Fischer-Aufgabe A5 „Morse-Code“ – am besten zu zweit mit zwei TXT: einer sendet mit der LED, der andere empfängt mit dem Fototransistor. Vorlage: 06_TXT_Programme/A5_Morse_Sender.py."
+ }
+}

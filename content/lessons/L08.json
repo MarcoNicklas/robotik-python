@@ -1,0 +1,569 @@
+{
+ "id": "L08",
+ "num": 8,
+ "file": "L08_Fahren_mit_Encodern.html",
+ "title": "Fahren mit Encodern und Kalibrieren",
+ "sub": "Motoren synchronisieren, Impulse pro cm bestimmen, Strecken fahren, sanft bremsen",
+ "lb": "LB 3",
+ "ds": "DS 8",
+ "fischer_tag": "A6 Buggy",
+ "lehrplan": "LB 3: Kalibrierung und Berechnung; Befehle einer Hochsprache",
+ "goals": [
+  "Motoren zeit- und impulsgesteuert ansteuern",
+  "einen Roboter kalibrieren (Impulse pro cm und pro Grad)",
+  "eine Bremsrampe mit einer linearen Formel programmieren"
+ ],
+ "read": {
+  "kap": "8",
+  "title": "Motoren, Encoder und Kalibrierung",
+  "pages": "17–18",
+  "page": 17,
+  "sections": [
+   "8.1 Motoren ansteuern – Befehlstabelle und der Absatz zur Synchronisation (S. 17)",
+   "8.2 Kalibrieren – Text, Tabelle „Messgröße – Rechnung – Beispielwert“ und der Code mit bewege(), vor(), rechts(), links() (S. 17)",
+   "8.3 Die Bremsrampe – Formeln für Fortschritt und Geschwindigkeit (S. 18)",
+   "Kasten „Am echten TXT 4.0“ (S. 18)"
+  ],
+  "focus": [
+   "Welcher Befehl fährt genau eine bestimmte Zahl von Impulsen, und woran erkennt das Programm, dass der Motor fertig ist?",
+   "Warum fährt der Buggy ohne Synchronisation eine Kurve, und was macht start_sync dagegen?",
+   "Wie bestimmst du durch Messen die Impulse pro cm und die Impulse pro Grad?",
+   "Wie berechnet die Bremsrampe aus dem Fortschritt die Geschwindigkeit, und warum bleibt MIN über 0?"
+  ],
+  "skip": "Den Kasten „Ausprobieren im Browser“ kannst du überspringen (das machst du gleich in der Vertiefung). „Teste dich“ bearbeitest du erst nach der Verständnisprüfung – die Lösungen in Anhang D bitte nicht nachschlagen.",
+  "note": "Am echten TXT 4.0 heißen die Motoren TXT_M_M1_encodermotor und TXT_M_M2_encodermotor, der Zähler TXT_M_C1_motor_step_counter (aus lib/controller.py). Material 3.1/3.2 nutzt teilweise eine andere Bibliothek (ftrobot2) – vergleiche mit dem Code, den ROBO Pro Coding erzeugt."
+ },
+ "check": [
+  {
+   "id": "c1",
+   "type": "match",
+   "q": "Ordne jedem Befehl seine Wirkung zu.",
+   "rows": [
+    [
+     "<code>m.set_speed(400, Motor.CCW)</code>",
+     "Geschwindigkeit und Drehrichtung einstellen"
+    ],
+    [
+     "<code>m1.start_sync(m2)</code>",
+     "beide Motoren synchron starten (m2 folgt m1)"
+    ],
+    [
+     "<code>m1.set_distance(300, m2)</code>",
+     "genau 300 Impulse synchron fahren"
+    ],
+    [
+     "<code>m.is_running()</code>",
+     "True, solange der Motor noch fährt"
+    ],
+    [
+     "<code>TXT_M_C1_motor_step_counter.get_count()</code>",
+     "Impulse seit dem letzten reset()"
+    ]
+   ],
+   "extra": [
+    "Strecke in cm seit dem Start"
+   ],
+   "hint": [
+    "Sieh dir die Befehlstabelle in 8.1 an."
+   ],
+   "ref": "S. 17 · 8.1",
+   "tag": "Motorbefehle",
+   "sol": "set_speed stellt Geschwindigkeit (0 … 512) und Drehrichtung ein, start_sync startet synchron (Master-Slave), set_distance fährt eine feste Impulszahl, is_running meldet True, solange der Motor fährt, get_count liefert die Impulse seit reset(). Eine Strecke in cm liefert kein Befehl – die musst du über die Kalibrierung ausrechnen."
+  },
+  {
+   "id": "c2",
+   "type": "num",
+   "q": "Dein Buggy hat 6,44 Impulse pro cm. Wie viele Impulse muss er fahren, um 50 cm zurückzulegen?",
+   "a": 322,
+   "tol": 1,
+   "unit": "Impulse",
+   "hint": [
+    "In der Tabelle in 8.2 steht, wie man aus cm die Impulse berechnet (Beispiel „Impulse für 2 m“)."
+   ],
+   "ref": "S. 17 · 8.2",
+   "tag": "Impulse-fuer-Strecke",
+   "sol": "Impulse = Strecke · Impulse pro cm = 50 · 6,44 = 322 Impulse."
+  },
+  {
+   "id": "c3",
+   "type": "num",
+   "q": "Bremsrampe mit MAX = 480 und MIN = 80. Die Bremszone beginnt bei Ticks_Brems = 600, das Ziel liegt bei Ticks_Ziel = 1000. Der Zähler steht gerade bei 700 Ticks. Welche Geschwindigkeit wird eingestellt?",
+   "a": 380,
+   "tol": 0.5,
+   "hint": [
+    "Berechne zuerst den Fortschritt mit der Formel aus 8.3.",
+    "Fortschritt = (Ticks − Ticks_Brems) ÷ (Ticks_Ziel − Ticks_Brems), dann Geschwindigkeit = MAX − Fortschritt · (MAX − MIN)."
+   ],
+   "ref": "S. 18 · 8.3",
+   "tag": "Bremsrampe-Rechnung",
+   "sol": "Fortschritt = (700 − 600) ÷ (1000 − 600) = 100 ÷ 400 = 0,25. Geschwindigkeit = 480 − 0,25 · (480 − 80) = 480 − 100 = 380."
+  },
+  {
+   "id": "c4",
+   "type": "bug",
+   "q": "Der Buggy soll 30 cm geradeaus fahren und sich danach auf der Stelle um 90° nach rechts drehen. Welche Zeilen sind fehlerhaft?",
+   "lines": [
+    "IMPULSE_PRO_CM, IMPULSE_PRO_GRAD = 6.438, 0.751",
+    "L, R = TXT_M_M1_encodermotor, TXT_M_M2_encodermotor",
+    "def bewege(impulse, richtung_links, richtung_rechts, speed=400):",
+    "    L.set_speed(speed, richtung_links)",
+    "    R.set_speed(speed, richtung_rechts)",
+    "    L.set_distance(round(impulse), R)",
+    "    while L.is_running():",
+    "        time.sleep(0.01)",
+    "def vor(cm):      bewege(cm * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CCW)",
+    "def rechts(grad): bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CCW)",
+    "vor(30)",
+    "rechts(90)"
+   ],
+   "a": [
+    8,
+    9
+   ],
+   "hint": [
+    "Vergleiche vor() und rechts() mit dem Code am Ende von 8.2: Welcher Kalibrierwert gehört zu Zentimetern, welcher zu Grad?",
+    "Bei einer Drehung auf der Stelle drehen die beiden Motoren in verschiedene Richtungen."
+   ],
+   "ref": "S. 17 · 8.2",
+   "tag": "Fahrfunktionen-Fehler",
+   "sol": "Zeile 9: vor() muss mit IMPULSE_PRO_CM rechnen: <code>bewege(cm * IMPULSE_PRO_CM, Motor.CCW, Motor.CCW)</code>. Zeile 10: Für eine Rechtsdrehung fährt der linke Motor vorwärts (CCW) und der rechte rückwärts (CW): <code>bewege(grad * IMPULSE_PRO_GRAD, Motor.CCW, Motor.CW)</code>. Mit zweimal CCW würde der Buggy nur ein Stück geradeaus fahren."
+  },
+  {
+   "id": "c5",
+   "type": "tf",
+   "q": "Stimmen die Aussagen zu Encodern und Bremsrampe?",
+   "rows": [
+    [
+     "Der Encoder liefert 63,9 Impulse je Motorumdrehung.",
+     true
+    ],
+    [
+     "Zwei Motoren mit gleicher Geschwindigkeitseinstellung fahren ohne Synchronisation genau geradeaus.",
+     false
+    ],
+    [
+     "Bei start_sync vergleicht der TXT ständig die Encoder-Impulse beider Motoren und regelt nach.",
+     true
+    ],
+    [
+     "Bei der Bremsrampe setzt man MIN auf 0, damit der Buggy genau im Ziel steht.",
+     false
+    ]
+   ],
+   "hint": [
+    "Lies den Absatz unter der Befehlstabelle (8.1) und den ersten Satz von 8.2.",
+    "In 8.3 steht, warum MIN über 0 bleibt."
+   ],
+   "ref": "S. 17–18 · 8.1–8.3",
+   "tag": "Encoder-Aussagen",
+   "sol": "Wahr: 63,9 Impulse je Umdrehung; start_sync regelt nach dem Master-Slave-Prinzip. Falsch: Zwei Motoren sind nie völlig gleich, ohne Synchronisation fährt der Buggy eine Kurve. Falsch: MIN bleibt über 0, sonst reicht die Kraft nicht mehr, um die Haftreibung zu überwinden – der Buggy bliebe vor dem Ziel stehen."
+  },
+  {
+   "id": "c6",
+   "type": "order",
+   "q": "Bringe die Schritte der Kalibrierfahrt (Impulse pro cm) in die richtige Reihenfolge.",
+   "items": [
+    "eine feste Impulszahl festlegen, z. B. 800",
+    "mit set_distance synchron genau diese Impulse fahren",
+    "die gefahrene Strecke mit dem Maßband messen",
+    "Impulse ÷ gemessene Strecke rechnen",
+    "die Fahrt mehrmals wiederholen und den Mittelwert bilden"
+   ],
+   "hint": [
+    "Der Ablauf steht in einem Satz in 8.2: „eine feste Impulszahl fahren, Strecke messen, teilen – …“"
+   ],
+   "ref": "S. 17 · 8.2",
+   "tag": "Kalibrier-Ablauf",
+   "sol": "Feste Impulszahl wählen → synchron fahren → Strecke messen → Impulse ÷ Strecke → mehrmals wiederholen und Mittelwert bilden (einzelne Messungen streuen)."
+  },
+  {
+   "id": "c7",
+   "type": "mc",
+   "q": "Ihr baut an euren Buggy größere Räder. Die Motoren und Encoder bleiben gleich. Was musst du im Programm tun?",
+   "opts": [
+    "IMPULSE_PRO_CM neu messen – der Wert wird kleiner, weil der Buggy pro Radumdrehung weiter fährt",
+    "nichts, denn der Encoder liefert weiterhin 63,9 Impulse je Motorumdrehung",
+    "IMPULSE_PRO_CM neu messen – der Wert wird größer, weil größere Räder mehr Impulse brauchen",
+    "nur die Geschwindigkeit in set_speed verringern"
+   ],
+   "a": 0,
+   "hint": [
+    "Überlege mit 8.2: Die Impulse je Umdrehung bleiben gleich – aber wie weit kommt der Buggy mit einer Umdrehung?"
+   ],
+   "ref": "S. 17 · 8.2",
+   "tag": "Kalibrierung-Transfer",
+   "sol": "Mit größeren Rädern legt der Buggy pro Motorumdrehung (63,9 Impulse) eine längere Strecke zurück. Also entfallen auf 1 cm weniger Impulse: IMPULSE_PRO_CM wird kleiner und muss durch eine neue Kalibrierfahrt bestimmt werden (ebenso die Impulse pro Grad)."
+  }
+ ],
+ "deep": [
+  {
+   "id": "v1",
+   "type": "sim",
+   "widget": "calib",
+   "q": "In der Kalibrierfahrt wählst du eine Impulszahl, lässt den Buggy fahren und misst die Strecke. Wie im echten Versuch streuen die Messungen ein wenig.",
+   "cfg": {
+    "n": 500
+   },
+   "predict": {
+    "id": "v1p",
+    "type": "num",
+    "q": "Der Buggy hat ungefähr 6,44 Impulse pro cm. Wie weit fährt er etwa mit 800 Impulsen? (Vermutung)",
+    "a": 124.2,
+    "tol": 3,
+    "unit": "cm",
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Fahre mindestens dreimal und benutze dabei mindestens zwei verschiedene Impulszahlen. Lies den Mittelwert der Impulse pro cm ab.",
+    "cond": "s.runs >= 3 && s.diff >= 2",
+    "rec": "'Mittelwert aus ' + s.runs + ' Fahrten: ' + s.mean + ' Impulse pro cm'"
+   },
+   "explain": {
+    "id": "v1x",
+    "type": "num",
+    "q": "Mit dem gemessenen Wert 6,44 Impulse pro cm: Wie viele Impulse braucht der Buggy für 1,5 m?",
+    "a": 966,
+    "tol": 1,
+    "unit": "Impulse",
+    "hint": [
+     "1,5 m = 150 cm; rechne wie in der Tabelle in 8.2 (Zeile „Impulse für 2 m“)."
+    ],
+    "ref": "S. 17 · 8.2",
+    "sol": "150 cm · 6,44 Impulse/cm = 966 Impulse.",
+    "tag": "Impulse-fuer-1,5m"
+   },
+   "tag": "Kalibrierfahrt",
+   "ref": "S. 17 · 8.2",
+   "paper": {
+    "obs": [
+     "Impulse",
+     "gemessene Strecke (cm)",
+     "Impulse ÷ cm"
+    ],
+    "rows": 4
+   }
+  },
+  {
+   "id": "v2",
+   "type": "sim",
+   "widget": "ramp",
+   "q": "Hier stellst du MAX, MIN und den Beginn der Bremszone ein und siehst, wie die Geschwindigkeit bis zum Ziel verläuft. Im roten Bereich (unter 60) dreht der Motor wegen der Haftreibung nicht mehr.",
+   "cfg": {
+    "max": 400,
+    "min": 0,
+    "bs": 100
+   },
+   "predict": {
+    "id": "v2p",
+    "type": "mc",
+    "q": "Was passiert, wenn die Rampe die Geschwindigkeit bis auf MIN = 0 absenkt? (Vermutung)",
+    "opts": [
+     "Der Buggy stoppt besonders genau im Ziel.",
+     "Der Buggy bleibt schon vor dem Ziel stehen.",
+     "Der Buggy rollt über das Ziel hinaus."
+    ],
+    "a": 1,
+    "hint": [],
+    "ref": "",
+    "cmp": true
+   },
+   "goal": {
+    "text": "Stelle MAX = 500 ein und wähle MIN und „Bremsen ab“ so, dass der Buggy sanft und sicher bis ins Ziel bremst (grüne Meldung).",
+    "cond": "s.max === 500 && s.ok",
+    "rec": "'MAX 500, MIN ' + s.min + ', Bremsen ab ' + s.bs + ' % → Geschwindigkeit bei Fortschritt 0,5: ' + s.half"
+   },
+   "explain": {
+    "id": "v2x",
+    "type": "num",
+    "q": "Eine Rampe hat MAX = 360 und MIN = 120. Welche Geschwindigkeit stellt sie bei Fortschritt 0,75 ein?",
+    "a": 180,
+    "tol": 0.5,
+    "hint": [
+     "Formel aus 8.3: Geschwindigkeit = MAX − Fortschritt · (MAX − MIN)."
+    ],
+    "ref": "S. 18 · 8.3",
+    "sol": "360 − 0,75 · (360 − 120) = 360 − 0,75 · 240 = 360 − 180 = 180.",
+    "tag": "Rampe-0,75"
+   },
+   "tag": "Bremsrampe",
+   "ref": "S. 18 · 8.3",
+   "paper": {
+    "obs": [
+     "MAX / MIN / Bremsen ab",
+     "Geschwindigkeit bei 0,5",
+     "Meldung"
+    ],
+    "rows": 3
+   }
+  },
+  {
+   "id": "v3",
+   "type": "py",
+   "title": "Vor – Pause – zurück (Material 3.1)",
+   "q": "Der Buggy soll 5 s vorwärts fahren, 2 s Pause machen und 5 s rückwärts fahren (Geschwindigkeit 200). Beobachte die Spur: Fährt er wirklich gerade?",
+   "lvl": "Basis",
+   "ref": "S. 17 · 8.1",
+   "tag": "Vor – Pause – zurück",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nmotor_links = TXT_M_M1_encodermotor\nmotor_rechts = TXT_M_M2_encodermotor\n\nmotor_links.set_speed(200, Motor.CCW)      # CCW = vorwärts\nmotor_rechts.set_speed(200, Motor.CCW)\nmotor_links.start()\nmotor_rechts.start()\ntime.sleep(5)\nmotor_links.stop()\nmotor_rechts.stop()\n\n# TODO: 2 s Pause, dann 5 s rückwärts (Motor.CW), dann stoppen\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 0,
+      "view": [
+       -20,
+       -50,
+       140,
+       50
+      ],
+      "pen": true
+     },
+     "limit_t": 30,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nps = poses()\nok(max(p[\"x\"] for p in ps) > 30, \"Buggy fährt vorwärts\", \"Buggy ist kaum vorwärts gefahren\")\nok(abs(ps[-1][\"x\"]) < 12, \"Buggy kommt ungefähr zurück\", \"Buggy ist nicht zurückgefahren (x = %.1f)\" % ps[-1][\"x\"])\n",
+    "solution": "import time\nfrom lib.controller import *\n\nmotor_links = TXT_M_M1_encodermotor\nmotor_rechts = TXT_M_M2_encodermotor\n\nmotor_links.set_speed(200, Motor.CCW)\nmotor_rechts.set_speed(200, Motor.CCW)\nmotor_links.start()\nmotor_rechts.start()\ntime.sleep(5)\nmotor_links.stop()\nmotor_rechts.stop()\n\ntime.sleep(2)\nmotor_links.set_speed(200, Motor.CW)\nmotor_rechts.set_speed(200, Motor.CW)\nmotor_links.start()\nmotor_rechts.start()\ntime.sleep(5)\nmotor_links.stop()\nmotor_rechts.stop()\n",
+    "hints": [
+     "Gleicher Aufbau wie vorwärts, nur <code>Motor.CW</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v4",
+   "type": "py",
+   "title": "Kalibrierfahrt",
+   "q": "Fahre synchron genau 500 Impulse. Lies die Strecke ab und berechne <code>impulse_pro_cm</code> (2 Nachkommastellen).",
+   "lvl": "Basis",
+   "ref": "S. 17 · 8.2",
+   "tag": "Kalibrierfahrt",
+   "ex": {
+    "starter": "import time, sim\nfrom lib.controller import *\n\nTXT_M_M1_encodermotor.set_speed(400, Motor.CCW)\nTXT_M_M2_encodermotor.set_speed(400, Motor.CCW)\n# TODO: synchron 500 Impulse fahren und warten\n\nx, y, winkel = sim.position()        # \"Lineal\": gefahrene Strecke in cm\nprint(\"Strecke:\", x, \"cm\")\nimpulse_pro_cm = 0                   # TODO\nprint(\"Impulse pro cm:\", impulse_pro_cm)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 0,
+      "view": [
+       -20,
+       -50,
+       140,
+       50
+      ],
+      "pen": true
+     },
+     "limit_t": 30,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\nok(abs(impulse_pro_cm - 6.44) < 0.05, \"Kalibrierwert ≈ 6,44 Impulse/cm\", \"Kalibrierwert: %s (erwartet ≈ 6,44)\" % impulse_pro_cm)\n",
+    "solution": "import time, sim\nfrom lib.controller import *\n\nTXT_M_M1_encodermotor.set_speed(400, Motor.CCW)\nTXT_M_M2_encodermotor.set_speed(400, Motor.CCW)\nTXT_M_M1_encodermotor.set_distance(500, TXT_M_M2_encodermotor)\nwhile TXT_M_M1_encodermotor.is_running():\n    time.sleep(0.01)\n\nx, y, winkel = sim.position()\nprint(\"Strecke:\", x, \"cm\")\nimpulse_pro_cm = round(500 / x, 2)\nprint(\"Impulse pro cm:\", impulse_pro_cm)\n",
+    "hints": [
+     "<code>set_distance(500, TXT_M_M2_encodermotor)</code> und danach die is_running-Schleife."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v5",
+   "type": "py",
+   "title": "Funktionen fahre_cm und drehe (A6, Aufgaben 3–5)",
+   "q": "Schreibe <code>fahre_cm(cm)</code> (6,438 Impulse/cm) und <code>drehe_rechts(grad)</code> (0,751 Impulse/Grad, links vorwärts + rechts rückwärts). Fahre 60 cm, drehe 90° nach rechts, fahre 30 cm.",
+   "lvl": "Basis",
+   "ref": "S. 17 · 8.2",
+   "tag": "Funktionen fahre_cm und drehe",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nSPEED = 400\n\ndef warten():\n    while TXT_M_M1_encodermotor.is_running():\n        time.sleep(0.01)\n\ndef fahre_cm(cm):\n    impulse = round(cm * IMPULSE_PRO_CM)\n    TXT_M_M1_encodermotor.set_speed(SPEED, Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(SPEED, Motor.CCW)\n    TXT_M_M1_encodermotor.set_distance(impulse, TXT_M_M2_encodermotor)\n    warten()\n\ndef drehe_rechts(grad):\n    pass   # TODO\n\nfahre_cm(60)\ndrehe_rechts(90)\nfahre_cm(30)\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 0,
+      "view": [
+       -20,
+       -50,
+       100,
+       20
+      ],
+      "pen": true,
+      "targets": [
+       [
+        60,
+        -30
+       ]
+      ]
+     },
+     "limit_t": 30,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\np = poses()[-1]\nok(abs(p[\"x\"] - 60) < 2 and abs(p[\"y\"] + 30) < 2, \"Ziel (60 | −30) erreicht\", \"Endposition (%.1f | %.1f), Ziel (60 | −30)\" % (p[\"x\"], p[\"y\"]))\n",
+    "solution": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nIMPULSE_PRO_GRAD = 0.751\nSPEED = 400\n\ndef warten():\n    while TXT_M_M1_encodermotor.is_running():\n        time.sleep(0.01)\n\ndef fahre_cm(cm):\n    impulse = round(cm * IMPULSE_PRO_CM)\n    TXT_M_M1_encodermotor.set_speed(SPEED, Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(SPEED, Motor.CCW)\n    TXT_M_M1_encodermotor.set_distance(impulse, TXT_M_M2_encodermotor)\n    warten()\n\ndef drehe_rechts(grad):\n    impulse = round(grad * IMPULSE_PRO_GRAD)\n    TXT_M_M1_encodermotor.set_speed(SPEED, Motor.CCW)   # links vorwärts\n    TXT_M_M2_encodermotor.set_speed(SPEED, Motor.CW)    # rechts rückwärts\n    TXT_M_M1_encodermotor.set_distance(impulse, TXT_M_M2_encodermotor)\n    warten()\n\nfahre_cm(60)\ndrehe_rechts(90)\nfahre_cm(30)\n",
+    "hints": [
+     "Wie <code>fahre_cm</code>, aber M2 mit <code>Motor.CW</code> und <code>grad * IMPULSE_PRO_GRAD</code>."
+    ],
+    "nosim": false
+   }
+  },
+  {
+   "id": "v6",
+   "type": "py",
+   "title": "Bremsrampe (Material 3.2)",
+   "q": "Ergänze Phase 2. Am Ende soll der Buggy bei 100 cm stehen und die Geschwindigkeit in der Bremszone gesunken sein.",
+   "lvl": "Profi · freiwillig",
+   "ref": "S. 18 · 8.3",
+   "tag": "Bremsrampe",
+   "ex": {
+    "starter": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nTICKS_ZIEL = round(100 * IMPULSE_PRO_CM)\nTICKS_BREMS = round(70 * IMPULSE_PRO_CM)\nMAX_SPEED = 512\nMIN_SPEED = 150\n\ndef fahre(speed):\n    TXT_M_M1_encodermotor.set_speed(int(speed), Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(int(speed), Motor.CCW)\n    TXT_M_M1_encodermotor.start_sync(TXT_M_M2_encodermotor)\n\nTXT_M_C1_motor_step_counter.reset()\nfahre(MAX_SPEED)\n\n# Phase 1: volle Fahrt bis zum Bremspunkt\nwhile TXT_M_C1_motor_step_counter.get_count() < TICKS_BREMS:\n    time.sleep(0.01)\n\n# Phase 2: Bremsrampe\nwhile True:\n    ticks = TXT_M_C1_motor_step_counter.get_count()\n    fortschritt = 0      # TODO\n    if fortschritt >= 1.0:\n        break\n    speed = MAX_SPEED    # TODO\n    fahre(speed)\n    time.sleep(0.01)\n\n# Phase 3: Stopp\nTXT_M_M1_encodermotor.stop_sync(TXT_M_M2_encodermotor)\nprint(\"Ziel erreicht, Impulse:\", TXT_M_C1_motor_step_counter.get_count())\n",
+    "cfg": {
+     "motors": [
+      {
+       "name": "TXT_M_M1_encodermotor",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_M2_encodermotor",
+       "port": 2,
+       "factor": 0.97
+      }
+     ],
+     "counters": [
+      {
+       "name": "TXT_M_C1_motor_step_counter",
+       "port": 1
+      },
+      {
+       "name": "TXT_M_C2_motor_step_counter",
+       "port": 2
+      }
+     ],
+     "inputs": [],
+     "leds": [],
+     "servos": [],
+     "world": {
+      "type": "buggy",
+      "start": [
+       0,
+       0
+      ],
+      "heading": 0,
+      "view": [
+       -10,
+       -30,
+       120,
+       30
+      ],
+      "pen": true,
+      "targets": [
+       [
+        100,
+        0
+       ]
+      ]
+     },
+     "limit_t": 30,
+     "display": false
+    },
+    "check": "\ndef led_at(port, t):\n    b = 0\n    for e in E:\n        if e[0] > t + 1e-9: break\n        if e[1] == \"led\" and e[2][\"o\"] == port: b = e[2][\"b\"]\n    return b\ndef led_intervals(port):\n    res = []; on = None\n    for e in E:\n        if e[1] == \"led\" and e[2][\"o\"] == port:\n            if e[2][\"b\"] > 0 and on is None: on = e[0]\n            elif e[2][\"b\"] == 0 and on is not None: res.append((on, e[0])); on = None\n    if on is not None: res.append((on, T_END))\n    return res\ndef disp_values(): return [e[2][\"v\"] for e in E if e[1] == \"display\"]\ndef disp_last():\n    v = disp_values(); return v[-1] if v else \"\"\ndef poses(): return [e[2] for e in E if e[1] == \"pose\"]\ndef gate_angles(): return [(e[0], e[2][\"a\"]) for e in E if e[1] == \"gate\"]\ndef xyz(): return [e[2] for e in E if e[1] == \"xyz\"]\ndef near(ps, x, y, tol):\n    return any(((p[\"x\"]-x)**2 + (p[\"y\"]-y)**2) ** 0.5 <= tol for p in ps)\ndef no_error():\n    ok(ERR is None and not TIMEOUT or (ERR is None and TIMEOUT_OK), \"Programm läuft ohne Fehler\",\n       \"Programm bricht ab: %s\" % ((ERR and (ERR[\"type\"] + \" \" + str(ERR.get(\"line\") or \"\"))) or \"Zeitlimit erreicht\"))\nTIMEOUT_OK = False\n\nno_error()\np = poses()[-1]\nok(99 <= p[\"x\"] <= 102, \"Stopp bei 100 cm (%.1f cm)\" % p[\"x\"], \"Endposition %.1f cm (soll 100)\" % p[\"x\"])\nsp = [e[2][\"s\"] for e in E if e[1] == \"motor\" and e[2][\"m\"] == 1]\nok(min(sp) < 250, \"Geschwindigkeit wurde abgesenkt\", \"Geschwindigkeit wurde nicht reduziert – Formel prüfen\")\n",
+    "solution": "import time\nfrom lib.controller import *\n\nIMPULSE_PRO_CM = 6.438\nTICKS_ZIEL = round(100 * IMPULSE_PRO_CM)\nTICKS_BREMS = round(70 * IMPULSE_PRO_CM)\nMAX_SPEED = 512\nMIN_SPEED = 150\n\ndef fahre(speed):\n    TXT_M_M1_encodermotor.set_speed(int(speed), Motor.CCW)\n    TXT_M_M2_encodermotor.set_speed(int(speed), Motor.CCW)\n    TXT_M_M1_encodermotor.start_sync(TXT_M_M2_encodermotor)\n\nTXT_M_C1_motor_step_counter.reset()\nfahre(MAX_SPEED)\n\nwhile TXT_M_C1_motor_step_counter.get_count() < TICKS_BREMS:\n    time.sleep(0.01)\n\nwhile True:\n    ticks = TXT_M_C1_motor_step_counter.get_count()\n    fortschritt = (ticks - TICKS_BREMS) / (TICKS_ZIEL - TICKS_BREMS)\n    if fortschritt >= 1.0:\n        break\n    speed = MAX_SPEED - fortschritt * (MAX_SPEED - MIN_SPEED)\n    fahre(speed)\n    time.sleep(0.01)\n\nTXT_M_M1_encodermotor.stop_sync(TXT_M_M2_encodermotor)\nprint(\"Ziel erreicht, Impulse:\", TXT_M_C1_motor_step_counter.get_count())\n",
+    "hints": [
+     "Berechne in der Schleife zuerst <code>fortschritt = (ticks - TICKS_BREMS) / (TICKS_ZIEL - TICKS_BREMS)</code> und brich ab, sobald er ≥ 1 ist.",
+     "Dann <code>speed = MAX_SPEED - fortschritt * (MAX_SPEED - MIN_SPEED)</code> und <code>fahre(speed)</code> aufrufen."
+    ],
+    "nosim": false
+   },
+   "opt": true
+  }
+ ],
+ "close": {
+  "merke": [
+   "Mit <code>set_distance(impulse, m2)</code> fährt der Buggy synchron eine genaue Impulszahl – mit <code>is_running()</code> wartest du, bis er fertig ist.",
+   "Zwei Motoren sind nie gleich: Erst die Synchronisation (Master-Slave) lässt den Buggy geradeaus fahren.",
+   "Kalibrieren heißt messen: Impulse ÷ gemessene Strecke, mehrmals fahren und den Mittelwert bilden. Impulse = Strecke · Impulse pro cm.",
+   "Bremsrampe: Geschwindigkeit = MAX − Fortschritt · (MAX − MIN); MIN bleibt über 0 wegen der Haftreibung."
+  ],
+  "praxis": "Bearbeite die Fischer-Aufgabe A6 „Buggy“, Programmieraufgaben 1–5, mit dem echten TXT 4.0. Miss die Impulse pro cm und pro Grad deines eigenen Buggys und notiere die Kalibrierwerte auf Arbeitsblatt 8."
+ }
+}
