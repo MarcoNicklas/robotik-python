@@ -32,7 +32,7 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 a{color:var(--pri)}
 code,pre,textarea,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 :not(pre)>code{background:var(--pri-soft);color:var(--ink);padding:1px 5px;border-radius:5px;font-size:.9em}
@@ -73,7 +73,7 @@ th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertic
 th{background:var(--pri-soft)}
 .tablewrap{overflow-x:auto}
 /* Code */
-pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.55;margin:10px 0}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:15px;line-height:1.55;margin:10px 0}
 .t-kw{color:var(--kw);font-weight:600}.t-st{color:var(--str)}.t-cm{color:var(--com);font-style:italic}.t-nu{color:var(--num)}
 .t-bi{color:var(--bi)}.t-me{color:var(--me)}.t-sen{color:var(--sen);font-weight:600}.t-akt{color:var(--akt);font-weight:600}.t-cnt{color:var(--cnt);font-weight:600}.t-ctl{color:#d6b4ff;font-weight:600}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;margin:6px 0}
@@ -131,7 +131,7 @@ input[type=text]{font-family:ui-monospace,Menlo,Consolas,monospace;min-width:0;w
 .toolbar .lab{font-size:13px;color:var(--muted);margin-right:2px}
 .reader{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:14px;align-items:start}
 @media (max-width:860px){.reader{grid-template-columns:1fr}}
-.codeview{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.6;overflow-x:auto}
+.codeview{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;line-height:1.65;overflow-x:auto}
 .codeview .r{display:flex;cursor:pointer;padding:0 10px 0 0;white-space:pre;min-width:max-content}
 .codeview .r:hover{background:rgba(255,255,255,.06)}
 .codeview .r.sel{background:rgba(79,179,189,.28)}
@@ -238,98 +238,70 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:40px}
 <!-- ===================== START ===================== -->
 <section class="page" id="start">
   <div class="hero">
-    <span class="tag">Python &amp; Robotik</span><span class="tag">fischertechnik TXT 4.0</span>
+    <span class="tag">P01 – P04</span>
     <h1>Code lesen wie ein Profi</h1>
-    <p class="lead">Ihr habt vier Projekte programmiert: Abstand messen, Thermometer, Schranke schließen und die automatische Schranke. Auf dieser Seite lernt ihr, <b>jeden dieser Codes zu lesen</b>, ihn in eigenen Worten zu erklären – und ihn dann selbst zu verändern.</p>
-  </div>
-
-  <div class="card">
-    <h3 style="margin-top:0">Das könnt ihr am Ende</h3>
-    <ul>
-      <li>Ich kann erklären, wozu <code>lib/controller.py</code> und <code>main.py</code> da sind.</li>
-      <li>Ich kann an einem Bauteilnamen ablesen, <b>welches Bauteil an welchem Anschluss</b> steckt.</li>
-      <li>Ich unterscheide <b>Sensor-Fragen</b> (liefern einen Wert) von <b>Aktor-Befehlen</b> (tun etwas).</li>
-      <li>Ich erkenne Schleifen, Entscheidungen und Funktionen an der <b>Einrückung</b> und kann sie als Satz „vorlesen“.</li>
-      <li>Ich kann vorhersagen, was ein Programm tut, es gezielt anpassen und Fehler finden.</li>
-    </ul>
+    <p class="lead">Lesen · Erklären · Verändern</p>
   </div>
 
   <h2>Die 4-Schritte-Lesemethode</h2>
-  <p class="lead">So geht ihr an <b>jeden</b> Code heran – egal wie lang er ist. Diese vier Schritte übt ihr auf jeder Seite.</p>
   <div class="grid g4">
-    <div class="card step"><div class="n">1</div><div><h4>🔎 Überblick</h4><p>Kopfkommentar und <code>import</code>-Zeilen lesen: Was soll das Programm tun? Welche Bauteile braucht es?</p></div></div>
-    <div class="card step"><div class="n">2</div><div><h4>🧩 Bauteile</h4><p>Namen zerlegen (<code>TXT_M_I1_…</code>). Wo wird ein Sensor <b>gefragt</b>, wo ein Aktor <b>befohlen</b>?</p></div></div>
-    <div class="card step"><div class="n">3</div><div><h4>🧱 Struktur</h4><p>Der Einrückung folgen: Welche Zeilen gehören zu welcher Schleife, Entscheidung oder Funktion?</p></div></div>
-    <div class="card step"><div class="n">4</div><div><h4>▶️ Durchspielen</h4><p>Zeile für Zeile mit echten Werten: Was steht jetzt in der Variablen? Was zeigt das Display?</p></div></div>
+    <div class="card step"><div class="n">1</div><div><h4>🔎 Überblick</h4><p>Was soll das Programm tun?</p></div></div>
+    <div class="card step"><div class="n">2</div><div><h4>🧩 Bauteile</h4><p>Wer wird gefragt, wer befohlen?</p></div></div>
+    <div class="card step"><div class="n">3</div><div><h4>🧱 Struktur</h4><p>Welche Zeile gehört zu welchem Block?</p></div></div>
+    <div class="card step"><div class="n">4</div><div><h4>▶️ Durchspielen</h4><p>Was passiert Zeile für Zeile?</p></div></div>
   </div>
 
-  <h2>Euer Fahrplan</h2>
+  <h2>Fahrplan</h2>
   <div class="grid g3">
-    <div class="card unit" data-go="s1"><div class="k">Baustein 1 · ca. 20 min</div><h4>Das Gerüst</h4><p>Zwei Dateien, ein Namensschema. Übung: Namens-Baukasten und Quiz.</p></div>
-    <div class="card unit" data-go="s2"><div class="k">Baustein 2 · ca. 20 min</div><h4>Der Wortschatz</h4><p>Alle Befehle unserer Bauteile – Sensoren fragen, Aktoren befehlen.</p></div>
-    <div class="card unit" data-go="s3"><div class="k">Baustein 3 · ca. 30 min</div><h4>Die Grammatik</h4><p>7 Code-Muster, die in allen Projekten vorkommen. Übung: Code-Puzzles.</p></div>
-    <div class="card unit" data-go="s4"><div class="k">Baustein 4 · ca. 35 min</div><h4>Code-Leser</h4><p>Eure Projekte P01–P04 Zeile für Zeile lesen – mit ausgeblendeten Kommentaren.</p></div>
-    <div class="card unit" data-go="s5"><div class="k">Baustein 5 · ca. 35 min</div><h4>Werkstatt</h4><p>Code im Simulator verändern, testen und Fehler finden – dann ab auf den echten TXT.</p></div>
+    <div class="card unit" data-go="s1"><div class="k">Baustein 1</div><h4>Gerüst</h4><p>Dateien &amp; Bauteilnamen</p></div>
+    <div class="card unit" data-go="s2"><div class="k">Baustein 2</div><h4>Wortschatz</h4><p>Befehle der Bauteile</p></div>
+    <div class="card unit" data-go="s3"><div class="k">Baustein 3</div><h4>Grammatik</h4><p>7 Code-Muster</p></div>
+    <div class="card unit" data-go="s4"><div class="k">Baustein 4</div><h4>Code-Leser</h4><p>P01–P04 Zeile für Zeile</p></div>
+    <div class="card unit" data-go="s5"><div class="k">Baustein 5</div><h4>Werkstatt</h4><p>Ändern, testen, Fehler finden</p></div>
   </div>
-  <div class="info"><b>Tipp:</b> Auf jeder Seite findet ihr Aufgaben direkt zum Anklicken. Eure Antworten werden in diesem Browser gespeichert.</div>
 </section>
 
 <!-- ===================== BAUSTEIN 1 ===================== -->
 <section class="page" id="s1">
-  <div class="hero"><span class="tag">Baustein 1</span><h1>Das Gerüst: zwei Dateien, ein Namensschema</h1>
-  <p class="lead">Jedes ROBO-Pro-Coding-Projekt besteht aus mindestens zwei Python-Dateien. Wer weiß, was wo steht, findet sich in jedem Code zurecht.</p></div>
+  <div class="hero"><span class="tag">Baustein 1</span><h1>Das Gerüst</h1></div>
 
   <div class="grid g2">
     <div class="card">
-      <h3 style="margin-top:0">📋 <code>lib/controller.py</code> – die Stückliste</h3>
-      <p>Hier steht, <b>welche Bauteile an welchem Anschluss</b> stecken. ROBO Pro Coding erzeugt diese Datei <b>automatisch</b>, sobald ihr die Bauteile im Controller-Fenster eintragt. Nicht abtippen, nicht verändern!</p>
+      <h3 style="margin-top:0">📋 <code>lib/controller.py</code></h3>
+      <p><b>Stückliste:</b> Welches Bauteil steckt wo?<br><span class="muted small">Wird automatisch erzeugt – nicht ändern.</span></p>
     </div>
     <div class="card">
-      <h3 style="margin-top:0">📝 <code>main.py</code> – die Bauanleitung</h3>
-      <p>Hier steht, <b>was passieren soll</b>: messen, warten, Motor starten … Das ist die Datei, die ihr programmiert. Die erste Zeile holt alle Bauteile aus der Stückliste:</p>
+      <h3 style="margin-top:0">📝 <code>main.py</code></h3>
+      <p><b>Bauanleitung:</b> Was soll passieren?</p>
       <pre class="code hl">from lib.controller import *   # alle Bauteile holen</pre>
     </div>
   </div>
 
-  <h2>So sieht die Stückliste von Projekt 3 aus</h2>
-  <pre class="code hl" id="ctl-demo"></pre>
-  <div class="grid g3">
-    <div class="card small"><b>① Bibliothek laden:</b> <code>import fischertechnik.factories as txt_factory</code> – die „Fabriken“, die für jedes Bauteil ein Python-Objekt bauen.</div>
-    <div class="card small"><b>② Vorbereiten:</b> <code>txt_factory.init…()</code> – nur die Fabriken, die das Projekt braucht (Eingänge, Motoren, Zähler).</div>
-    <div class="card small"><b>③ Bauteile erzeugen:</b> <code>create_…(TXT_M, 1)</code> – Bauteiltyp + Controller + Anschlussnummer. Das Ergebnis bekommt einen Namen.</div>
-  </div>
-
   <h2>Das Namensschema</h2>
-  <p>Jeder Bauteilname ist wie eine Adresse aufgebaut. Wer ihn zerlegt, weiß sofort, was gemeint ist:</p>
   <div class="nameparts">
-    <div class="np1">TXT_M<small>Controller (Master)</small></div><span class="np-sep">_</span>
+    <div class="np1">TXT_M<small>Controller</small></div><span class="np-sep">_</span>
     <div class="np2">I1<small>Anschluss</small></div><span class="np-sep">_</span>
-    <div class="np3">mini_switch<small>Bauteiltyp</small></div>
+    <div class="np3">mini_switch<small>Bauteil</small></div>
   </div>
   <div class="grid g2">
-    <div class="card"><h3 style="margin-top:0">Anschlüsse am TXT 4.0</h3>
-      <div class="tablewrap"><table>
-        <tr><th>Kürzel</th><th>Bedeutung</th><th>Beispiel</th></tr>
-        <tr><td><b>I1 … I8</b></td><td>Eingänge (Input) – Sensoren, Taster</td><td>Taster, Ultraschall, NTC</td></tr>
-        <tr><td><b>M1 … M4</b></td><td>Motorausgänge</td><td>Encodermotor</td></tr>
-        <tr><td><b>C1 … C4</b></td><td>Zählereingänge (Counter)</td><td>Impulse des Encodermotors</td></tr>
-        <tr><td><b>O1 … O8</b></td><td>Einzelausgänge (Output)</td><td>LED, Lampe</td></tr>
-      </table></div></div>
-    <div class="card"><h3 style="margin-top:0">Bauteiltypen in unseren Projekten</h3>
-      <div class="tablewrap"><table>
-        <tr><th>im Namen</th><th>Bauteil</th><th>Projekt</th></tr>
-        <tr><td><code>ultrasonic_distance_meter</code></td><td>Ultraschall-Abstandssensor</td><td>P01</td></tr>
-        <tr><td><code>ntc_resistor</code></td><td>NTC-Widerstand (Temperatur)</td><td>P02</td></tr>
-        <tr><td><code>mini_switch</code></td><td>Mini-Taster</td><td>P03, P04</td></tr>
-        <tr><td><code>encodermotor</code></td><td>Encodermotor</td><td>P03, P04</td></tr>
-        <tr><td><code>motor_step_counter</code></td><td>Impulszähler zum Motor</td><td>P03, P04</td></tr>
-      </table></div></div>
+    <div class="card"><div class="tablewrap"><table>
+      <tr><th>Anschluss</th><th>Bedeutung</th></tr>
+      <tr><td><b>I1–I8</b></td><td>Eingänge: Sensoren, Taster</td></tr>
+      <tr><td><b>M1–M4</b></td><td>Motoren</td></tr>
+      <tr><td><b>C1–C4</b></td><td>Zähler</td></tr>
+    </table></div></div>
+    <div class="card"><div class="tablewrap"><table>
+      <tr><th>im Namen</th><th>Bauteil</th></tr>
+      <tr><td><code>ultrasonic_distance_meter</code></td><td>Ultraschall</td></tr>
+      <tr><td><code>ntc_resistor</code></td><td>Temperatur (NTC)</td></tr>
+      <tr><td><code>mini_switch</code></td><td>Taster</td></tr>
+      <tr><td><code>encodermotor</code></td><td>Motor</td></tr>
+    </table></div></div>
   </div>
-  <div class="merke"><b>Merke:</b> Python unterscheidet Groß- und Kleinschreibung. <code>TXT_M_I1_Mini_switch</code> ist ein <b>anderer</b> Name als <code>TXT_M_I1_mini_switch</code> – die Folge ist ein <code>NameError</code>. Der Name in <code>main.py</code> muss <b>exakt</b> so lauten wie in <code>lib/controller.py</code>.</div>
+  <div class="merke"><b>Merke:</b> Name muss <b>exakt</b> stimmen – sonst <code>NameError</code>.</div>
 
   <h2>Übung 1a: Namens-Baukasten</h2>
   <div class="card">
-    <p>Wähle Anschluss und Bauteil – der Baukasten setzt den Namen zusammen und prüft, ob die Kombination Sinn ergibt.</p>
     <div class="row-inline">
       <select id="nb-port"></select>
       <select id="nb-type">
@@ -344,102 +316,88 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:40px}
     <div id="nb-msg" class="small"></div>
   </div>
 
-  <h2>Übung 1b: Namen entschlüsseln</h2>
+  <h2>Übung 1b: Quiz</h2>
   <div class="quiz" data-quiz="q1"></div>
+  <pre class="code hl" id="ctl-demo" style="display:none"></pre>
 </section>
 
 <!-- ===================== BAUSTEIN 2 ===================== -->
 <section class="page" id="s2">
-  <div class="hero"><span class="tag">Baustein 2</span><h1>Der Wortschatz: Befehle der Bauteile</h1>
-  <p class="lead">Jedes Bauteil ist ein <b>Objekt</b>. Mit einem Punkt gebt ihr ihm einen Befehl (eine <b>Methode</b>). Lest den Punkt wie „…, bitte …!“</p></div>
+  <div class="hero"><span class="tag">Baustein 2</span><h1>Der Wortschatz</h1></div>
 
   <div class="nameparts">
     <div class="np1">TXT_M_M1_encodermotor<small>WER?</small></div><span class="np-sep">.</span>
     <div class="np2">set_speed<small>WAS?</small></div>
-    <div class="np3">(200, Motor.CW)<small>WIE? (Werte)</small></div>
+    <div class="np3">(200, Motor.CW)<small>WIE?</small></div>
   </div>
-  <p class="lead">→ Lies so: „Encodermotor an M1, stelle bitte Geschwindigkeit 200 im Uhrzeigersinn ein.“</p>
 
   <div class="grid g2">
     <div class="card" style="border-top:5px solid var(--green)">
-      <h3 style="margin-top:0">❓ Sensoren <b>fragen</b> – sie liefern einen Wert</h3>
+      <h3 style="margin-top:0">❓ Sensoren <b>fragen</b></h3>
       <div class="tablewrap"><table>
-        <tr><th>Befehl</th><th>liefert</th></tr>
-        <tr><td><code>.get_distance()</code></td><td>Abstand in cm als ganze Zahl (<code>int</code>), z. B. <code>23</code></td></tr>
-        <tr><td><code>.get_temperature()</code></td><td>Temperatur in °C als Kommazahl (<code>float</code>), z. B. <code>22.4378</code></td></tr>
-        <tr><td><code>.is_closed()</code></td><td><code>True</code> = Taster gedrückt, <code>False</code> = nicht gedrückt</td></tr>
+        <tr><td><code>.get_distance()</code></td><td>Abstand in cm</td></tr>
+        <tr><td><code>.get_temperature()</code></td><td>Temperatur in °C</td></tr>
+        <tr><td><code>.is_closed()</code></td><td>gedrückt? True / False</td></tr>
       </table></div>
-      <p class="small muted"><b>Erkennungszeichen:</b> Die Frage steht <b>rechts vom =</b> (Wert wird gespeichert) oder hinter <code>if</code> / <code>while</code> (Wert wird geprüft).</p>
-      <pre class="code hl">abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()
-while not TXT_M_I1_mini_switch.is_closed():</pre>
     </div>
     <div class="card" style="border-top:5px solid var(--red)">
-      <h3 style="margin-top:0">❗ Aktoren <b>befehlen</b> – sie tun etwas</h3>
+      <h3 style="margin-top:0">❗ Aktoren <b>befehlen</b></h3>
       <div class="tablewrap"><table>
-        <tr><th>Befehl</th><th>bewirkt</th></tr>
-        <tr><td><code>.set_speed(200, Motor.CW)</code></td><td>stellt Tempo (0 … 512) und Richtung ein – <b>fährt noch nicht!</b></td></tr>
-        <tr><td><code>.start()</code></td><td>Motor fährt los</td></tr>
-        <tr><td><code>.stop()</code></td><td>Motor hält an</td></tr>
+        <tr><td><code>.set_speed(200, Motor.CW)</code></td><td>nur einstellen</td></tr>
+        <tr><td><code>.start()</code></td><td>losfahren</td></tr>
+        <tr><td><code>.stop()</code></td><td>anhalten</td></tr>
       </table></div>
-      <p class="small muted"><b>Richtung bei der Schranke:</b> <code>Motor.CW</code> (im Uhrzeigersinn) = zu, <code>Motor.CCW</code> (gegen den Uhrzeigersinn) = auf.<br><b>Erkennungszeichen:</b> Der Befehl steht <b>allein in einer Zeile</b>.</p>
-      <pre class="code hl">TXT_M_M1_encodermotor.set_speed(200, Motor.CW)
-TXT_M_M1_encodermotor.start()</pre>
+      <p class="small muted">CW = zu · CCW = auf</p>
     </div>
     <div class="card" style="border-top:5px solid var(--pri)">
       <h3 style="margin-top:0">🖥️ Ausgeben</h3>
       <div class="tablewrap"><table>
-        <tr><td><code>display.set_attr("txt_label.text", text)</code></td><td>schreibt <code>text</code> in das Label <code>txt_label</code> auf dem TXT-Display. Braucht <code>from lib.display import *</code></td></tr>
-        <tr><td><code>print(...)</code></td><td>schreibt in die Konsole – praktisch zur Fehlersuche</td></tr>
+        <tr><td><code>display.set_attr("txt_label.text", text)</code></td><td>Display</td></tr>
+        <tr><td><code>print(...)</code></td><td>Konsole</td></tr>
       </table></div>
     </div>
     <div class="card" style="border-top:5px solid var(--violet)">
-      <h3 style="margin-top:0">🧰 Python-Werkzeuge</h3>
+      <h3 style="margin-top:0">🧰 Werkzeuge</h3>
       <div class="tablewrap"><table>
-        <tr><td><code>str(23)</code></td><td>Zahl → Text: <code>"23"</code></td></tr>
-        <tr><td><code>round(22.4378, 1)</code></td><td>runden auf 1 Nachkommastelle: <code>22.4</code></td></tr>
-        <tr><td><code>time.sleep(0.5)</code></td><td>0,5 Sekunden warten. Braucht <code>import time</code></td></tr>
-        <tr><td><code>range(10)</code></td><td>die Zahlen 0, 1, …, 9 (für <code>for</code>-Schleifen)</td></tr>
+        <tr><td><code>str(23)</code></td><td>Zahl → Text</td></tr>
+        <tr><td><code>round(22.43, 1)</code></td><td>runden → 22.4</td></tr>
+        <tr><td><code>time.sleep(0.5)</code></td><td>warten</td></tr>
       </table></div>
     </div>
   </div>
-  <div class="merke"><b>Merke:</b> Text und Zahl kann man nicht mit <code>+</code> verbinden. <code>"Abstand: " + 23</code> ergibt einen <code>TypeError</code>. Richtig: <code>"Abstand: " + str(23)</code> → <code>"Abstand: 23"</code>.</div>
+  <div class="merke"><b>Merke:</b> <code>"Abstand: " + 23</code> ✘ &nbsp;→&nbsp; <code>"Abstand: " + str(23)</code> ✔</div>
 
-  <h2>Übung 2: Fragen oder befehlen?</h2>
+  <h2>Übung 2: Quiz</h2>
   <div class="quiz" data-quiz="q2"></div>
 </section>
 
 <!-- ===================== BAUSTEIN 3 ===================== -->
 <section class="page" id="s3">
-  <div class="hero"><span class="tag">Baustein 3</span><h1>Die Grammatik: 7 Muster, die immer wiederkommen</h1>
-  <p class="lead">Python zeigt die Struktur durch <b>Einrückung</b> (4 Leerzeichen). Alles, was unter einer Zeile mit <b>Doppelpunkt</b> eingerückt ist, gehört zu ihr – wie Unterpunkte in einer Liste.</p></div>
+  <div class="hero"><span class="tag">Baustein 3</span><h1>Die Grammatik</h1>
+  <p class="lead">Einrückung = gehört dazu.</p></div>
 
-  <div class="grid g2">
-    <div class="card"><pre class="code hl">for i in range(10):                 # Kopfzeile mit Doppelpunkt
+  <pre class="code hl">for i in range(10):
     temp = TXT_M_I1_ntc_resistor.get_temperature()   # gehört zur Schleife
-    time.sleep(1)                   # gehört zur Schleife
-display.set_attr("txt_label.text", "fertig")         # NICHT eingerückt: erst danach</pre></div>
-    <div class="card"><h3 style="margin-top:0">Lesetrick: Blöcke umrahmen</h3><p>Fahrt mit dem Finger an der Einrückung nach unten. Wo die Einrückung endet, endet der Block. Im <b>Code-Leser</b> (Baustein 4) könnt ihr die Blöcke mit dem Schalter <b>„Struktur“</b> farbig markieren lassen.</p></div>
-  </div>
+    time.sleep(1)                                    # gehört zur Schleife
+display.set_attr("txt_label.text", "fertig")         # erst danach</pre>
 
-  <h2>Die Muster</h2>
+  <h2>Die 7 Muster</h2>
   <div class="grid g2" id="muster"></div>
 
-  <h2>Übung 3a: Code-Puzzle „Schranke schließen“</h2>
-  <p class="lead">Bringt die Zeilen mit ▲ ▼ in die richtige Reihenfolge. Die Importzeilen stehen schon oben.</p>
+  <h2>Übung 3a: Puzzle „Schranke schließen“</h2>
   <div class="card" id="pz1"></div>
 
-  <h2>Übung 3b: Code-Puzzle „Mittelwert“</h2>
-  <p class="lead">Achtung: Hier gibt es eine Zeile, die unbedingt <b>vor</b> der Schleife stehen muss – und eine, die erst <b>danach</b> Sinn ergibt.</p>
+  <h2>Übung 3b: Puzzle „Mittelwert“</h2>
   <div class="card" id="pz2"></div>
 
-  <h2>Übung 3c: Wie oft? Was passiert?</h2>
+  <h2>Übung 3c: Quiz</h2>
   <div class="quiz" data-quiz="q3"></div>
 </section>
 
 <!-- ===================== BAUSTEIN 4 ===================== -->
 <section class="page" id="s4">
-  <div class="hero"><span class="tag">Baustein 4</span><h1>Code-Leser: eure Projekte P01 – P04</h1>
-  <p class="lead">Wählt ein Projekt. <b>Klickt auf eine Zeile</b> – rechts erscheinen Bauteil-Infos, die „Lies-so“-Übersetzung und der Kommentar. Blendet die Kommentare aus, um euch selbst zu testen.</p></div>
+  <div class="hero"><span class="tag">Baustein 4</span><h1>Code-Leser</h1>
+  <p class="lead">Zeile anklicken · Kommentare aus · selbst erklären</p></div>
 
   <div class="toolbar">
     <div class="grp" id="rd-proj"><span class="lab">Projekt</span></div>
@@ -450,26 +408,22 @@ display.set_attr("txt_label.text", "fertig")         # NICHT eingerückt: erst d
     </div>
   </div>
   <div class="card small" id="rd-about" style="margin-top:0"></div>
-  <div class="legend"><span class="t-sen">Sensor</span><span class="t-akt">Aktor</span><span class="t-cnt">Zähler</span><span class="t-kw">Schlüsselwort</span><span class="t-me">.befehl()</span><span class="t-st">"Text"</span><span class="t-nu">Zahl</span><span class="t-cm"># Kommentar</span></div>
   <div class="reader" id="reader">
     <div class="codeview" id="rd-code"></div>
     <div class="card panel" id="rd-panel"></div>
   </div>
 
-  <h2>Lese-Auftrag</h2>
-  <div class="grid g2">
+  <div class="grid g2" style="margin-top:20px">
     <div class="card">
-      <h3 style="margin-top:0">Im Lesetandem (zu zweit)</h3>
+      <h3 style="margin-top:0">👥 Lesetandem</h3>
       <ol class="small">
-        <li>Kommentare <b>ausblenden</b>.</li>
-        <li><b>Leser/in</b> liest den Code Zeile für Zeile als deutschen Satz vor („Lies so“).</li>
-        <li><b>Prüfer/in</b> klickt die Zeile an und deckt die Lösung auf. Stimmt es? Sonst gemeinsam klären.</li>
-        <li>Nach der Hälfte der Zeilen: Rollen tauschen.</li>
-        <li>Zum Schluss die Fragen unten beantworten.</li>
+        <li>A liest die Zeile als Satz vor.</li>
+        <li>B deckt auf und prüft.</li>
+        <li>Rollen tauschen.</li>
       </ol>
     </div>
     <div class="card">
-      <h3 style="margin-top:0">Checkliste: 4 Schritte</h3>
+      <h3 style="margin-top:0">✅ Checkliste</h3>
       <ul class="checklist" id="rd-check"></ul>
     </div>
   </div>
@@ -478,12 +432,12 @@ display.set_attr("txt_label.text", "fertig")         # NICHT eingerückt: erst d
 
 <!-- ===================== BAUSTEIN 5 ===================== -->
 <section class="page" id="s5">
-  <div class="hero"><span class="tag">Baustein 5</span><h1>Werkstatt: Code anpassen &amp; Fehler finden</h1>
-  <p class="lead">Wählt eine Aufgabe, ladet den Code, verändert ihn und testet ihn im Simulator. Erst lesen, dann ändern! Mit <b>Zeitlupe</b> seht ihr, welche Zeile gerade ausgeführt wird.</p>
+  <div class="hero"><span class="tag">Baustein 5</span><h1>Werkstatt</h1>
+  <p class="lead">Erst lesen – dann ändern – dann testen.</p>
   <p class="status" id="pystatus"><span class="dot"></span><span class="stxt">Python wird geladen …</span></p></div>
 
   <div class="card">
-    <div class="row-inline" style="justify-content:space-between"><b>🔧 Anpassen</b></div>
+    <b>🔧 Anpassen</b>
     <div class="tasklist" id="tl-mod" style="margin:8px 0 12px"></div>
     <b>🐞 Fehlersuche</b>
     <div class="tasklist" id="tl-bug" style="margin:8px 0 12px"></div>
@@ -504,20 +458,19 @@ display.set_attr("txt_label.text", "fertig")         # NICHT eingerückt: erst d
         <button class="btn pri" id="run">▶ Start</button>
         <button class="btn red" id="stop" disabled>■ Stopp</button>
         <label><input type="checkbox" id="slow"> 🐢 Zeitlupe</label>
-        <label><input type="checkbox" id="fast"> ⏩ Zeitraffer ×5</label>
+        <label><input type="checkbox" id="fast"> ⏩ ×5</label>
         <span style="flex:1"></span>
-        <button class="btn sm" id="reset">↺ Original laden</button>
-        <button class="btn sm" id="copy">📋 Code kopieren</button>
+        <button class="btn sm" id="reset">↺ Original</button>
+        <button class="btn sm" id="copy">📋 Kopieren</button>
       </div>
       <div class="errbox" id="errbox"></div>
-      <p class="small muted">Getestet? Dann den Code mit „Code kopieren“ in ROBO Pro Coding in <code>main.py</code> einfügen und am echten Modell ausprobieren. Der Simulator ersetzt nicht das Modell – Fahrzeiten sind dort anders!</p>
     </div>
     <div class="sim" id="sim">
       <h3>Simulator</h3>
-      <div class="txtdev"><div class="txtscreen"><div class="lbl" id="sim-label"></div></div><div class="txtcap">TXT 4.0 · DISPLAY · txt_label</div></div>
+      <div class="txtdev"><div class="txtscreen"><div class="lbl" id="sim-label"></div></div><div class="txtcap">TXT 4.0 · DISPLAY</div></div>
       <div id="sim-ctrls"></div>
       <div class="barrier" id="sim-barrier"></div>
-      <div style="font-weight:600;font-size:14px;margin:8px 0 4px">Konsole (print)</div>
+      <div style="font-weight:600;font-size:14px;margin:8px 0 4px">Konsole</div>
       <div class="console" id="console"></div>
     </div>
   </div>
@@ -525,52 +478,25 @@ display.set_attr("txt_label.text", "fertig")         # NICHT eingerückt: erst d
 
 <!-- ===================== LEHRKRAFT ===================== -->
 <section class="page" id="lk">
-  <div class="hero"><span class="tag">Für Lehrkräfte</span><h1>Unterrichtsablauf „Code lesen“</h1>
-  <p class="lead">Kompakte Einheit: 2 Doppelstunden (4 × 45 min). Voraussetzung: Die Projekte P01–P04 wurden bereits in ROBO Pro Coding bearbeitet.</p></div>
-
-  <div class="card">
-    <h3 style="margin-top:0">Leitidee</h3>
-    <p>Die Schüler/innen haben Code <b>geschrieben</b> (oft mit Vorlage), können ihn aber selten <b>lesen</b>. Die Einheit dreht die Richtung um: erst Gerüst (Dateien, Namen), dann Wortschatz (Methoden), dann Grammatik (Kontrollstrukturen) – und immer wieder dieselbe <b>4-Schritte-Lesemethode</b> (Überblick – Bauteile – Struktur – Durchspielen). Lesen wird über drei Stufen aufgebaut: <b>Vorlesen</b> (Code → Satz), <b>Vorhersagen</b> (Was passiert?), <b>Verändern</b> (gezielte Anpassung, Fehlersuche).</p>
-  </div>
-
-  <h2>Doppelstunde 1: Gerüst, Wortschatz, Grammatik</h2>
-  <div class="card tablewrap teacher"><table>
-    <tr><th>Zeit</th><th>Phase</th><th>Inhalt / Aktivität</th><th>Sozialform</th><th>Seite</th></tr>
-    <tr><td>10′</td><td>Einstieg</td><td>Schranke (P03) am Modell oder im Simulator vorführen. Impuls: „Woher weiß der Motor, wann er anhalten muss?“ Code ohne Kommentare zeigen → Problem: „Code ist eine Fremdsprache – wir lernen heute, sie zu lesen.“ Lesemethode vorstellen.</td><td>UG</td><td>Start</td></tr>
-    <tr><td>20′</td><td>Erarbeitung I</td><td>Zwei Dateien &amp; Namensschema. Namens-Baukasten ausprobieren, Quiz 1b.</td><td>EA / PA</td><td>1</td></tr>
-    <tr><td>20′</td><td>Erarbeitung II</td><td>Sensor fragen vs. Aktor befehlen. Lesetrick „Punkt = …, bitte …!“ Quiz 2.</td><td>EA</td><td>2</td></tr>
-    <tr><td>30′</td><td>Erarbeitung III</td><td>7 Muster mit „Lies-so“-Sätzen. Code-Puzzles 3a/3b, Quiz 3c.</td><td>PA</td><td>3</td></tr>
-    <tr><td>10′</td><td>Sicherung</td><td>„Muster-Blitz“: L zeigt eine Zeile aus P01–P04, Klasse nennt das Muster und liest sie als Satz vor.</td><td>UG</td><td>3</td></tr>
-  </table></div>
-
-  <h2>Doppelstunde 2: Lesen, Vorhersagen, Verändern</h2>
-  <div class="card tablewrap teacher"><table>
-    <tr><th>Zeit</th><th>Phase</th><th>Inhalt / Aktivität</th><th>Sozialform</th><th>Seite</th></tr>
-    <tr><td>5′</td><td>Wiederholung</td><td>4 Schritte der Lesemethode an der Tafel sammeln.</td><td>UG</td><td>Start</td></tr>
-    <tr><td>35′</td><td>Lesetandem</td><td>Code-Leser mit ausgeblendeten Kommentaren: P01 + P02 (Pflicht), P03 + P04 (Wahl), jeweils Grundaufgabe; Zusatz-Dateien für Schnelle. Rollen Leser/Prüfer, danach Fragen beantworten.</td><td>PA</td><td>4</td></tr>
-    <tr><td>35′</td><td>Werkstatt</td><td>Mind. 2 Anpassen-Aufgaben (Basis) + 2 Fehlersuchen. Profi-Aufgaben zur Differenzierung. Vor jedem Start: Vorhersage aufschreiben, dann testen. Gelungene Lösungen am echten Modell testen.</td><td>PA / EA</td><td>5</td></tr>
-    <tr><td>15′</td><td>Sicherung / Exit-Ticket</td><td>P04 Zusatz (Zustandsautomat) gemeinsam lesen. Exit-Ticket: „Erkläre P04 Zusatz in 4 Sätzen – je ein Satz pro Lese-Schritt.“</td><td>UG / EA</td><td>4</td></tr>
-  </table></div>
+  <div class="hero"><span class="tag">Lehrkraft</span><h1>Ablauf: 2 Doppelstunden</h1></div>
 
   <div class="grid g2">
-    <div class="card"><h3 style="margin-top:0">Differenzierung</h3>
-      <ul class="small">
-        <li><b>Basis:</b> Grundaufgaben lesen, Kommentare dürfen an bleiben; Basis-Aufgaben in der Werkstatt.</li>
-        <li><b>Profi:</b> nur mit ausgeblendeten Kommentaren lesen; Zusatz-Dateien; Profi-Aufgaben (if/else einbauen, Höchstwert, Schleife um Ablauf legen).</li>
-        <li><b>Hilfen:</b> Struktur-Ansicht, „Lies so“-Aufdecken, Tipps in den Aufgaben.</li>
-      </ul></div>
-    <div class="card"><h3 style="margin-top:0">Erwartungshorizont Exit-Ticket (P04 Zusatz)</h3>
-      <ol class="small">
-        <li><b>Überblick:</b> Schranke öffnet und schließt automatisch und zählt Durchfahrten; nach 5 ist Schluss.</li>
-        <li><b>Bauteile:</b> Encodermotor M1, Endlagen-Taster I1 (unten) und I2 (oben), Display-Label.</li>
-        <li><b>Struktur:</b> zwei Funktionen + Endlosschleife mit <code>if/elif</code> je Zustand; Ausstieg mit <code>break</code>.</li>
-        <li><b>Durchspielen:</b> SCHLIESSEN → GESCHLOSSEN → OEFFNEN → OFFEN (+1) → … bis <code>durchfahrten</code> = 5, dann „Parkhaus voll!“.</li>
-      </ol></div>
+    <div class="card tablewrap teacher"><h3 style="margin-top:0">DS 1 · Gerüst, Wortschatz, Grammatik</h3><table>
+      <tr><td>10′</td><td>Einstieg: Schranke vorführen – „Woher weiß der Motor, wann er stoppt?“</td></tr>
+      <tr><td>20′</td><td>Baustein 1</td></tr>
+      <tr><td>20′</td><td>Baustein 2</td></tr>
+      <tr><td>30′</td><td>Baustein 3 (Puzzles in PA)</td></tr>
+      <tr><td>10′</td><td>Muster-Blitz: Zeile zeigen → Muster nennen</td></tr>
+    </table></div>
+    <div class="card tablewrap teacher"><h3 style="margin-top:0">DS 2 · Lesen, Vorhersagen, Verändern</h3><table>
+      <tr><td>5′</td><td>Lesemethode wiederholen</td></tr>
+      <tr><td>35′</td><td>Baustein 4 im Lesetandem (P01+P02 Pflicht, P03/P04 Wahl)</td></tr>
+      <tr><td>35′</td><td>Baustein 5: 2 × Anpassen + 2 × Fehlersuche</td></tr>
+      <tr><td>15′</td><td>Exit-Ticket: P04 Zusatz in 4 Sätzen (1 pro Lese-Schritt)</td></tr>
+    </table></div>
   </div>
-  <div class="info small"><b>Technische Hinweise:</b> Der Simulator führt echtes Python im Browser aus (Skulpt, Internetverbindung nötig). <code>lib/controller.py</code> wird unverändert aus den Musterlösungen ausgeführt, die fischertechnik-Bibliothek ist nachgebildet. <code>Motor.CW/CCW</code> steht – wie in ROBO Pro Coding – automatisch zur Verfügung. Fahrzeiten sind im Simulator idealisiert; Endlagen-Taster werden von der virtuellen Schranke ausgelöst, der Bedarfstaster (P03, I2) per Knopf. Eingaben und Quiz-Ergebnisse werden nur lokal im Browser gespeichert.</div>
+  <div class="info small"><b>Hinweis:</b> Simulator braucht Internet. Fahrzeiten sind idealisiert – am echten Modell testen.</div>
 </section>
-
-<footer>Code lesen · fischertechnik TXT 4.0 · Python &amp; Robotik</footer>
 </main>
 
 <script>
@@ -1042,7 +968,7 @@ function renderReader(){
     view.appendChild(r);
   });
   if(R.sel != null) renderPanel(lines, R.sel, fns);
-  else $("#rd-panel").innerHTML = '<h4>👆 Klicke auf eine Codezeile</h4><p class="small muted">Hier erscheinen dann:</p><ul class="small muted"><li>die Bauteile in dieser Zeile</li><li>die Befehle und was sie tun</li><li>„Lies so“ – die Zeile als deutscher Satz</li><li>der Kommentar aus der Musterlösung</li></ul><p class="small muted">Im <b>Übungsmodus</b> (Kommentare aus) überlegt ihr erst selbst und deckt dann auf.</p>';
+  else $("#rd-panel").innerHTML = '<h4>👆 Zeile anklicken</h4><p class="small muted">Bauteil · Befehl · „Lies so“ · Kommentar</p>';
   renderChecklist();
   renderQuiz($("#rd-quiz"), "rd:" + R.p + "_" + R.v, READQ[R.p + "_" + R.v]);
 }
@@ -1059,13 +985,13 @@ function renderPanel(lines, i, fns){
   const inner = (lies ? '<div class="box lies"><b>Lies so:</b> ' + esc(lies) + "</div>" : "") + (kom ? '<div class="box kom"><b>Kommentar:</b> ' + esc(kom) + "</div>" : "");
   if(!inner) h += '<p class="small muted">Für diese Zeile gibt es keine Erklärung.</p>';
   else if(R.cm) h += '<div class="reveal">' + inner + "</div>";
-  else h += '<div class="reveal"><p class="small"><b>Übungsmodus:</b> Sprich die Zeile zuerst selbst als Satz aus!</p><button class="btn pri sm" id="rv">Aufdecken</button><div id="rvbox" style="display:none">' + inner + "</div></div>";
+  else h += '<div class="reveal"><p class="small"><b>Erst selbst erklären!</b></p><button class="btn pri sm" id="rv">Aufdecken</button><div id="rvbox" style="display:none">' + inner + "</div></div>";
   $("#rd-panel").innerHTML = h;
   const rv = $("#rv"); if(rv) rv.onclick = () => { $("#rvbox").style.display = "block"; rv.remove(); };
 }
 function renderChecklist(){
   const key = "ck:" + R.p + "_" + R.v;
-  const items = ["🔎 Überblick: Ich kann in einem Satz sagen, was das Programm tut.","🧩 Bauteile: Ich habe alle Bauteile gefunden und weiß, wo gefragt und wo befohlen wird.","🧱 Struktur: Ich weiß bei jeder Zeile, zu welchem Block sie gehört (Struktur-Ansicht zum Prüfen).","▶️ Durchspielen: Ich kann sagen, was nacheinander auf dem Display erscheint."];
+  const items = ["🔎 Ich weiß, was das Programm tut.","🧩 Ich kenne alle Bauteile.","🧱 Ich kenne alle Blöcke.","▶️ Ich weiß, was auf dem Display erscheint."];
   let st = {}; try{ st = JSON.parse(store(key) || "{}"); }catch(e){}
   const ul = $("#rd-check"); ul.innerHTML = "";
   items.forEach((t, k) => { const li = document.createElement("li"); li.innerHTML = '<label><input type="checkbox"' + (st[k] ? " checked" : "") + "> " + t + "</label>"; li.querySelector("input").onchange = e => { st[k] = e.target.checked; store(key, JSON.stringify(st)); }; ul.appendChild(li); });
@@ -1460,9 +1386,9 @@ function selectTask(id){
   renderTaskLists();
   const P = proj(T.proj);
   let h = "";
-  if(T.free) h = '<h3>🧪 Frei üben: ' + P.id + " " + P.name + "</h3><p>" + (T.from === "Zusatz" ? P.aboutZ : P.about) + "</p><p class='small muted'>Lies den Code zuerst mit der 4-Schritte-Methode. Verändere dann eine Sache, sage voraus, was passiert, und teste.</p>";
-  else if(T.lvl === "bug") h = '<h3>🐞 ' + T.t + '</h3><p><b>Symptom:</b> ' + T.sym + '</p><p class="small"><b>Vorgehen:</b> 1. Starten und beobachten · 2. Code lesen und Fehler suchen · 3. Vermutung aufschreiben · 4. Reparieren und erneut testen.</p><details><summary>💡 Tipp</summary><p>' + T.tipp + "</p></details><details><summary>✅ Lösung</summary><p>" + T.loes + "</p></details>";
-  else h = '<h3>🔧 ' + T.t + ' <span class="lvl ' + T.lvl + '">' + (T.lvl === "profi" ? "Profi" : "Basis") + '</span></h3><p class="small muted">Ausgangscode: ' + P.id + " " + P.name + " · " + (T.from === "Grund" ? "Grundaufgabe" : "Zusatz") + "</p><p><b>Auftrag:</b> " + T.auftrag + "</p><p><b>Vorher überlegen:</b> " + T.vorher + "</p><details><summary>💡 Tipp</summary><p>" + T.tipp + "</p></details><details><summary>✅ Lösungsvorschlag</summary><pre class='code'>" + hl(T.loes) + "</pre></details>";
+  if(T.free) h = '<h3>🧪 Frei üben: ' + P.id + " " + P.name + "</h3><p>" + (T.from === "Zusatz" ? P.aboutZ : P.about) + "</p>";
+  else if(T.lvl === "bug") h = '<h3>🐞 ' + T.t + '</h3><p><b>Symptom:</b> ' + T.sym + '</p><details><summary>💡 Tipp</summary><p>' + T.tipp + "</p></details><details><summary>✅ Lösung</summary><p>" + T.loes + "</p></details>";
+  else h = '<h3>🔧 ' + T.t + ' <span class="lvl ' + T.lvl + '">' + (T.lvl === "profi" ? "Profi" : "Basis") + '</span></h3><p>' + T.auftrag + "</p><p class='small muted'>🤔 " + T.vorher + "</p><details><summary>💡 Tipp</summary><p>" + T.tipp + "</p></details><details><summary>✅ Lösungsvorschlag</summary><pre class='code'>" + hl(T.loes) + "</pre></details>";
   $("#taskcard").innerHTML = h;
   CTL_SRC = fileOf(T.proj, "controller");
   currentProjForNames = T.proj;
@@ -1613,7 +1539,7 @@ function finish(err){
 
 /* ============ Start ============ */
 function renderMuster(){
-  $("#muster").innerHTML = MUSTER.map(m => '<div class="card muster"><h4>' + m.t + '</h4><div class="erk">Erkennungszeichen: <code>' + esc(m.erk) + '</code></div><pre class="code">' + hl(m.code) + '</pre><div class="liesso"><b>Lies so:</b> ' + m.lies + '</div><div class="vork">kommt vor in: ' + m.vork + "</div></div>").join("");
+  $("#muster").innerHTML = MUSTER.map(m => '<div class="card muster"><h4>' + m.t + '</h4><pre class="code">' + hl(m.code) + '</pre><div class="liesso"><b>Lies so:</b> ' + m.lies + '</div></div>').join("");
 }
 function init(){
   $("#ctl-demo").textContent = fileOf("P03", "controller").replace(/\n+$/, "");
