@@ -1,0 +1,1630 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code lesen TXT</title>
+<style>
+:root{
+  --bg:#f6f8f9; --card:#ffffff; --ink:#1c2430; --muted:#5b6672; --line:#d9e1e6;
+  --pri:#1f6f78; --pri-soft:#e3f0f1; --amber:#b87503; --amber-soft:#fdf3e0;
+  --red:#c0392b; --red-soft:#fbe9e7; --green:#3b7d3a; --green-soft:#e7f3e6;
+  --violet:#6a4fb3; --violet-soft:#efeafa;
+  --code-bg:#1c2430; --code-ink:#e8edf1; --kw:#7fd1d9; --str:#f3c26b; --com:#8a97a3; --num:#c5a3ff;
+  --sen:#7be0a0; --akt:#ff9e7a; --cnt:#9ec5ff; --me:#f7d794; --bi:#a6d8ff;
+  --shadow:0 1px 3px rgba(20,30,40,.08),0 4px 14px rgba(20,30,40,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161c; --card:#19212a; --ink:#e6ecf1; --muted:#9aa7b3; --line:#2b3641;
+    --pri:#4fb3bd; --pri-soft:#173238; --amber:#f0b03c; --amber-soft:#2e2615;
+    --red:#ef7a6c; --red-soft:#3a1f1c; --green:#78c476; --green-soft:#1b2f1b;
+    --violet:#b39cf0; --violet-soft:#2a2340;
+    --code-bg:#0b0f14; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161c; --card:#19212a; --ink:#e6ecf1; --muted:#9aa7b3; --line:#2b3641;
+  --pri:#4fb3bd; --pri-soft:#173238; --amber:#f0b03c; --amber-soft:#2e2615;
+  --red:#ef7a6c; --red-soft:#3a1f1c; --green:#78c476; --green-soft:#1b2f1b;
+  --violet:#b39cf0; --violet-soft:#2a2340;
+  --code-bg:#0b0f14; --shadow:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--pri)}
+code,pre,textarea,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+:not(pre)>code{background:var(--pri-soft);color:var(--ink);padding:1px 5px;border-radius:5px;font-size:.9em}
+.top{position:sticky;top:0;z-index:30;background:var(--card);border-bottom:1px solid var(--line)}
+.top .in{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.top .home{font-weight:700;white-space:nowrap}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.nav button{font:inherit;font-size:14px;cursor:pointer;padding:4px 11px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink)}
+.nav button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+main{max-width:1180px;margin:0 auto;padding:20px 16px 90px}
+section.page{display:none}
+section.page.on{display:block}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin-bottom:20px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--pri);background:var(--pri-soft);border-radius:999px;padding:3px 10px;margin-right:6px}
+h1{margin:10px 0 6px;font-size:clamp(24px,4vw,34px);line-height:1.2}
+h2{font-size:22px;margin:28px 0 10px}
+h3{font-size:18px;margin:18px 0 8px}
+.lead{color:var(--muted);margin:6px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);margin:14px 0}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.merke{border-left:5px solid var(--amber);background:var(--amber-soft);border-radius:8px;padding:10px 14px;margin:14px 0}
+.merke b:first-child{color:var(--amber)}
+.info{border-left:5px solid var(--pri);background:var(--pri-soft);border-radius:8px;padding:10px 14px;margin:14px 0}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step .n{flex:0 0 38px;height:38px;border-radius:50%;background:var(--pri);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:18px}
+.step h4{margin:2px 0 4px;font-size:16px}
+.step p{margin:0;color:var(--muted);font-size:14.5px}
+.unit{cursor:pointer;transition:transform .1s}
+.unit:hover{transform:translateY(-2px)}
+.unit .k{font-size:12px;font-weight:700;color:var(--pri);text-transform:uppercase;letter-spacing:.05em}
+.unit h4{margin:4px 0;font-size:17px}
+.unit p{margin:0;font-size:14px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{background:var(--pri-soft)}
+.tablewrap{overflow-x:auto}
+/* Code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.55;margin:10px 0}
+.t-kw{color:var(--kw);font-weight:600}.t-st{color:var(--str)}.t-cm{color:var(--com);font-style:italic}.t-nu{color:var(--num)}
+.t-bi{color:var(--bi)}.t-me{color:var(--me)}.t-sen{color:var(--sen);font-weight:600}.t-akt{color:var(--akt);font-weight:600}.t-cnt{color:var(--cnt);font-weight:600}.t-ctl{color:#d6b4ff;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;margin:6px 0}
+.legend span{padding:2px 9px;border-radius:6px;background:var(--code-bg)}
+/* Namensschema */
+.nameparts{display:flex;flex-wrap:wrap;gap:4px;align-items:stretch;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:clamp(15px,2.6vw,22px);margin:12px 0}
+.nameparts div{border-radius:8px;padding:8px 12px;text-align:center}
+.nameparts small{display:block;font-family:system-ui;font-size:12px;font-weight:600;margin-top:2px}
+.np1{background:var(--violet-soft);color:var(--violet)}.np2{background:var(--amber-soft);color:var(--amber)}.np3{background:var(--green-soft);color:var(--green)}
+.np-sep{align-self:center;color:var(--muted)}
+/* Buttons/forms */
+.btn{font:inherit;font-size:14.5px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px}
+.btn:hover{border-color:var(--pri)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.sm{font-size:13px;padding:3px 9px}
+.btn.on{background:var(--pri-soft);border-color:var(--pri);color:var(--pri);font-weight:600}
+.btn:disabled{opacity:.5;cursor:default}
+select,input[type=text]{font:inherit;font-size:15px;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+input[type=text]{font-family:ui-monospace,Menlo,Consolas,monospace;min-width:0;width:100%;max-width:420px}
+.row-inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.out-name{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:18px;background:var(--code-bg);color:var(--code-ink);padding:10px 14px;border-radius:8px;margin:10px 0;word-break:break-all}
+/* Quiz */
+.quiz{margin:10px 0}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.score{font-size:14px;font-weight:600;color:var(--pri);background:var(--pri-soft);padding:3px 10px;border-radius:999px}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;background:var(--card)}
+.q.ok{border-color:var(--green);background:var(--green-soft)}
+.qq{font-weight:600;margin-bottom:6px}
+.qn{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--pri);color:#fff;font-size:13px;align-items:center;justify-content:center;margin-right:6px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;font:inherit;font-size:15px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 11px}
+.opt:hover{border-color:var(--pri)}
+.opt.right{background:var(--green-soft);border-color:var(--green)}
+.opt.wrong{background:var(--red-soft);border-color:var(--red)}
+.fb{margin-top:8px;font-size:14.5px;padding:8px 10px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--green-soft);color:var(--ink);border-left:4px solid var(--green)}
+.fb.bad{background:var(--red-soft);color:var(--ink);border-left:4px solid var(--red)}
+/* Muster */
+.muster h4{margin:0 0 4px;font-size:16.5px}
+.muster .erk{font-size:13.5px;color:var(--muted)}
+.liesso{background:var(--green-soft);border-radius:8px;padding:7px 10px;font-size:14.5px;margin-top:8px}
+.liesso b{color:var(--green)}
+.vork{font-size:12.5px;color:var(--muted);margin-top:6px}
+/* Parsons */
+.pars{list-style:none;padding:0;margin:10px 0}
+.pars li{display:flex;align-items:center;gap:6px;background:var(--code-bg);color:var(--code-ink);border-radius:8px;margin:5px 0;padding:4px 6px 4px 10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre;overflow-x:auto}
+.pars li .c{flex:1}
+.pars li button{flex:0 0 auto;background:#2c3846;color:#fff;border:0;border-radius:6px;width:30px;height:28px;cursor:pointer;font-size:14px}
+.pars.ok li{outline:2px solid var(--green)}
+/* Reader */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.toolbar .grp{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.toolbar .lab{font-size:13px;color:var(--muted);margin-right:2px}
+.reader{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.reader{grid-template-columns:1fr}}
+.codeview{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.6;overflow-x:auto}
+.codeview .r{display:flex;cursor:pointer;padding:0 10px 0 0;white-space:pre;min-width:max-content}
+.codeview .r:hover{background:rgba(255,255,255,.06)}
+.codeview .r.sel{background:rgba(79,179,189,.28)}
+.codeview .r.hid{display:none}
+.codeview .ln{flex:0 0 40px;text-align:right;padding-right:12px;color:#6b7785;user-select:none}
+.codeview .src{flex:1}
+.codeview .badge{margin-left:14px;font-family:system-ui;font-size:11.5px;font-weight:700;padding:0 7px;border-radius:999px;align-self:center;line-height:18px;display:none}
+.struct .codeview .badge{display:inline-block}
+.b-loop{background:#24505a;color:#a5ecf3}.b-wait{background:#5a4a1c;color:#ffe09a}.b-if{background:#5a2f4a;color:#ffc2e6}.b-def{background:#3d2f66;color:#d8c8ff}.b-call{background:#2f3d66;color:#c8d6ff}.b-end{background:#5a2424;color:#ffc2c2}
+.ig{display:inline-block}
+.struct .ig0{background:rgba(127,209,217,.20);box-shadow:inset 2px 0 0 #7fd1d9}
+.struct .ig1{background:rgba(243,194,107,.20);box-shadow:inset 2px 0 0 #f3c26b}
+.struct .ig2{background:rgba(197,163,255,.22);box-shadow:inset 2px 0 0 #c5a3ff}
+.struct .ig3{background:rgba(123,224,160,.20);box-shadow:inset 2px 0 0 #7be0a0}
+.panel{position:sticky;top:64px}
+.panel h4{margin:0 0 6px}
+.chip{display:block;font-size:14px;padding:6px 9px;border-radius:8px;margin:6px 0;background:var(--pri-soft)}
+.chip.sen{background:var(--green-soft)}.chip.akt{background:var(--red-soft)}.chip.cnt{background:var(--pri-soft)}
+.reveal{margin-top:10px}
+.reveal .box{border-radius:8px;padding:8px 11px;font-size:14.5px;margin-top:6px}
+.box.lies{background:var(--green-soft);border-left:4px solid var(--green)}
+.box.kom{background:var(--amber-soft);border-left:4px solid var(--amber)}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.checklist{list-style:none;padding:0;margin:6px 0}
+.checklist li{margin:5px 0}
+.checklist label{cursor:pointer}
+/* Werkstatt */
+.ws{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,1fr);gap:14px;align-items:start}
+@media (max-width:920px){.ws{grid-template-columns:1fr}}
+.tasklist{display:flex;flex-wrap:wrap;gap:6px}
+.tasklist .btn{font-size:13.5px}
+.lvl{font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;margin-left:4px;vertical-align:1px}
+.lvl.basis{background:var(--green-soft);color:var(--green)}.lvl.profi{background:var(--violet-soft);color:var(--violet)}.lvl.bug{background:var(--red-soft);color:var(--red)}
+.taskcard h3{margin:0 0 6px}
+details{margin:8px 0}
+summary{cursor:pointer;font-weight:600;color:var(--pri)}
+.edtabs{display:flex;gap:4px;margin-bottom:-1px}
+.edtabs button{font:inherit;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace;padding:5px 12px;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:var(--card);color:var(--muted);cursor:pointer}
+.edtabs button.on{background:var(--code-bg);color:var(--code-ink);border-color:var(--code-bg)}
+.editor{display:flex;background:var(--code-bg);border-radius:0 10px 10px 10px;height:470px;overflow:hidden;position:relative}
+.gutter{flex:0 0 44px;overflow:hidden;color:#6b7785;text-align:right;padding:10px 8px 10px 0;font:14px/21px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;user-select:none}
+.gutter div.err{color:#fff;background:var(--red);border-radius:4px 0 0 4px}
+.gutter div.cur{color:#11161c;background:#f3c26b;border-radius:4px 0 0 4px}
+.edwrap{position:relative;flex:1;min-width:0}
+.edwrap pre,.edwrap textarea{position:absolute;inset:0;margin:0;border:0;padding:10px 12px;font:14px/21px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;overflow:auto;tab-size:4;letter-spacing:0}
+.edwrap pre{color:var(--code-ink);pointer-events:none}
+.edwrap pre .L{display:block;min-height:21px}
+.edwrap pre .L.cur{background:rgba(243,194,107,.22)}
+.edwrap pre .L.err{background:rgba(239,122,108,.25)}
+.edwrap textarea{background:transparent;color:transparent;caret-color:#fff;resize:none;outline:none}
+.edwrap textarea::selection{background:rgba(79,179,189,.45);color:transparent}
+.edwrap textarea[readonly]{caret-color:transparent}
+.runbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.runbar label{font-size:14px;display:flex;gap:5px;align-items:center;cursor:pointer}
+.sim{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.sim h3{margin:0 0 8px;font-size:16px}
+.txtdev{background:#2b2f36;border-radius:14px;padding:12px;margin-bottom:12px}
+.txtscreen{background:#0d1b26;border:2px solid #475260;border-radius:6px;min-height:92px;display:flex;align-items:center;justify-content:center;padding:10px;text-align:center}
+.txtscreen .lbl{color:#cfe9ff;font-size:19px;font-weight:600;word-break:break-word}
+.txtscreen .lbl:empty::before{content:"(Label txt_label ist leer)";color:#4e6577;font-size:13px;font-weight:400}
+.txtcap{color:#aab3bf;font-size:11.5px;text-align:center;margin-top:6px;letter-spacing:.04em}
+.ctrl{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;font-size:14px}
+.ctrl .hd{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.ctrl .hd .v{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--pri)}
+.ctrl input[type=range]{width:100%}
+.ctrl .sub{font-size:12.5px;color:var(--muted)}
+.led{display:inline-block;width:12px;height:12px;border-radius:50%;background:#7b8794;vertical-align:-1px;margin-right:5px;border:1px solid rgba(0,0,0,.2)}
+.led.on{background:#2ecc71;box-shadow:0 0 8px #2ecc71}
+.push{user-select:none;-webkit-user-select:none;touch-action:none}
+.push.down{background:var(--green);color:#fff;border-color:var(--green)}
+.barrier svg{width:100%;height:auto;display:block}
+.mstat{font-size:13.5px;font-family:ui-monospace,Menlo,Consolas,monospace;margin:4px 0}
+.warn{color:var(--red);font-weight:700}
+.console{background:var(--code-bg);color:#d5dde5;border-radius:8px;padding:8px 10px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;height:170px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.console .e{color:#ff9e8f}.console .i{color:#8a97a3}.console .w{color:#f3c26b}
+.errbox{display:none;border-left:5px solid var(--red);background:var(--red-soft);border-radius:8px;padding:9px 12px;margin:10px 0;font-size:14.5px}
+.errbox.show{display:block}
+.status{font-size:13px;color:var(--muted)}
+.status .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--amber);margin-right:5px}
+.status.ready .dot{background:var(--green)}.status.fail .dot{background:var(--red)}
+.teacher td:first-child{white-space:nowrap;font-weight:600}
+footer{color:var(--muted);font-size:13px;text-align:center;margin-top:40px}
+@media print{.top,.runbar,.nav{display:none}section.page{display:block}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="home" href="index.html" style="color:inherit;text-decoration:none" title="Zur Übersicht der Lernplattform">🤖 Python &amp; Robotik</a><span class="muted" style="font-size:14px">› Code lesen</span>
+  <nav class="nav" id="nav">
+    <button data-p="start">Start</button>
+    <button data-p="s1">1 Gerüst</button>
+    <button data-p="s2">2 Wortschatz</button>
+    <button data-p="s3">3 Grammatik</button>
+    <button data-p="s4">4 Code-Leser</button>
+    <button data-p="s5">5 Werkstatt</button>
+    <button data-p="lk">Lehrkraft</button>
+  </nav>
+</div></header>
+<main>
+
+<!-- ===================== START ===================== -->
+<section class="page" id="start">
+  <div class="hero">
+    <span class="tag">Python &amp; Robotik</span><span class="tag">fischertechnik TXT 4.0</span>
+    <h1>Code lesen wie ein Profi</h1>
+    <p class="lead">Ihr habt vier Projekte programmiert: Abstand messen, Thermometer, Schranke schließen und die automatische Schranke. Auf dieser Seite lernt ihr, <b>jeden dieser Codes zu lesen</b>, ihn in eigenen Worten zu erklären – und ihn dann selbst zu verändern.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Das könnt ihr am Ende</h3>
+    <ul>
+      <li>Ich kann erklären, wozu <code>lib/controller.py</code> und <code>main.py</code> da sind.</li>
+      <li>Ich kann an einem Bauteilnamen ablesen, <b>welches Bauteil an welchem Anschluss</b> steckt.</li>
+      <li>Ich unterscheide <b>Sensor-Fragen</b> (liefern einen Wert) von <b>Aktor-Befehlen</b> (tun etwas).</li>
+      <li>Ich erkenne Schleifen, Entscheidungen und Funktionen an der <b>Einrückung</b> und kann sie als Satz „vorlesen“.</li>
+      <li>Ich kann vorhersagen, was ein Programm tut, es gezielt anpassen und Fehler finden.</li>
+    </ul>
+  </div>
+
+  <h2>Die 4-Schritte-Lesemethode</h2>
+  <p class="lead">So geht ihr an <b>jeden</b> Code heran – egal wie lang er ist. Diese vier Schritte übt ihr auf jeder Seite.</p>
+  <div class="grid g4">
+    <div class="card step"><div class="n">1</div><div><h4>🔎 Überblick</h4><p>Kopfkommentar und <code>import</code>-Zeilen lesen: Was soll das Programm tun? Welche Bauteile braucht es?</p></div></div>
+    <div class="card step"><div class="n">2</div><div><h4>🧩 Bauteile</h4><p>Namen zerlegen (<code>TXT_M_I1_…</code>). Wo wird ein Sensor <b>gefragt</b>, wo ein Aktor <b>befohlen</b>?</p></div></div>
+    <div class="card step"><div class="n">3</div><div><h4>🧱 Struktur</h4><p>Der Einrückung folgen: Welche Zeilen gehören zu welcher Schleife, Entscheidung oder Funktion?</p></div></div>
+    <div class="card step"><div class="n">4</div><div><h4>▶️ Durchspielen</h4><p>Zeile für Zeile mit echten Werten: Was steht jetzt in der Variablen? Was zeigt das Display?</p></div></div>
+  </div>
+
+  <h2>Euer Fahrplan</h2>
+  <div class="grid g3">
+    <div class="card unit" data-go="s1"><div class="k">Baustein 1 · ca. 20 min</div><h4>Das Gerüst</h4><p>Zwei Dateien, ein Namensschema. Übung: Namens-Baukasten und Quiz.</p></div>
+    <div class="card unit" data-go="s2"><div class="k">Baustein 2 · ca. 20 min</div><h4>Der Wortschatz</h4><p>Alle Befehle unserer Bauteile – Sensoren fragen, Aktoren befehlen.</p></div>
+    <div class="card unit" data-go="s3"><div class="k">Baustein 3 · ca. 30 min</div><h4>Die Grammatik</h4><p>7 Code-Muster, die in allen Projekten vorkommen. Übung: Code-Puzzles.</p></div>
+    <div class="card unit" data-go="s4"><div class="k">Baustein 4 · ca. 35 min</div><h4>Code-Leser</h4><p>Eure Projekte P01–P04 Zeile für Zeile lesen – mit ausgeblendeten Kommentaren.</p></div>
+    <div class="card unit" data-go="s5"><div class="k">Baustein 5 · ca. 35 min</div><h4>Werkstatt</h4><p>Code im Simulator verändern, testen und Fehler finden – dann ab auf den echten TXT.</p></div>
+  </div>
+  <div class="info"><b>Tipp:</b> Auf jeder Seite findet ihr Aufgaben direkt zum Anklicken. Eure Antworten werden in diesem Browser gespeichert.</div>
+</section>
+
+<!-- ===================== BAUSTEIN 1 ===================== -->
+<section class="page" id="s1">
+  <div class="hero"><span class="tag">Baustein 1</span><h1>Das Gerüst: zwei Dateien, ein Namensschema</h1>
+  <p class="lead">Jedes ROBO-Pro-Coding-Projekt besteht aus mindestens zwei Python-Dateien. Wer weiß, was wo steht, findet sich in jedem Code zurecht.</p></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">📋 <code>lib/controller.py</code> – die Stückliste</h3>
+      <p>Hier steht, <b>welche Bauteile an welchem Anschluss</b> stecken. ROBO Pro Coding erzeugt diese Datei <b>automatisch</b>, sobald ihr die Bauteile im Controller-Fenster eintragt. Nicht abtippen, nicht verändern!</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">📝 <code>main.py</code> – die Bauanleitung</h3>
+      <p>Hier steht, <b>was passieren soll</b>: messen, warten, Motor starten … Das ist die Datei, die ihr programmiert. Die erste Zeile holt alle Bauteile aus der Stückliste:</p>
+      <pre class="code hl">from lib.controller import *   # alle Bauteile holen</pre>
+    </div>
+  </div>
+
+  <h2>So sieht die Stückliste von Projekt 3 aus</h2>
+  <pre class="code hl" id="ctl-demo"></pre>
+  <div class="grid g3">
+    <div class="card small"><b>① Bibliothek laden:</b> <code>import fischertechnik.factories as txt_factory</code> – die „Fabriken“, die für jedes Bauteil ein Python-Objekt bauen.</div>
+    <div class="card small"><b>② Vorbereiten:</b> <code>txt_factory.init…()</code> – nur die Fabriken, die das Projekt braucht (Eingänge, Motoren, Zähler).</div>
+    <div class="card small"><b>③ Bauteile erzeugen:</b> <code>create_…(TXT_M, 1)</code> – Bauteiltyp + Controller + Anschlussnummer. Das Ergebnis bekommt einen Namen.</div>
+  </div>
+
+  <h2>Das Namensschema</h2>
+  <p>Jeder Bauteilname ist wie eine Adresse aufgebaut. Wer ihn zerlegt, weiß sofort, was gemeint ist:</p>
+  <div class="nameparts">
+    <div class="np1">TXT_M<small>Controller (Master)</small></div><span class="np-sep">_</span>
+    <div class="np2">I1<small>Anschluss</small></div><span class="np-sep">_</span>
+    <div class="np3">mini_switch<small>Bauteiltyp</small></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3 style="margin-top:0">Anschlüsse am TXT 4.0</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Kürzel</th><th>Bedeutung</th><th>Beispiel</th></tr>
+        <tr><td><b>I1 … I8</b></td><td>Eingänge (Input) – Sensoren, Taster</td><td>Taster, Ultraschall, NTC</td></tr>
+        <tr><td><b>M1 … M4</b></td><td>Motorausgänge</td><td>Encodermotor</td></tr>
+        <tr><td><b>C1 … C4</b></td><td>Zählereingänge (Counter)</td><td>Impulse des Encodermotors</td></tr>
+        <tr><td><b>O1 … O8</b></td><td>Einzelausgänge (Output)</td><td>LED, Lampe</td></tr>
+      </table></div></div>
+    <div class="card"><h3 style="margin-top:0">Bauteiltypen in unseren Projekten</h3>
+      <div class="tablewrap"><table>
+        <tr><th>im Namen</th><th>Bauteil</th><th>Projekt</th></tr>
+        <tr><td><code>ultrasonic_distance_meter</code></td><td>Ultraschall-Abstandssensor</td><td>P01</td></tr>
+        <tr><td><code>ntc_resistor</code></td><td>NTC-Widerstand (Temperatur)</td><td>P02</td></tr>
+        <tr><td><code>mini_switch</code></td><td>Mini-Taster</td><td>P03, P04</td></tr>
+        <tr><td><code>encodermotor</code></td><td>Encodermotor</td><td>P03, P04</td></tr>
+        <tr><td><code>motor_step_counter</code></td><td>Impulszähler zum Motor</td><td>P03, P04</td></tr>
+      </table></div></div>
+  </div>
+  <div class="merke"><b>Merke:</b> Python unterscheidet Groß- und Kleinschreibung. <code>TXT_M_I1_Mini_switch</code> ist ein <b>anderer</b> Name als <code>TXT_M_I1_mini_switch</code> – die Folge ist ein <code>NameError</code>. Der Name in <code>main.py</code> muss <b>exakt</b> so lauten wie in <code>lib/controller.py</code>.</div>
+
+  <h2>Übung 1a: Namens-Baukasten</h2>
+  <div class="card">
+    <p>Wähle Anschluss und Bauteil – der Baukasten setzt den Namen zusammen und prüft, ob die Kombination Sinn ergibt.</p>
+    <div class="row-inline">
+      <select id="nb-port"></select>
+      <select id="nb-type">
+        <option value="mini_switch">Mini-Taster</option>
+        <option value="ultrasonic_distance_meter">Ultraschall-Abstandssensor</option>
+        <option value="ntc_resistor">NTC-Widerstand</option>
+        <option value="encodermotor">Encodermotor</option>
+        <option value="motor_step_counter">Impulszähler</option>
+      </select>
+    </div>
+    <div class="out-name" id="nb-out"></div>
+    <div id="nb-msg" class="small"></div>
+  </div>
+
+  <h2>Übung 1b: Namen entschlüsseln</h2>
+  <div class="quiz" data-quiz="q1"></div>
+</section>
+
+<!-- ===================== BAUSTEIN 2 ===================== -->
+<section class="page" id="s2">
+  <div class="hero"><span class="tag">Baustein 2</span><h1>Der Wortschatz: Befehle der Bauteile</h1>
+  <p class="lead">Jedes Bauteil ist ein <b>Objekt</b>. Mit einem Punkt gebt ihr ihm einen Befehl (eine <b>Methode</b>). Lest den Punkt wie „…, bitte …!“</p></div>
+
+  <div class="nameparts">
+    <div class="np1">TXT_M_M1_encodermotor<small>WER?</small></div><span class="np-sep">.</span>
+    <div class="np2">set_speed<small>WAS?</small></div>
+    <div class="np3">(200, Motor.CW)<small>WIE? (Werte)</small></div>
+  </div>
+  <p class="lead">→ Lies so: „Encodermotor an M1, stelle bitte Geschwindigkeit 200 im Uhrzeigersinn ein.“</p>
+
+  <div class="grid g2">
+    <div class="card" style="border-top:5px solid var(--green)">
+      <h3 style="margin-top:0">❓ Sensoren <b>fragen</b> – sie liefern einen Wert</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Befehl</th><th>liefert</th></tr>
+        <tr><td><code>.get_distance()</code></td><td>Abstand in cm als ganze Zahl (<code>int</code>), z. B. <code>23</code></td></tr>
+        <tr><td><code>.get_temperature()</code></td><td>Temperatur in °C als Kommazahl (<code>float</code>), z. B. <code>22.4378</code></td></tr>
+        <tr><td><code>.is_closed()</code></td><td><code>True</code> = Taster gedrückt, <code>False</code> = nicht gedrückt</td></tr>
+      </table></div>
+      <p class="small muted"><b>Erkennungszeichen:</b> Die Frage steht <b>rechts vom =</b> (Wert wird gespeichert) oder hinter <code>if</code> / <code>while</code> (Wert wird geprüft).</p>
+      <pre class="code hl">abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()
+while not TXT_M_I1_mini_switch.is_closed():</pre>
+    </div>
+    <div class="card" style="border-top:5px solid var(--red)">
+      <h3 style="margin-top:0">❗ Aktoren <b>befehlen</b> – sie tun etwas</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Befehl</th><th>bewirkt</th></tr>
+        <tr><td><code>.set_speed(200, Motor.CW)</code></td><td>stellt Tempo (0 … 512) und Richtung ein – <b>fährt noch nicht!</b></td></tr>
+        <tr><td><code>.start()</code></td><td>Motor fährt los</td></tr>
+        <tr><td><code>.stop()</code></td><td>Motor hält an</td></tr>
+      </table></div>
+      <p class="small muted"><b>Richtung bei der Schranke:</b> <code>Motor.CW</code> (im Uhrzeigersinn) = zu, <code>Motor.CCW</code> (gegen den Uhrzeigersinn) = auf.<br><b>Erkennungszeichen:</b> Der Befehl steht <b>allein in einer Zeile</b>.</p>
+      <pre class="code hl">TXT_M_M1_encodermotor.set_speed(200, Motor.CW)
+TXT_M_M1_encodermotor.start()</pre>
+    </div>
+    <div class="card" style="border-top:5px solid var(--pri)">
+      <h3 style="margin-top:0">🖥️ Ausgeben</h3>
+      <div class="tablewrap"><table>
+        <tr><td><code>display.set_attr("txt_label.text", text)</code></td><td>schreibt <code>text</code> in das Label <code>txt_label</code> auf dem TXT-Display. Braucht <code>from lib.display import *</code></td></tr>
+        <tr><td><code>print(...)</code></td><td>schreibt in die Konsole – praktisch zur Fehlersuche</td></tr>
+      </table></div>
+    </div>
+    <div class="card" style="border-top:5px solid var(--violet)">
+      <h3 style="margin-top:0">🧰 Python-Werkzeuge</h3>
+      <div class="tablewrap"><table>
+        <tr><td><code>str(23)</code></td><td>Zahl → Text: <code>"23"</code></td></tr>
+        <tr><td><code>round(22.4378, 1)</code></td><td>runden auf 1 Nachkommastelle: <code>22.4</code></td></tr>
+        <tr><td><code>time.sleep(0.5)</code></td><td>0,5 Sekunden warten. Braucht <code>import time</code></td></tr>
+        <tr><td><code>range(10)</code></td><td>die Zahlen 0, 1, …, 9 (für <code>for</code>-Schleifen)</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="merke"><b>Merke:</b> Text und Zahl kann man nicht mit <code>+</code> verbinden. <code>"Abstand: " + 23</code> ergibt einen <code>TypeError</code>. Richtig: <code>"Abstand: " + str(23)</code> → <code>"Abstand: 23"</code>.</div>
+
+  <h2>Übung 2: Fragen oder befehlen?</h2>
+  <div class="quiz" data-quiz="q2"></div>
+</section>
+
+<!-- ===================== BAUSTEIN 3 ===================== -->
+<section class="page" id="s3">
+  <div class="hero"><span class="tag">Baustein 3</span><h1>Die Grammatik: 7 Muster, die immer wiederkommen</h1>
+  <p class="lead">Python zeigt die Struktur durch <b>Einrückung</b> (4 Leerzeichen). Alles, was unter einer Zeile mit <b>Doppelpunkt</b> eingerückt ist, gehört zu ihr – wie Unterpunkte in einer Liste.</p></div>
+
+  <div class="grid g2">
+    <div class="card"><pre class="code hl">for i in range(10):                 # Kopfzeile mit Doppelpunkt
+    temp = TXT_M_I1_ntc_resistor.get_temperature()   # gehört zur Schleife
+    time.sleep(1)                   # gehört zur Schleife
+display.set_attr("txt_label.text", "fertig")         # NICHT eingerückt: erst danach</pre></div>
+    <div class="card"><h3 style="margin-top:0">Lesetrick: Blöcke umrahmen</h3><p>Fahrt mit dem Finger an der Einrückung nach unten. Wo die Einrückung endet, endet der Block. Im <b>Code-Leser</b> (Baustein 4) könnt ihr die Blöcke mit dem Schalter <b>„Struktur“</b> farbig markieren lassen.</p></div>
+  </div>
+
+  <h2>Die Muster</h2>
+  <div class="grid g2" id="muster"></div>
+
+  <h2>Übung 3a: Code-Puzzle „Schranke schließen“</h2>
+  <p class="lead">Bringt die Zeilen mit ▲ ▼ in die richtige Reihenfolge. Die Importzeilen stehen schon oben.</p>
+  <div class="card" id="pz1"></div>
+
+  <h2>Übung 3b: Code-Puzzle „Mittelwert“</h2>
+  <p class="lead">Achtung: Hier gibt es eine Zeile, die unbedingt <b>vor</b> der Schleife stehen muss – und eine, die erst <b>danach</b> Sinn ergibt.</p>
+  <div class="card" id="pz2"></div>
+
+  <h2>Übung 3c: Wie oft? Was passiert?</h2>
+  <div class="quiz" data-quiz="q3"></div>
+</section>
+
+<!-- ===================== BAUSTEIN 4 ===================== -->
+<section class="page" id="s4">
+  <div class="hero"><span class="tag">Baustein 4</span><h1>Code-Leser: eure Projekte P01 – P04</h1>
+  <p class="lead">Wählt ein Projekt. <b>Klickt auf eine Zeile</b> – rechts erscheinen Bauteil-Infos, die „Lies-so“-Übersetzung und der Kommentar. Blendet die Kommentare aus, um euch selbst zu testen.</p></div>
+
+  <div class="toolbar">
+    <div class="grp" id="rd-proj"><span class="lab">Projekt</span></div>
+    <div class="grp" id="rd-ver"><span class="lab">Datei</span></div>
+    <div class="grp"><span class="lab">Ansicht</span>
+      <button class="btn sm" id="rd-cm">💬 Kommentare: an</button>
+      <button class="btn sm" id="rd-st">🧱 Struktur: aus</button>
+    </div>
+  </div>
+  <div class="card small" id="rd-about" style="margin-top:0"></div>
+  <div class="legend"><span class="t-sen">Sensor</span><span class="t-akt">Aktor</span><span class="t-cnt">Zähler</span><span class="t-kw">Schlüsselwort</span><span class="t-me">.befehl()</span><span class="t-st">"Text"</span><span class="t-nu">Zahl</span><span class="t-cm"># Kommentar</span></div>
+  <div class="reader" id="reader">
+    <div class="codeview" id="rd-code"></div>
+    <div class="card panel" id="rd-panel"></div>
+  </div>
+
+  <h2>Lese-Auftrag</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">Im Lesetandem (zu zweit)</h3>
+      <ol class="small">
+        <li>Kommentare <b>ausblenden</b>.</li>
+        <li><b>Leser/in</b> liest den Code Zeile für Zeile als deutschen Satz vor („Lies so“).</li>
+        <li><b>Prüfer/in</b> klickt die Zeile an und deckt die Lösung auf. Stimmt es? Sonst gemeinsam klären.</li>
+        <li>Nach der Hälfte der Zeilen: Rollen tauschen.</li>
+        <li>Zum Schluss die Fragen unten beantworten.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Checkliste: 4 Schritte</h3>
+      <ul class="checklist" id="rd-check"></ul>
+    </div>
+  </div>
+  <div class="quiz" id="rd-quiz"></div>
+</section>
+
+<!-- ===================== BAUSTEIN 5 ===================== -->
+<section class="page" id="s5">
+  <div class="hero"><span class="tag">Baustein 5</span><h1>Werkstatt: Code anpassen &amp; Fehler finden</h1>
+  <p class="lead">Wählt eine Aufgabe, ladet den Code, verändert ihn und testet ihn im Simulator. Erst lesen, dann ändern! Mit <b>Zeitlupe</b> seht ihr, welche Zeile gerade ausgeführt wird.</p>
+  <p class="status" id="pystatus"><span class="dot"></span><span class="stxt">Python wird geladen …</span></p></div>
+
+  <div class="card">
+    <div class="row-inline" style="justify-content:space-between"><b>🔧 Anpassen</b></div>
+    <div class="tasklist" id="tl-mod" style="margin:8px 0 12px"></div>
+    <b>🐞 Fehlersuche</b>
+    <div class="tasklist" id="tl-bug" style="margin:8px 0 12px"></div>
+    <b>🧪 Frei üben</b>
+    <div class="tasklist" id="tl-free" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card taskcard" id="taskcard"></div>
+
+  <div class="ws">
+    <div>
+      <div class="edtabs"><button class="on" id="tab-main">main.py</button><button id="tab-ctl">lib/controller.py</button></div>
+      <div class="editor" id="editor">
+        <div class="gutter" id="gutter"></div>
+        <div class="edwrap"><pre id="edhl" aria-hidden="true"></pre><textarea id="ed" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Python-Code"></textarea></div>
+      </div>
+      <div class="runbar">
+        <button class="btn pri" id="run">▶ Start</button>
+        <button class="btn red" id="stop" disabled>■ Stopp</button>
+        <label><input type="checkbox" id="slow"> 🐢 Zeitlupe</label>
+        <label><input type="checkbox" id="fast"> ⏩ Zeitraffer ×5</label>
+        <span style="flex:1"></span>
+        <button class="btn sm" id="reset">↺ Original laden</button>
+        <button class="btn sm" id="copy">📋 Code kopieren</button>
+      </div>
+      <div class="errbox" id="errbox"></div>
+      <p class="small muted">Getestet? Dann den Code mit „Code kopieren“ in ROBO Pro Coding in <code>main.py</code> einfügen und am echten Modell ausprobieren. Der Simulator ersetzt nicht das Modell – Fahrzeiten sind dort anders!</p>
+    </div>
+    <div class="sim" id="sim">
+      <h3>Simulator</h3>
+      <div class="txtdev"><div class="txtscreen"><div class="lbl" id="sim-label"></div></div><div class="txtcap">TXT 4.0 · DISPLAY · txt_label</div></div>
+      <div id="sim-ctrls"></div>
+      <div class="barrier" id="sim-barrier"></div>
+      <div style="font-weight:600;font-size:14px;margin:8px 0 4px">Konsole (print)</div>
+      <div class="console" id="console"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LEHRKRAFT ===================== -->
+<section class="page" id="lk">
+  <div class="hero"><span class="tag">Für Lehrkräfte</span><h1>Unterrichtsablauf „Code lesen“</h1>
+  <p class="lead">Kompakte Einheit: 2 Doppelstunden (4 × 45 min). Voraussetzung: Die Projekte P01–P04 wurden bereits in ROBO Pro Coding bearbeitet.</p></div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Leitidee</h3>
+    <p>Die Schüler/innen haben Code <b>geschrieben</b> (oft mit Vorlage), können ihn aber selten <b>lesen</b>. Die Einheit dreht die Richtung um: erst Gerüst (Dateien, Namen), dann Wortschatz (Methoden), dann Grammatik (Kontrollstrukturen) – und immer wieder dieselbe <b>4-Schritte-Lesemethode</b> (Überblick – Bauteile – Struktur – Durchspielen). Lesen wird über drei Stufen aufgebaut: <b>Vorlesen</b> (Code → Satz), <b>Vorhersagen</b> (Was passiert?), <b>Verändern</b> (gezielte Anpassung, Fehlersuche).</p>
+  </div>
+
+  <h2>Doppelstunde 1: Gerüst, Wortschatz, Grammatik</h2>
+  <div class="card tablewrap teacher"><table>
+    <tr><th>Zeit</th><th>Phase</th><th>Inhalt / Aktivität</th><th>Sozialform</th><th>Seite</th></tr>
+    <tr><td>10′</td><td>Einstieg</td><td>Schranke (P03) am Modell oder im Simulator vorführen. Impuls: „Woher weiß der Motor, wann er anhalten muss?“ Code ohne Kommentare zeigen → Problem: „Code ist eine Fremdsprache – wir lernen heute, sie zu lesen.“ Lesemethode vorstellen.</td><td>UG</td><td>Start</td></tr>
+    <tr><td>20′</td><td>Erarbeitung I</td><td>Zwei Dateien &amp; Namensschema. Namens-Baukasten ausprobieren, Quiz 1b.</td><td>EA / PA</td><td>1</td></tr>
+    <tr><td>20′</td><td>Erarbeitung II</td><td>Sensor fragen vs. Aktor befehlen. Lesetrick „Punkt = …, bitte …!“ Quiz 2.</td><td>EA</td><td>2</td></tr>
+    <tr><td>30′</td><td>Erarbeitung III</td><td>7 Muster mit „Lies-so“-Sätzen. Code-Puzzles 3a/3b, Quiz 3c.</td><td>PA</td><td>3</td></tr>
+    <tr><td>10′</td><td>Sicherung</td><td>„Muster-Blitz“: L zeigt eine Zeile aus P01–P04, Klasse nennt das Muster und liest sie als Satz vor.</td><td>UG</td><td>3</td></tr>
+  </table></div>
+
+  <h2>Doppelstunde 2: Lesen, Vorhersagen, Verändern</h2>
+  <div class="card tablewrap teacher"><table>
+    <tr><th>Zeit</th><th>Phase</th><th>Inhalt / Aktivität</th><th>Sozialform</th><th>Seite</th></tr>
+    <tr><td>5′</td><td>Wiederholung</td><td>4 Schritte der Lesemethode an der Tafel sammeln.</td><td>UG</td><td>Start</td></tr>
+    <tr><td>35′</td><td>Lesetandem</td><td>Code-Leser mit ausgeblendeten Kommentaren: P01 + P02 (Pflicht), P03 + P04 (Wahl), jeweils Grundaufgabe; Zusatz-Dateien für Schnelle. Rollen Leser/Prüfer, danach Fragen beantworten.</td><td>PA</td><td>4</td></tr>
+    <tr><td>35′</td><td>Werkstatt</td><td>Mind. 2 Anpassen-Aufgaben (Basis) + 2 Fehlersuchen. Profi-Aufgaben zur Differenzierung. Vor jedem Start: Vorhersage aufschreiben, dann testen. Gelungene Lösungen am echten Modell testen.</td><td>PA / EA</td><td>5</td></tr>
+    <tr><td>15′</td><td>Sicherung / Exit-Ticket</td><td>P04 Zusatz (Zustandsautomat) gemeinsam lesen. Exit-Ticket: „Erkläre P04 Zusatz in 4 Sätzen – je ein Satz pro Lese-Schritt.“</td><td>UG / EA</td><td>4</td></tr>
+  </table></div>
+
+  <div class="grid g2">
+    <div class="card"><h3 style="margin-top:0">Differenzierung</h3>
+      <ul class="small">
+        <li><b>Basis:</b> Grundaufgaben lesen, Kommentare dürfen an bleiben; Basis-Aufgaben in der Werkstatt.</li>
+        <li><b>Profi:</b> nur mit ausgeblendeten Kommentaren lesen; Zusatz-Dateien; Profi-Aufgaben (if/else einbauen, Höchstwert, Schleife um Ablauf legen).</li>
+        <li><b>Hilfen:</b> Struktur-Ansicht, „Lies so“-Aufdecken, Tipps in den Aufgaben.</li>
+      </ul></div>
+    <div class="card"><h3 style="margin-top:0">Erwartungshorizont Exit-Ticket (P04 Zusatz)</h3>
+      <ol class="small">
+        <li><b>Überblick:</b> Schranke öffnet und schließt automatisch und zählt Durchfahrten; nach 5 ist Schluss.</li>
+        <li><b>Bauteile:</b> Encodermotor M1, Endlagen-Taster I1 (unten) und I2 (oben), Display-Label.</li>
+        <li><b>Struktur:</b> zwei Funktionen + Endlosschleife mit <code>if/elif</code> je Zustand; Ausstieg mit <code>break</code>.</li>
+        <li><b>Durchspielen:</b> SCHLIESSEN → GESCHLOSSEN → OEFFNEN → OFFEN (+1) → … bis <code>durchfahrten</code> = 5, dann „Parkhaus voll!“.</li>
+      </ol></div>
+  </div>
+  <div class="info small"><b>Technische Hinweise:</b> Der Simulator führt echtes Python im Browser aus (Skulpt, Internetverbindung nötig). <code>lib/controller.py</code> wird unverändert aus den Musterlösungen ausgeführt, die fischertechnik-Bibliothek ist nachgebildet. <code>Motor.CW/CCW</code> steht – wie in ROBO Pro Coding – automatisch zur Verfügung. Fahrzeiten sind im Simulator idealisiert; Endlagen-Taster werden von der virtuellen Schranke ausgelöst, der Bedarfstaster (P03, I2) per Knopf. Eingaben und Quiz-Ergebnisse werden nur lokal im Browser gespeichert.</div>
+</section>
+
+<footer>Code lesen · fischertechnik TXT 4.0 · Python &amp; Robotik</footer>
+</main>
+
+<script>
+"use strict";
+/* ============ Daten: Musterlösungen ============ */
+const FILES = {"P01_A1_Abstand_Grund.py": "# Projekt 1 – Abstand messen und anzeigen (A1 Analoge Sensoren)\n# Controller: I2 = Ultraschall-Abstandssensor, Display-Label \"txt_label\"\n\nimport time                    # für time.sleep() – Pausen zwischen den Messungen\nfrom lib.controller import *   # holt alle Bauteile aus dem Controller (TXT_M_I2_...)\nfrom lib.display import *      # nötig, damit wir mit display.set_attr() schreiben können\n\nzaehler = 0                    # Zähler startet bei 0 – so wissen wir, wie oft gemessen wurde\nwhile zaehler < 20:            # Schleife läuft, solange noch keine 20 Messungen erfolgt sind\n    # Sensor fragen: liefert den Abstand als ganze Zahl in cm\n    abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()\n    # Zahl und Text verbinden: str() wandelt die Zahl in Text um, sonst gibt es einen Fehler\n    display.set_attr(\"txt_label.text\", \"Abstand: \" + str(abstand) + \" cm\")\n    print(abstand, \"cm\")       # zusätzlich in der Konsole – praktisch zur Fehlersuche\n    zaehler = zaehler + 1      # Zähler erhöhen, sonst würde die Schleife nie enden\n    time.sleep(0.5)            # 0,5 s warten, damit man die Anzeige lesen kann\n", "P01_A1_Abstand_Zusatz.py": "# Projekt 1 – Zusatz: Messungen mitzählen, Einstellungen als Variablen\n# Controller: I2 = Ultraschall-Abstandssensor, Display-Label \"txt_label\"\nimport time\nfrom lib.controller import *\nfrom lib.display import *\n\n# Einstellungen GROSS und ganz oben: So ändert man sie an einer Stelle,\n# statt die Zahlen im ganzen Programm suchen zu müssen.\nANZAHL = 20          # wie oft gemessen wird\nPAUSE = 0.5          # Sekunden zwischen zwei Messungen\n\nmessung = 1          # wir zählen ab 1, weil man \"Messung 1/20\" lesen will (nicht 0/20)\nwhile messung <= ANZAHL:            # <= statt <, damit auch die 20. Messung stattfindet\n    abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()\n    # den Text einmal in einer Variablen zusammenbauen – dann kann man ihn\n    # gleichzeitig aufs Display schreiben UND mit print() ausgeben\n    text = \"Messung \" + str(messung) + \"/\" + str(ANZAHL) + \": \" + str(abstand) + \" cm\"\n    display.set_attr(\"txt_label.text\", text)\n    print(text)\n    messung = messung + 1\n    time.sleep(PAUSE)               # Variable statt fester Zahl\n\n# steht nach der Schleife (nicht eingerückt) -> wird genau einmal am Ende ausgeführt\ndisplay.set_attr(\"txt_label.text\", \"Fertig!\")\n", "P01_A1_Abstand_controller.py": "# lib/controller.py  –  Projekt 1: Abstand messen und anzeigen\n# Wird von ROBO Pro Coding automatisch aus der Controller-Konfiguration erzeugt.\n# NICHT abtippen: Bauteile im Controller eintragen und diese Datei nur zum Vergleich nutzen.\n\n# Bibliothek von fischertechnik: Sie enthält für jede Bauteilart eine \"Fabrik\"\n# (factory), die das passende Python-Objekt herstellt.\nimport fischertechnik.factories as txt_factory\n\n# Verbindung zur TXT-Hardware vorbereiten. Danach werden nur die Fabriken geladen,\n# die dieses Projekt braucht: Eingänge (I), Ausgänge (O), Motoren (M), Zähler (C).\ntxt_factory.init()\ntxt_factory.init_input_factory()\n\n# TXT_M = der Controller selbst (M = Master). Jedes Bauteil wird an ihn \"angehängt\".\nTXT_M = txt_factory.controller_factory.create_graphical_controller()\n\n# Jedes Bauteil: create_...(Controller, Anschlussnummer). Der Name setzt sich zusammen aus\n# Controller + Anschluss + Bauteiltyp (z. B. TXT_M + I1 + mini_switch) – GENAU dieser\n# Name muss in main.py stehen, sonst kommt ein NameError.\n\n# I2: Ultraschall-Abstandssensor – misst die Laufzeit des Schalls, liefert cm\nTXT_M_I2_ultrasonic_distance_meter = txt_factory.input_factory.create_ultrasonic_distance_meter(TXT_M, 2)\n\n# Konfiguration abgeschlossen – ab jetzt dürfen main.py & Co. die Bauteile benutzen.\ntxt_factory.initialized()\n", "P02_A1_Thermometer_Grund.py": "# Projekt 2 – Das TXT als Thermometer (A1 Analoge Sensoren)\n# Controller: I1 = NTC-Widerstand, Display-Label \"txt_label\"\nimport time\nfrom lib.controller import *\nfrom lib.display import *\n\n# for-Schleife, weil die Anzahl der Durchläufe vorher feststeht (genau 10 Messungen).\n# range(10) liefert 0, 1, ..., 9 – also 10 Durchläufe.\nfor i in range(10):\n    # Der TXT rechnet den Widerstand des NTC selbst in °C um -> Ergebnis ist eine\n    # Kommazahl (float), z. B. 22.4378\n    temp = TXT_M_I1_ntc_resistor.get_temperature()\n    # round(temp, 1) rundet auf eine Nachkommastelle; str() macht daraus Text.\n    # Mehr Stellen wären unsinnig – so genau misst der NTC gar nicht.\n    display.set_attr(\"txt_label.text\", str(round(temp, 1)) + \" °C\")\n    time.sleep(1)    # Temperatur ändert sich langsam -> 1 Messung pro Sekunde reicht\n", "P02_A1_Thermometer_Zusatz.py": "# Projekt 2 – Zusatz: Fahrenheit und Mittelwert\n# Controller: I1 = NTC-Widerstand, Display-Label \"txt_label\"\nimport time\nfrom lib.controller import *\nfrom lib.display import *\n\nsumme = 0            # Summe VOR der Schleife auf 0 setzen – in der Schleife würde sie\n                     # bei jedem Durchlauf wieder gelöscht\nfor i in range(10):\n    celsius = TXT_M_I1_ntc_resistor.get_temperature()\n    fahrenheit = celsius * 1.8 + 32      # Umrechnungsformel °C -> °F (Punkt vor Strich!)\n    summe = summe + celsius              # jeden Messwert aufaddieren\n    # Zwei Messwerte ohne f-Strings anzeigen (kompatibler mit aelterem Python).\n    display.set_attr(\"txt_label.text\", str(round(celsius, 1)) + \" °C = \" + str(round(fahrenheit, 1)) + \" °F\")\n    time.sleep(1)\n\n# Mittelwert = Summe aller Werte : Anzahl der Werte.\n# Er steht NACH der Schleife, weil erst dann alle 10 Werte in der Summe stecken.\nmittelwert = summe / 10\ndisplay.set_attr(\"txt_label.text\", \"Mittelwert: \" + str(round(mittelwert, 1)) + \" °C\")\nprint(\"Mittelwert:\", round(mittelwert, 1), \"°C\")   # round() rundet für die Konsole\n", "P02_A1_Thermometer_controller.py": "# lib/controller.py  –  Projekt 2: Das TXT als Thermometer\n# Wird von ROBO Pro Coding automatisch aus der Controller-Konfiguration erzeugt.\n# NICHT abtippen: Bauteile im Controller eintragen und diese Datei nur zum Vergleich nutzen.\n\n# Bibliothek von fischertechnik: Sie enthält für jede Bauteilart eine \"Fabrik\"\n# (factory), die das passende Python-Objekt herstellt.\nimport fischertechnik.factories as txt_factory\n\n# Verbindung zur TXT-Hardware vorbereiten. Danach werden nur die Fabriken geladen,\n# die dieses Projekt braucht: Eingänge (I), Ausgänge (O), Motoren (M), Zähler (C).\ntxt_factory.init()\ntxt_factory.init_input_factory()\n\n# TXT_M = der Controller selbst (M = Master). Jedes Bauteil wird an ihn \"angehängt\".\nTXT_M = txt_factory.controller_factory.create_graphical_controller()\n\n# Jedes Bauteil: create_...(Controller, Anschlussnummer). Der Name setzt sich zusammen aus\n# Controller + Anschluss + Bauteiltyp (z. B. TXT_M + I1 + mini_switch) – GENAU dieser\n# Name muss in main.py stehen, sonst kommt ein NameError.\n\n# I1: NTC-Widerstand – analoger Eingang, der TXT rechnet in °C um (get_temperature)\nTXT_M_I1_ntc_resistor = txt_factory.input_factory.create_ntc_resistor(TXT_M, 1)\n\n# Konfiguration abgeschlossen – ab jetzt dürfen main.py & Co. die Bauteile benutzen.\ntxt_factory.initialized()\n", "P03_A2_Schranke_schliessen_Grund.py": "# Projekt 3 – Schranke schließen bis zur Endlage (A2 Parkhausschranke)\n# Controller: M1 = Encodermotor, I1 = Mini-Taster (Endlage unten), Display-Label \"txt_label\"\nimport time\nfrom lib.controller import *\nfrom lib.display import *\n\n# Geschwindigkeit 0 ... 512; 200 ist langsam genug, damit die Schranke nicht\n# gegen den Anschlag knallt. Motor.CW = im Uhrzeigersinn = Richtung \"zu\".\nTXT_M_M1_encodermotor.set_speed(200, Motor.CW)\nTXT_M_M1_encodermotor.start()          # set_speed stellt nur ein – erst start() fährt los\n\n# Warten, bis die Schranke unten den Taster drückt.\n# \"while not ...\" = \"solange der Taster NICHT gedrückt ist, mach weiter\".\n# So funktioniert das Programm egal, wo die Schranke am Anfang steht –\n# besser als eine feste Fahrzeit, die mal zu kurz und mal zu lang wäre.\nwhile not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)                   # kurze Pause: der TXT fragt 100-mal pro Sekunde\n                                       # nach, ohne den Prozessor voll auszulasten\nTXT_M_M1_encodermotor.stop()           # Taster gedrückt -> sofort anhalten\ndisplay.set_attr(\"txt_label.text\", \"geschlossen\")\n", "P03_A2_Schranke_schliessen_Zusatz.py": "# Projekt 3 – Zusatz: Start-Check mit if/else und Öffnen auf Knopfdruck\n# Controller: M1 = Encodermotor, I1 = Endlage unten, I2 = Bedarfstaster, Label \"txt_label\"\nimport time\nfrom lib.controller import *\nfrom lib.display import *\n\n# 1) Start-Check: Ist die Schranke schon unten, darf der Motor nicht anlaufen –\n#    er würde sonst gegen den Anschlag drücken. Dafür brauchen wir eine Entscheidung.\nif TXT_M_I1_mini_switch.is_closed():\n    display.set_attr(\"txt_label.text\", \"bereits geschlossen\")\nelse:                                  # nur wenn sie NICHT unten ist: schließen\n    display.set_attr(\"txt_label.text\", \"schliesse ...\")\n    TXT_M_M1_encodermotor.set_speed(200, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n    display.set_attr(\"txt_label.text\", \"geschlossen\")\n\n# 2) Auf den Bedarfstaster warten – das Programm \"hängt\" hier, bis jemand drückt.\nwhile not TXT_M_I2_mini_switch.is_closed():\n    time.sleep(0.01)\n\n# 3) Öffnen nach Zeit: Oben gibt es keinen Taster, also fahren wir eine feste Zeit.\n#    Die Zeit steht als Variable oben, weil man sie am Modell ausprobieren muss.\nOEFFNUNGSZEIT = 1.0\ndisplay.set_attr(\"txt_label.text\", \"offen - bitte einfahren\")\nTXT_M_M1_encodermotor.set_speed(200, Motor.CCW)   # CCW = gegen den Uhrzeigersinn = auf\nTXT_M_M1_encodermotor.start()\ntime.sleep(OEFFNUNGSZEIT)\nTXT_M_M1_encodermotor.stop()\ntime.sleep(3)                          # Zeit zum Durchfahren\n\n# 4) Wieder schließen – wie oben: bis zur Endlage, nicht nach Zeit (genauer!)\nTXT_M_M1_encodermotor.set_speed(200, Motor.CW)\nTXT_M_M1_encodermotor.start()\nwhile not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)\nTXT_M_M1_encodermotor.stop()\ndisplay.set_attr(\"txt_label.text\", \"geschlossen\")\n", "P03_A2_Schranke_schliessen_controller.py": "# lib/controller.py  –  Projekt 3: Schranke schließen bis zur Endlage\n# Wird von ROBO Pro Coding automatisch aus der Controller-Konfiguration erzeugt.\n# NICHT abtippen: Bauteile im Controller eintragen und diese Datei nur zum Vergleich nutzen.\n\n# Bibliothek von fischertechnik: Sie enthält für jede Bauteilart eine \"Fabrik\"\n# (factory), die das passende Python-Objekt herstellt.\nimport fischertechnik.factories as txt_factory\n\n# Verbindung zur TXT-Hardware vorbereiten. Danach werden nur die Fabriken geladen,\n# die dieses Projekt braucht: Eingänge (I), Ausgänge (O), Motoren (M), Zähler (C).\ntxt_factory.init()\ntxt_factory.init_input_factory()\ntxt_factory.init_motor_factory()\ntxt_factory.init_counter_factory()\n\n# TXT_M = der Controller selbst (M = Master). Jedes Bauteil wird an ihn \"angehängt\".\nTXT_M = txt_factory.controller_factory.create_graphical_controller()\n\n# Jedes Bauteil: create_...(Controller, Anschlussnummer). Der Name setzt sich zusammen aus\n# Controller + Anschluss + Bauteiltyp (z. B. TXT_M + I1 + mini_switch) – GENAU dieser\n# Name muss in main.py stehen, sonst kommt ein NameError.\n\n# M1: Encodermotor (Schranke)\n# Encodermotor + eigener Impulszähler C1. set_motor() verbindet beide –\n# nur so kann set_distance() eine bestimmte Zahl von Impulsen fahren.\nTXT_M_M1_encodermotor = txt_factory.motor_factory.create_encodermotor(TXT_M, 1)\nTXT_M_C1_motor_step_counter = txt_factory.counter_factory.create_encodermotor_counter(TXT_M, 1)\nTXT_M_C1_motor_step_counter.set_motor(TXT_M_M1_encodermotor)\n\n# I1: Mini-Taster (Endlage unten) – is_closed() liefert True = gedrückt\nTXT_M_I1_mini_switch = txt_factory.input_factory.create_mini_switch(TXT_M, 1)\n\n# I2: Mini-Taster (Bedarf) – is_closed() liefert True = gedrückt\nTXT_M_I2_mini_switch = txt_factory.input_factory.create_mini_switch(TXT_M, 2)    # nur Zusatzaufgabe\n\n# Konfiguration abgeschlossen – ab jetzt dürfen main.py & Co. die Bauteile benutzen.\ntxt_factory.initialized()\n", "P04_A2_Schranke_automatisch_Grund.py": "# Projekt 4 – Die automatische Schranke (A2 Parkhausschranke)\n# Controller: M1 = Encodermotor, I1 = Endlage unten, I2 = Endlage oben\nimport time\nfrom lib.controller import *\n\n# Funktionen: Schließen und Öffnen werden mehrmals gebraucht. Statt den Code\n# jedes Mal zu wiederholen, schreiben wir ihn einmal und rufen ihn per Namen auf.\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)       # CW = zu\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():          # bis Endlage UNTEN\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)      # CCW = auf\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I2_mini_switch.is_closed():          # bis Endlage OBEN\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\n# Zuerst einmal schließen: Damit ist der Startzustand immer gleich (\"definiert\"),\n# egal wie die Schranke beim Einschalten stand.\nschliessen()\n\n# for-Schleife, weil die Anzahl feststeht: genau 3 Zyklen\nfor zyklus in range(3):\n    time.sleep(3)       # Schranke bleibt zu  (am Modell: 10 s)\n    oeffnen()\n    time.sleep(2)       # Schranke bleibt offen (am Modell: 5 s)\n    schliessen()\n", "P04_A2_Schranke_automatisch_Zusatz.py": "# Projekt 4 – Zusatz: Schranke als Zustandsautomat mit Durchfahrt-Zähler\n# Controller: M1 = Encodermotor, I1 = Endlage unten, I2 = Endlage oben, Label \"txt_label\"\nimport time\nfrom lib.controller import *\nfrom lib.display import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I2_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\nMAX_DURCHFAHRTEN = 5\ndurchfahrten = 0\n# Zustandsautomat: Die Variable \"zustand\" merkt sich, in welcher Phase die Schranke ist.\n# Das Programm entscheidet dann jedes Mal nur: \"Was tue ich in DIESEM Zustand und\n# in welchen Zustand gehe ich danach?\" – genau wie im Zustandsdiagramm aus AB 4.\nzustand = \"SCHLIESSEN\"\n\nwhile True:                      # Hauptschleife – sie wird nur über break verlassen\n    display.set_attr(\"txt_label.text\", zustand + \" | Autos: \" + str(durchfahrten))\n    if zustand == \"SCHLIESSEN\":\n        schliessen()\n        zustand = \"GESCHLOSSEN\"  # Übergang in den nächsten Zustand\n    elif zustand == \"GESCHLOSSEN\":\n        if durchfahrten >= MAX_DURCHFAHRTEN:\n            break                # Parkhaus voll -> Automat beenden (Schranke bleibt zu)\n        time.sleep(3)\n        zustand = \"OEFFNEN\"\n    elif zustand == \"OEFFNEN\":\n        oeffnen()\n        zustand = \"OFFEN\"\n    elif zustand == \"OFFEN\":\n        time.sleep(2)\n        durchfahrten = durchfahrten + 1   # ein Auto ist durch -> zählen\n        zustand = \"SCHLIESSEN\"\n\n# wird erst nach dem break erreicht\ndisplay.set_attr(\"txt_label.text\", \"Parkhaus voll!\")\n", "P04_A2_Schranke_automatisch_controller.py": "# lib/controller.py  –  Projekt 4: Die automatische Schranke\n# Wird von ROBO Pro Coding automatisch aus der Controller-Konfiguration erzeugt.\n# NICHT abtippen: Bauteile im Controller eintragen und diese Datei nur zum Vergleich nutzen.\n\n# Bibliothek von fischertechnik: Sie enthält für jede Bauteilart eine \"Fabrik\"\n# (factory), die das passende Python-Objekt herstellt.\nimport fischertechnik.factories as txt_factory\n\n# Verbindung zur TXT-Hardware vorbereiten. Danach werden nur die Fabriken geladen,\n# die dieses Projekt braucht: Eingänge (I), Ausgänge (O), Motoren (M), Zähler (C).\ntxt_factory.init()\ntxt_factory.init_input_factory()\ntxt_factory.init_motor_factory()\ntxt_factory.init_counter_factory()\n\n# TXT_M = der Controller selbst (M = Master). Jedes Bauteil wird an ihn \"angehängt\".\nTXT_M = txt_factory.controller_factory.create_graphical_controller()\n\n# Jedes Bauteil: create_...(Controller, Anschlussnummer). Der Name setzt sich zusammen aus\n# Controller + Anschluss + Bauteiltyp (z. B. TXT_M + I1 + mini_switch) – GENAU dieser\n# Name muss in main.py stehen, sonst kommt ein NameError.\n\n# M1: Encodermotor (Schranke)\n# Encodermotor + eigener Impulszähler C1. set_motor() verbindet beide –\n# nur so kann set_distance() eine bestimmte Zahl von Impulsen fahren.\nTXT_M_M1_encodermotor = txt_factory.motor_factory.create_encodermotor(TXT_M, 1)\nTXT_M_C1_motor_step_counter = txt_factory.counter_factory.create_encodermotor_counter(TXT_M, 1)\nTXT_M_C1_motor_step_counter.set_motor(TXT_M_M1_encodermotor)\n\n# I1: Mini-Taster (Endlage unten) – is_closed() liefert True = gedrückt\nTXT_M_I1_mini_switch = txt_factory.input_factory.create_mini_switch(TXT_M, 1)\n\n# I2: Mini-Taster (Endlage oben) – is_closed() liefert True = gedrückt\nTXT_M_I2_mini_switch = txt_factory.input_factory.create_mini_switch(TXT_M, 2)\n\n# Konfiguration abgeschlossen – ab jetzt dürfen main.py & Co. die Bauteile benutzen.\ntxt_factory.initialized()\n"};
+
+const PROJECTS = [
+  {id:"P01", name:"Abstand messen", kit:"A1 Analoge Sensoren", base:"P01_A1_Abstand",
+   about:"Der Ultraschallsensor an I2 misst 20-mal den Abstand und zeigt ihn auf dem Display an.",
+   aboutZ:"Wie die Grundaufgabe, aber mit Einstellungen als Variablen (ANZAHL, PAUSE) und Anzeige „Messung 3/20: …“.",
+   switches:{}, angle:0},
+  {id:"P02", name:"Thermometer", kit:"A1 Analoge Sensoren", base:"P02_A1_Thermometer",
+   about:"Der NTC-Widerstand an I1 misst 10-mal die Temperatur, das Display zeigt sie mit einer Nachkommastelle.",
+   aboutZ:"Zusätzlich Umrechnung in Fahrenheit und am Ende der Mittelwert aller 10 Messungen.",
+   switches:{}, angle:0},
+  {id:"P03", name:"Schranke schließen", kit:"A2 Parkhausschranke", base:"P03_A2_Schranke_schliessen",
+   about:"Der Encodermotor M1 schließt die Schranke, bis der Endlagen-Taster I1 gedrückt wird.",
+   aboutZ:"Start-Check mit if/else, dann Öffnen auf Knopfdruck (Bedarfstaster I2) für eine feste Zeit und wieder Schließen.",
+   switches:{1:"unten", 2:"taster"}, angle:60},
+  {id:"P04", name:"Automatische Schranke", kit:"A2 Parkhausschranke", base:"P04_A2_Schranke_automatisch",
+   about:"Die Schranke öffnet und schließt 3-mal automatisch. Endlagen-Taster: I1 unten, I2 oben. Schließen und Öffnen sind Funktionen.",
+   aboutZ:"Die Schranke als Zustandsautomat mit Durchfahrt-Zähler: Nach 5 Autos ist das Parkhaus voll.",
+   switches:{1:"unten", 2:"oben"}, angle:40}
+];
+const proj = id => PROJECTS.find(p => p.id === id);
+const fileOf = (p, v) => FILES[proj(p).base + "_" + v + ".py"] || "";
+
+/* ============ Helfer ============ */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function store(k, v){ try{ k = "codelesen:" + k; if(v === undefined) return localStorage.getItem(k); if(v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); }catch(e){ return null; } }
+
+/* ============ Bauteile & Wortschatz ============ */
+const TYPES = {
+  mini_switch:["Mini-Taster","sen"], ultrasonic_distance_meter:["Ultraschall-Abstandssensor","sen"],
+  ntc_resistor:["NTC-Widerstand (Temperatur)","sen"], encodermotor:["Encodermotor","akt"],
+  motor_step_counter:["Impulszähler des Encodermotors","cnt"], motor:["Motor","akt"], led:["LED","akt"]
+};
+const PORTS = {I:"Eingang", M:"Motorausgang", C:"Zählereingang", O:"Ausgang"};
+function decode(name){
+  if(name === "TXT_M") return {cls:"ctl", short:"der Controller", text:"<b>TXT_M</b> = der Controller selbst (M = Master). Jedes Bauteil wird an ihn angehängt."};
+  const m = /^TXT_M_([IMCO])(\d+)_(\w+)$/.exec(name);
+  if(!m) return null;
+  const t = TYPES[m[3]] || [m[3], "sen"];
+  const lt = (proj(currentProjForNames) || {}).switches || {};
+  let role = "";
+  if(m[3] === "mini_switch" && lt[m[2]]) role = {unten:" (Endlage unten)", oben:" (Endlage oben)", taster:" (Bedarfstaster)"}[lt[m[2]]];
+  return {cls:t[1], short:t[0] + " an " + m[1] + m[2] + role,
+    text:"<b>" + t[0] + role + "</b> · Anschluss <b>" + m[1] + m[2] + "</b> (" + PORTS[m[1]] + " " + m[2] + ")"};
+}
+let currentProjForNames = "P01";
+const VOCAB = {
+  get_distance:"Sensor-Frage: liefert den Abstand in cm (ganze Zahl).",
+  get_temperature:"Sensor-Frage: liefert die Temperatur in °C (Kommazahl).",
+  is_closed:"Sensor-Frage: True, wenn der Taster gedrückt ist, sonst False.",
+  set_speed:"Aktor-Befehl: stellt Geschwindigkeit (0–512) und Richtung ein. Fährt noch nicht los!",
+  start:"Aktor-Befehl: Motor fährt mit der eingestellten Geschwindigkeit los.",
+  stop:"Aktor-Befehl: Motor hält an.",
+  set_attr:"Anzeige: schreibt einen Wert in ein Element des Displays, hier den Text von txt_label.",
+  sleep:"Warten: das Programm pausiert so viele Sekunden.",
+  set_motor:"verbindet den Impulszähler mit seinem Motor.",
+  set_distance:"Aktor-Befehl: Motor fährt eine bestimmte Anzahl Impulse.",
+  create_graphical_controller:"erzeugt das Objekt für den Controller.",
+  create_ultrasonic_distance_meter:"erzeugt das Objekt für einen Ultraschallsensor.",
+  create_ntc_resistor:"erzeugt das Objekt für einen NTC-Widerstand.",
+  create_mini_switch:"erzeugt das Objekt für einen Mini-Taster.",
+  create_encodermotor:"erzeugt das Objekt für einen Encodermotor.",
+  create_encodermotor_counter:"erzeugt das Objekt für den Impulszähler eines Encodermotors.",
+  initialized:"meldet: Konfiguration fertig, die Bauteile können benutzt werden.",
+  init:"bereitet die Verbindung zur TXT-Hardware vor.",
+  init_input_factory:"lädt die Fabrik für Eingänge (Sensoren, Taster).",
+  init_motor_factory:"lädt die Fabrik für Motoren.",
+  init_counter_factory:"lädt die Fabrik für Zähler."
+};
+const BUILTIN_INFO = {str:"str(x) wandelt x in Text um.", round:"round(x, 1) rundet x auf eine Nachkommastelle.", range:"range(n) liefert 0, 1, …, n−1.", print:"print(...) schreibt in die Konsole."};
+
+/* ============ Syntax-Highlighting ============ */
+const KW = new Set("def while for in if elif else not and or import from as True False None break return pass continue is lambda try except global".split(" "));
+const BI = new Set("print str round range int float len abs min max".split(" "));
+function hl(src){
+  const re = /(#.*$)|("(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/gm;
+  let out = "", last = 0, m;
+  while((m = re.exec(src))){
+    out += esc(src.slice(last, m.index)); last = re.lastIndex;
+    if(m[1]) out += '<span class="t-cm">' + esc(m[1]) + "</span>";
+    else if(m[2]) out += '<span class="t-st">' + esc(m[2]) + "</span>";
+    else if(m[3]) out += '<span class="t-nu">' + m[3] + "</span>";
+    else {
+      const w = m[4];
+      if(KW.has(w)) out += '<span class="t-kw">' + w + "</span>";
+      else if(/^TXT_M/.test(w)){ const d = decode(w); out += '<span class="t-' + (d ? d.cls : "sen") + '" title="' + esc(d ? d.short : "") + '">' + w + "</span>"; }
+      else if(src[m.index - 1] === ".") out += '<span class="t-me">' + w + "</span>";
+      else if(BI.has(w)) out += '<span class="t-bi">' + w + "</span>";
+      else out += w;
+    }
+  }
+  return out + esc(src.slice(last));
+}
+function hlAll(){ $$("pre.hl").forEach(p => { p.innerHTML = hl(p.textContent); }); }
+
+/* ============ Kommentare / Lies so ============ */
+function inlineComment(line){
+  let q = null;
+  for(let i = 0; i < line.length; i++){
+    const c = line[i];
+    if(q){ if(c === "\\") i++; else if(c === q) q = null; }
+    else if(c === '"' || c === "'") q = c;
+    else if(c === "#") return i;
+  }
+  return -1;
+}
+const isCm = l => /^\s*#/.test(l);
+const indentOf = l => l.search(/\S|$/);
+function codePart(l){ const i = inlineComment(l); return (i >= 0 ? l.slice(0, i) : l).replace(/\s+$/, ""); }
+function commentFor(lines, i){
+  const pre = [];
+  let j = i - 1;
+  const ind = indentOf(lines[i]);
+  while(j >= 0 && isCm(lines[j]) && indentOf(lines[j]) <= ind + 8){ pre.unshift(lines[j].trim().replace(/^#\s?/, "")); j--; }
+  if(j < 0) pre.length = 0; // Kopfkommentar der Datei nicht zuordnen
+  const post = [];
+  const ic = inlineComment(lines[i]);
+  let inl = "";
+  if(ic >= 0){
+    inl = lines[i].slice(ic + 1).trim();
+    let k = i + 1;
+    while(k < lines.length && isCm(lines[k]) && indentOf(lines[k]) >= ic - 2){ post.push(lines[k].trim().replace(/^#\s?/, "")); k++; }
+  }
+  return [pre.join(" "), [inl].concat(post).join(" ")].filter(Boolean).join(" — ");
+}
+function stripComments(code){
+  const out = [];
+  code.split("\n").forEach(l => {
+    if(isCm(l)) return;
+    const c = codePart(l);
+    if(c === "" && out.length && out[out.length - 1] === "") return;
+    out.push(c);
+  });
+  while(out.length && out[0] === "") out.shift();
+  return out.join("\n").replace(/\n+$/, "") + "\n";
+}
+function nm(name){ const d = decode(name); return d ? "„" + d.short + "“" : name; }
+function readAs(line, fns){
+  const s = codePart(line).trim();
+  if(!s) return null;
+  let m;
+  if(s === "import time") return "Lade das Zeit-Werkzeug, damit time.sleep() funktioniert.";
+  if(s === "from lib.controller import *") return "Hole alle Bauteile aus der Stückliste lib/controller.py.";
+  if(s === "from lib.display import *") return "Hole das Display-Objekt display, damit wir auf den Bildschirm schreiben können.";
+  if((m = /^import fischertechnik\.factories as (\w+)/.exec(s))) return "Lade die fischertechnik-Bibliothek und nenne sie kurz " + m[1] + ".";
+  if((m = /^txt_factory\.(init\w*)\(\)$/.exec(s))) return "Bereite vor: " + (VOCAB[m[1]] || m[1]);
+  if(s === "txt_factory.initialized()") return "Melde: Alle Bauteile sind eingetragen – das Hauptprogramm darf loslegen.";
+  if((m = /^TXT_M = /.exec(s))) return "Erzeuge den Controller und nenne ihn TXT_M.";
+  if((m = /^(TXT_M_\w+) = txt_factory\.\w+\.create_\w+\(TXT_M, (\d+)\)/.exec(s))) return "Erzeuge das Objekt für " + nm(m[1]) + " und gib ihm den Namen " + m[1] + ".";
+  if((m = /^(TXT_M_\w+)\.set_motor\((TXT_M_\w+)\)/.exec(s))) return "Verbinde den Impulszähler mit " + nm(m[2]) + ".";
+  if((m = /^(\w+) = (TXT_M_\w+)\.get_distance\(\)$/.exec(s))) return "Frage " + nm(m[2]) + " nach dem Abstand und speichere die Zahl (cm) in " + m[1] + ".";
+  if((m = /^(\w+) = (TXT_M_\w+)\.get_temperature\(\)$/.exec(s))) return "Frage " + nm(m[2]) + " nach der Temperatur und speichere die Kommazahl (°C) in " + m[1] + ".";
+  if((m = /^while not (TXT_M_\w+)\.is_closed\(\):$/.exec(s))) return "Solange " + nm(m[1]) + " NICHT gedrückt ist, wiederhole den eingerückten Block. Kurz: Warte, bis der Taster gedrückt ist.";
+  if((m = /^if (TXT_M_\w+)\.is_closed\(\):$/.exec(s))) return "Wenn " + nm(m[1]) + " gedrückt ist, dann führe den eingerückten Block aus.";
+  if(s === "while True:") return "Wiederhole den eingerückten Block für immer – bis ein break kommt.";
+  if((m = /^while (.+):$/.exec(s))) return "Solange „" + m[1] + "“ wahr ist, wiederhole den eingerückten Block.";
+  if((m = /^for (\w+) in range\((\w+)\):$/.exec(s))) return "Wiederhole den eingerückten Block " + m[2] + "-mal. " + m[1] + " zählt dabei 0, 1, 2, … mit.";
+  if((m = /^if (.+):$/.exec(s))) return "Wenn „" + m[1] + "“ wahr ist, dann führe den eingerückten Block aus.";
+  if((m = /^elif (.+):$/.exec(s))) return "Sonst, wenn „" + m[1] + "“ wahr ist, dann …";
+  if(s === "else:") return "Sonst (in allen anderen Fällen) führe diesen Block aus.";
+  if((m = /^def (\w+)\(\):$/.exec(s))) return "Lege einen Bauplan (Funktion) mit dem Namen " + m[1] + " an. Der Block läuft erst, wenn " + m[1] + "() aufgerufen wird.";
+  if(s === "break") return "Verlasse die Schleife sofort und mache unter ihr weiter.";
+  if((m = /^(\w+)\(\)$/.exec(s)) && fns.has(m[1])) return "Rufe die Funktion " + m[1] + " auf: Springe in ihren Block, arbeite ihn ab und komme dann hierher zurück.";
+  if((m = /^(TXT_M_\w+)\.set_speed\((\w+), Motor\.(CCW|CW)\)$/.exec(s))) return "Stelle " + nm(m[1]) + " auf Geschwindigkeit " + m[2] + (m[3] === "CW" ? " im Uhrzeigersinn (Schranke zu)" : " gegen den Uhrzeigersinn (Schranke auf)") + " ein. Er fährt noch nicht los!";
+  if((m = /^(TXT_M_\w+)\.start\(\)$/.exec(s))) return nm(m[1]) + ": Fahr los!";
+  if((m = /^(TXT_M_\w+)\.stop\(\)$/.exec(s))) return nm(m[1]) + ": Halt an!";
+  if((m = /^time\.sleep\((.+)\)$/.exec(s))) return "Warte " + m[1] + " Sekunden.";
+  if((m = /^display\.set_attr\("txt_label\.text", (.+)\)$/.exec(s))) return "Schreibe auf das Display: " + m[1];
+  if((m = /^print\((.+)\)$/.exec(s))) return "Gib in der Konsole aus: " + m[1];
+  if((m = /^(\w+) = \1 \+ (.+)$/.exec(s))) return "Erhöhe " + m[1] + " um " + m[2] + " (neuer Wert = alter Wert + " + m[2] + ").";
+  if((m = /^([A-Z][A-Z_0-9]*) = (.+)$/.exec(s))) return "Lege die Einstellung " + m[1] + " mit dem Wert " + m[2] + " an (GROSS geschrieben = wird nicht verändert).";
+  if((m = /^(\w+) = (.+)$/.exec(s))) return "Berechne „" + m[2] + "“ und speichere das Ergebnis in der Variablen " + m[1] + ".";
+  return null;
+}
+function badgeFor(line, fns){
+  const s = codePart(line).trim();
+  let m;
+  if(/^while not .+:$/.test(s)) return ["b-wait","Warten bis …"];
+  if(s === "while True:") return ["b-loop","Endlos-Schleife"];
+  if(/^while .+:$/.test(s)) return ["b-loop","Schleife (solange …)"];
+  if(/^for .+:$/.test(s)) return ["b-loop","Zählschleife"];
+  if(/^(if|elif) .+:$/.test(s) || s === "else:") return ["b-if","Entscheidung"];
+  if(/^def /.test(s)) return ["b-def","Funktion (Bauplan)"];
+  if(s === "break") return ["b-end","Ausstieg"];
+  if((m = /^(\w+)\(\)$/.exec(s)) && fns.has(m[1])) return ["b-call","Funktionsaufruf"];
+  return null;
+}
+
+/* ============ Quiz-Engine ============ */
+function normalize(s){ return String(s).trim().replace(/^["'„“]+|["'„“]+$/g, "").replace(/\s+/g, " "); }
+function renderQuiz(el, key, qs){
+  el.innerHTML = "";
+  if(!qs || !qs.length){ el.innerHTML = '<p class="muted small">Für diese Datei gibt es keine Fragen.</p>'; return; }
+  const head = document.createElement("div"); head.className = "qhead";
+  head.innerHTML = '<h3 style="margin:0">Fragen</h3><span class="score"></span>';
+  el.appendChild(head);
+  const upd = () => { const n = qs.filter((q, i) => store(key + ":" + i) === "1").length; head.querySelector(".score").textContent = n + " / " + qs.length + " richtig"; };
+  qs.forEach((q, i) => {
+    const b = document.createElement("div"); b.className = "q";
+    const done = store(key + ":" + i) === "1";
+    if(done) b.classList.add("ok");
+    b.innerHTML = '<div class="qq"><span class="qn">' + (i + 1) + "</span>" + q.q + "</div>" + (q.code ? '<pre class="code">' + hl(q.code) + "</pre>" : "");
+    const fb = document.createElement("div"); fb.className = "fb";
+    const win = () => { store(key + ":" + i, "1"); b.classList.add("ok"); fb.className = "fb show good"; fb.innerHTML = "✔ Richtig! " + (q.e || ""); upd(); };
+    const lose = msg => { fb.className = "fb show bad"; fb.innerHTML = "✘ " + (msg || "Noch nicht. Lies die Zeile noch einmal genau."); };
+    if(q.o){
+      const box = document.createElement("div"); box.className = "opts";
+      q.o.forEach((o, oi) => {
+        const bt = document.createElement("button"); bt.className = "opt"; bt.innerHTML = o;
+        if(done && oi === q.a) bt.classList.add("right");
+        bt.onclick = () => { $$(".opt", box).forEach(x => x.classList.remove("wrong")); if(oi === q.a){ bt.classList.add("right"); win(); } else { bt.classList.add("wrong"); lose(q.h); } };
+        box.appendChild(bt);
+      });
+      b.appendChild(box);
+    } else {
+      const r = document.createElement("div"); r.className = "row-inline";
+      r.innerHTML = '<input type="text" placeholder="Antwort eingeben"><button class="btn pri sm">Prüfen</button>';
+      const inp = r.querySelector("input");
+      const chk = () => {
+        const v = normalize(inp.value);
+        const ok = q.a.some(a => { if(q.num){ return Math.abs(parseFloat(v.replace(",", ".")) - parseFloat(a)) < 1e-9; } return q.ci ? v.toLowerCase() === a.toLowerCase() : v === a; });
+        if(ok) win(); else lose(v && q.cs && v.toLowerCase() === q.a[0].toLowerCase() ? "Fast! Achte auf Groß- und Kleinschreibung." : q.h);
+      };
+      r.querySelector("button").onclick = chk;
+      inp.addEventListener("keydown", e => { if(e.key === "Enter") chk(); });
+      b.appendChild(r);
+    }
+    if(done){ fb.className = "fb show good"; fb.innerHTML = "✔ Bereits gelöst. " + (q.e || ""); }
+    b.appendChild(fb);
+    el.appendChild(b);
+  });
+  upd();
+}
+
+const QUIZ = {
+ q1:[
+  {q:"Ein Mini-Taster steckt an Eingang <b>I3</b>. Wie heißt seine Variable?", a:["TXT_M_I3_mini_switch"], cs:true, h:"Schema: Controller _ Anschluss _ Bauteiltyp.", e:"Controller + Anschluss + Typ, verbunden mit Unterstrichen."},
+  {q:"Was steckt an <code>TXT_M_I2_ultrasonic_distance_meter</code>?", o:["Ein Motor an Ausgang M2","Ein Ultraschall-Abstandssensor an Eingang I2","Ein Taster an Eingang I2","Ein Temperatursensor an I2"], a:1, e:"I2 = Eingang 2, ultrasonic_distance_meter = Ultraschall-Abstandssensor."},
+  {q:"Ein Encodermotor hängt an <b>M1</b>. Wie heißt seine Variable?", a:["TXT_M_M1_encodermotor"], cs:true, h:"Motoren hängen an M-Anschlüssen. Typ: encodermotor."},
+  {q:"In welcher Datei wird festgelegt, welche Bauteile an welchen Anschlüssen stecken?", o:["main.py","lib/controller.py","lib/display.py"], a:1, e:"Die Stückliste wird von ROBO Pro Coding automatisch erzeugt."},
+  {q:"In <code>main.py</code> steht <code>TXT_M_I1_Mini_switch.is_closed()</code>. Was passiert?", o:["Funktioniert, Python ignoriert Großbuchstaben","NameError – den Namen gibt es so nicht","Der Taster wird einfach als „nicht gedrückt“ gelesen"], a:1, e:"Python unterscheidet Groß-/Kleinschreibung: Mini_switch ≠ mini_switch."},
+  {q:"Wozu dient <code>from lib.controller import *</code> in main.py?", o:["Es startet den Controller neu","Es holt alle Bauteile (Namen) aus lib/controller.py in main.py","Es lädt das Display"], a:1, e:"Der Stern * heißt: alles holen."},
+  {q:"Warum gibt es in P03 neben dem Encodermotor auch <code>TXT_M_C1_motor_step_counter</code>?", o:["Er zählt die Impulse (Umdrehungen) des Encodermotors","Er misst die Geschwindigkeit des Autos","Er ist ein zweiter Motor"], a:0, e:"Mit dem Zähler kann der Motor eine bestimmte Strecke (Anzahl Impulse) fahren."},
+  {q:"Was steckt in Projekt 4 an <code>TXT_M_I2_mini_switch</code> – und was in Projekt 3?", o:["P04: Endlage oben · P03: Bedarfstaster","Beides Endlage unten","P04: Ultraschallsensor · P03: Taster"], a:0, e:"Der Name verrät nur Anschluss und Bauteiltyp – die <b>Aufgabe</b> im Modell steht im Kommentar der controller.py. Deshalb lohnt es sich, die Stückliste zu lesen!"}
+ ],
+ q2:[
+  {q:"Was steht nach dieser Zeile in der Variablen <code>abstand</code>?", code:"abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()", o:["Der Text „Abstand“","Eine ganze Zahl: der Abstand in cm","True oder False"], a:1, e:"get_distance() ist eine Sensor-Frage, die Antwort (z. B. 23) wird gespeichert."},
+  {q:"Was passiert, wenn nur diese Zeile ausgeführt wird?", code:"TXT_M_M1_encodermotor.set_speed(200, Motor.CW)", o:["Der Motor fährt mit 200 los","Nichts bewegt sich – es wird nur eingestellt","Der Motor fährt 200 Impulse"], a:1, e:"Erst start() lässt den Motor losfahren."},
+  {q:"<code>TXT_M_I1_mini_switch.is_closed()</code> ist …", o:["ein Aktor-Befehl, der den Taster drückt","eine Sensor-Frage, die True oder False liefert","eine Funktion, die wir selbst geschrieben haben"], a:1},
+  {q:"Welche Zeile führt zu einem Fehler?", o:['<code>"Abstand: " + str(abstand) + " cm"</code>','<code>"Abstand: " + abstand + " cm"</code>','<code>str(round(temp, 1)) + " °C"</code>'], a:1, e:"abstand ist eine Zahl – ohne str() gibt es einen TypeError."},
+  {q:"Was ergibt <code>round(22.4378, 1)</code>?", a:["22.4"], num:true, h:"Eine Nachkommastelle – auf- oder abrunden?", e:"Auf eine Nachkommastelle gerundet."},
+  {q:"<code>Motor.CCW</code> bedeutet bei unserer Schranke …", o:["zu (schließen)","auf (öffnen)","anhalten"], a:1, e:"CCW = counter clockwise = gegen den Uhrzeigersinn = auf."},
+  {q:"Welche Zahl ist die <b>höchste</b> Geschwindigkeit für set_speed?", a:["512"], num:true, h:"Schaut in die Tabelle oben.", e:"0 … 512."},
+  {q:"Welche Zeile <b>fehlt</b>, wenn <code>display.set_attr(...)</code> einen NameError auslöst?", o:["import time","from lib.display import *","from lib.controller import *"], a:1, e:"display kommt aus lib/display.py."}
+ ],
+ q3:[
+  {q:"Welche Zahlen gibt dieses Programm aus?", code:"for i in range(4):\n    print(i)", o:["1 2 3 4","0 1 2 3","0 1 2 3 4"], a:1, e:"range(4) beginnt bei 0 und endet VOR 4."},
+  {q:"Welchen Wert hat <code>zaehler</code> am Ende?", code:"zaehler = 0\nwhile zaehler < 5:\n    zaehler = zaehler + 2", a:["6"], num:true, h:"Spielt es durch: 0 → 2 → 4 → … Wann ist zaehler < 5 falsch?", e:"0, 2, 4 sind kleiner als 5 → noch einmal +2 → 6. Jetzt ist die Bedingung falsch."},
+  {q:"Wie liest man diese zwei Zeilen am besten?", code:"while not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)", o:["Warte 0,01 Sekunden und drücke dann den Taster","Warte, bis der Taster an I1 gedrückt ist","Wiederhole, solange der Taster gedrückt ist"], a:1, e:"Das ist das Muster „Warten bis …“."},
+  {q:"Wann wird der Code <b>in</b> der Funktion ausgeführt?", code:"def schliessen():\n    TXT_M_M1_encodermotor.start()", o:["Sobald Python die Zeile def liest","Erst wenn schliessen() aufgerufen wird","Nie"], a:1, e:"def ist nur der Bauplan. Ausgeführt wird beim Aufruf."},
+  {q:"Was macht <code>break</code>?", o:["Es beendet das ganze Programm mit Fehler","Es verlässt die Schleife sofort","Es macht eine Pause"], a:1},
+  {q:"Was steht auf dem Display, wenn die Temperatur 20 °C beträgt?", code:'temp = TXT_M_I1_ntc_resistor.get_temperature()\nif temp > 25:\n    display.set_attr("txt_label.text", "warm")\nelse:\n    display.set_attr("txt_label.text", "kalt")', o:["warm","kalt","warm und dann kalt"], a:1, e:"20 > 25 ist falsch → else-Zweig."},
+  {q:"Welchen Wert hat <code>summe</code> am Ende?", code:"summe = 0\nfor i in range(3):\n    summe = summe + 10", a:["30"], num:true, h:"Der Block läuft 3-mal.", e:"0 + 10 + 10 + 10 = 30."},
+  {q:"Wie oft wird <code>oeffnen()</code> hier aufgerufen?", code:"schliessen()\nfor zyklus in range(3):\n    oeffnen()\n    schliessen()", a:["3"], num:true, e:"Einmal pro Schleifendurchlauf."}
+ ]
+};
+
+const READQ = {
+ P01_Grund:[
+  {q:"<b>Schritt 1+2:</b> Welcher Sensor wird benutzt und an welchem Anschluss?", o:["Taster an I1","Ultraschall-Abstandssensor an I2","NTC an I2"], a:1},
+  {q:"Wie oft wird gemessen?", a:["20"], num:true, h:"Schaut in die while-Zeile und auf den Startwert von zaehler."},
+  {q:"Wie lange läuft das Programm ungefähr?", o:["0,5 Sekunden","10 Sekunden","20 Sekunden"], a:1, e:"20 Messungen × 0,5 s = 10 s."},
+  {q:"Was passiert, wenn man die Zeile <code>zaehler = zaehler + 1</code> löscht?", o:["Es wird nur einmal gemessen","Die Schleife endet nie","Fehlermeldung"], a:1, e:"zaehler bleibt 0, 0 < 20 ist immer wahr."},
+  {q:"Was zeigt das Display bei einem Abstand von 23 cm?", a:["Abstand: 23 cm"], h:"Achtet auf Leerzeichen innerhalb der Anführungszeichen."}
+ ],
+ P01_Zusatz:[
+  {q:"Warum steht dort <code>&lt;=</code> und nicht <code>&lt;</code>?", o:["Weil messung bei 1 beginnt – sonst gäbe es nur 19 Messungen","Weil <= schneller ist","Das ist egal"], a:0},
+  {q:"Was steht ganz am Ende auf dem Display?", a:["Fertig!"], h:"Schaut nach der Schleife (nicht eingerückt)."},
+  {q:"Was muss man ändern, damit 50-mal im Abstand von 1 Sekunde gemessen wird?", o:["Nur die while-Zeile","ANZAHL = 50 und PAUSE = 1","time.sleep(PAUSE) durch time.sleep(50) ersetzen"], a:1, e:"Genau dafür stehen die Einstellungen oben."},
+  {q:"Was zeigt das Display bei der 3. Messung mit 17 cm?", a:["Messung 3/20: 17 cm"]}
+ ],
+ P02_Grund:[
+  {q:"Welche Werte nimmt <code>i</code> nacheinander an?", o:["1 bis 10","0 bis 9","0 bis 10"], a:1},
+  {q:"Warum wurde hier <code>for</code> statt <code>while</code> gewählt?", o:["Weil die Anzahl der Durchläufe vorher feststeht","Weil for schneller misst","Weil while bei Temperaturen nicht geht"], a:0},
+  {q:"Der NTC liefert <code>22.4378</code>. Was steht auf dem Display?", a:["22.4 °C"], h:"round(…, 1) und dann + \" °C\""},
+  {q:"Wie lange dauert das Programm ungefähr?", a:["10"], num:true, h:"Antwort in Sekunden als Zahl.", e:"10 Durchläufe × 1 s."}
+ ],
+ P02_Zusatz:[
+  {q:"Warum steht <code>summe = 0</code> <b>vor</b> der Schleife?", o:["Sonst würde die Summe in jedem Durchlauf wieder gelöscht","Weil Python das so verlangt","Damit die Schleife schneller läuft"], a:0},
+  {q:"Was ergibt <code>20 * 1.8 + 32</code>?", a:["68"], num:true, h:"Punkt vor Strich."},
+  {q:"Fünf Messungen ergeben 20,0 °C und fünf Messungen 22,0 °C. Welcher Mittelwert wird angezeigt? (nur die Zahl)", a:["21", "21.0"], num:true, e:"(5·20 + 5·22) : 10 = 21,0."},
+  {q:"Warum steht die Mittelwert-Berechnung <b>nach</b> der Schleife?", o:["Erst dann stecken alle 10 Werte in summe","Weil man nach der Schleife nicht mehr rechnen darf","Das ist egal"], a:0}
+ ],
+ P03_Grund:[
+  {q:"Was bewirkt <code>while not TXT_M_I1_mini_switch.is_closed():</code> mit <code>time.sleep(0.01)</code> darunter?", o:["Der Motor wird 0,01 s eingeschaltet","Das Programm wartet, bis die Schranke unten den Taster drückt","Der Taster wird 100-mal gedrückt"], a:1},
+  {q:"Warum ist das besser als eine feste Fahrzeit (z. B. <code>time.sleep(2)</code>)?", o:["Es funktioniert egal, wo die Schranke am Anfang steht","Es ist kürzer","Es braucht keinen Taster"], a:0},
+  {q:"Die Schranke ist beim Start <b>schon unten</b>. Was passiert?", o:["Der Motor startet und stoppt sofort wieder, Display: geschlossen","Der Motor dreht endlos","Fehlermeldung"], a:0, e:"Die Bedingung ist sofort falsch → die Schleife wird übersprungen."},
+  {q:"Welche Zeile lässt den Motor tatsächlich losfahren? (Zeilennummer)", a:["10"], num:true}
+ ],
+ P03_Zusatz:[
+  {q:"Die Schranke steht beim Start <b>offen</b>. Welche Texte erscheinen nacheinander, bis jemand den Bedarfstaster drückt?", o:["bereits geschlossen","schliesse ... → geschlossen","geschlossen → schliesse ..."], a:1},
+  {q:"Warum wird nach Zeit geöffnet, aber bis zum Taster geschlossen?", o:["Oben gibt es keinen Endlagen-Taster","Öffnen ist schneller","Weil Motor.CCW keinen Taster kennt"], a:0},
+  {q:"Wie viele Sekunden bleibt die Schranke offen, nachdem sie oben angehalten hat?", a:["3"], num:true},
+  {q:"Was bedeutet der Bereich unter <code>else:</code>?", o:["Er läuft nur, wenn die Schranke beim Start NICHT unten ist","Er läuft immer","Er läuft nur, wenn der Bedarfstaster gedrückt ist"], a:0}
+ ],
+ P04_Grund:[
+  {q:"Wie oft öffnet die Schranke?", a:["3"], num:true},
+  {q:"Wie oft wird <code>schliessen()</code> insgesamt aufgerufen?", a:["4"], num:true, h:"Vergesst den Aufruf vor der Schleife nicht.", e:"1-mal vorher + 3-mal in der Schleife."},
+  {q:"Warum wird vor der Schleife einmal <code>schliessen()</code> aufgerufen?", o:["Damit der Startzustand immer gleich ist","Weil Funktionen einmal getestet werden müssen","Damit der Motor warm wird"], a:0},
+  {q:"Worin unterscheiden sich <code>schliessen()</code> und <code>oeffnen()</code>?", o:["Nur in der Geschwindigkeit","In Richtung (CW/CCW) und im Taster, auf den gewartet wird (I1/I2)","Gar nicht"], a:1},
+  {q:"Wie viele Sekunden wird pro Zyklus gewartet (ohne Fahrzeit)?", a:["5"], num:true, e:"3 s zu + 2 s offen."}
+ ],
+ P04_Zusatz:[
+  {q:"In welcher Reihenfolge werden die Zustände durchlaufen?", o:["SCHLIESSEN → GESCHLOSSEN → OEFFNEN → OFFEN → SCHLIESSEN …","OFFEN → OEFFNEN → SCHLIESSEN → GESCHLOSSEN","GESCHLOSSEN → SCHLIESSEN → OFFEN → OEFFNEN"], a:0},
+  {q:"Wie oft öffnet die Schranke, bevor „Parkhaus voll!“ erscheint?", a:["5"], num:true, h:"Spielt den Zustand GESCHLOSSEN mit durchfahrten = 0, 1, … durch."},
+  {q:"Wo wird <code>durchfahrten</code> erhöht?", o:["Im Zustand OFFEN","Im Zustand GESCHLOSSEN","In der Funktion oeffnen()"], a:0},
+  {q:"Was passiert mit <code>MAX_DURCHFAHRTEN = 0</code>?", o:["Die Schranke schließt einmal und das Programm meldet sofort „Parkhaus voll!“","Endlosschleife","Fehlermeldung"], a:0},
+  {q:"Was steht ganz am Ende auf dem Display?", a:["Parkhaus voll!"]}
+ ],
+ P01_controller:[
+  {q:"Welche Fabrik wird in P01 geladen?", o:["Nur die Eingangs-Fabrik (init_input_factory)","Eingänge und Motoren","Alle"], a:0, e:"Es gibt nur einen Sensor."},
+  {q:"Was müsste man im Controller ändern, wenn der Sensor an I4 steckt?", o:["Nichts","Die Anschlussnummer 2 → 4 (und dann heißt er TXT_M_I4_…)","Nur den Kommentar"], a:1}
+ ],
+ P02_controller:[
+  {q:"Wie heißt das NTC-Objekt?", a:["TXT_M_I1_ntc_resistor"], cs:true}
+ ],
+ P03_controller:[
+  {q:"Wozu dient <code>TXT_M_C1_motor_step_counter.set_motor(TXT_M_M1_encodermotor)</code>?", o:["Es verbindet Zähler und Motor","Es startet den Motor","Es zählt die Autos"], a:0},
+  {q:"Wie viele Bauteil-Objekte (ohne TXT_M) werden erzeugt?", a:["4"], num:true, e:"Motor, Zähler, zwei Taster."}
+ ],
+ P04_controller:[
+  {q:"Was ist der Unterschied zur controller.py von P03?", o:["I2 ist hier die Endlage oben statt des Bedarfstasters","Hier gibt es keinen Motor","Hier gibt es keinen Taster"], a:0}
+ ]
+};
+
+/* ============ Muster (Baustein 3) ============ */
+const MUSTER = [
+ {t:"① Zählschleife mit while", erk:"Zähler vor der Schleife, Bedingung im Kopf, Erhöhen im Block", lies:"Solange der Zähler kleiner als 20 ist: messen, anzeigen, Zähler +1.", code:"zaehler = 0\nwhile zaehler < 20:\n    ...\n    zaehler = zaehler + 1", vork:"P01 Grund, P01 Zusatz"},
+ {t:"② Zählschleife mit for", erk:"for … in range(n):", lies:"Wiederhole 10-mal; i zählt 0 bis 9.", code:"for i in range(10):\n    temp = TXT_M_I1_ntc_resistor.get_temperature()\n    time.sleep(1)", vork:"P02, P04 Grund"},
+ {t:"③ Warten bis …", erk:"while not <Taster>.is_closed(): + kurze Pause", lies:"Warte, bis der Taster gedrückt ist (alle 0,01 s nachsehen).", code:"while not TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)", vork:"P03, P04"},
+ {t:"④ Entscheidung if / else", erk:"if Bedingung: … else: …", lies:"Wenn die Schranke schon unten ist, melde das – sonst schließe sie.", code:'if TXT_M_I1_mini_switch.is_closed():\n    display.set_attr("txt_label.text", "bereits geschlossen")\nelse:\n    ...', vork:"P03 Zusatz, P04 Zusatz"},
+ {t:"⑤ Aufsummieren", erk:"summe = 0 vor der Schleife, summe = summe + wert im Block", lies:"Starte bei 0 und lege jeden Messwert oben drauf.", code:"summe = 0\nfor i in range(10):\n    summe = summe + celsius\nmittelwert = summe / 10", vork:"P02 Zusatz"},
+ {t:"⑥ Funktion: Bauplan und Aufruf", erk:"def name(): … und später name()", lies:"Lege den Ablauf „schliessen“ einmal fest und benutze ihn, so oft du willst.", code:"def schliessen():\n    TXT_M_M1_encodermotor.start()\n    ...\n\nschliessen()", vork:"P04"},
+ {t:"⑦ Zustandsautomat", erk:"Variable zustand, while True:, if/elif je Zustand, break", lies:"Merke dir die Phase. In jeder Runde: Tu, was in dieser Phase dran ist, und wechsle in die nächste.", code:'zustand = "SCHLIESSEN"\nwhile True:\n    if zustand == "SCHLIESSEN":\n        schliessen()\n        zustand = "GESCHLOSSEN"\n    elif ...', vork:"P04 Zusatz"}
+];
+
+/* ============ Code-Puzzles ============ */
+const PUZZLES = {
+ pz1:{fixed:["import time","from lib.controller import *","from lib.display import *",""],
+   lines:["TXT_M_M1_encodermotor.set_speed(200, Motor.CW)","TXT_M_M1_encodermotor.start()","while not TXT_M_I1_mini_switch.is_closed():","    time.sleep(0.01)","TXT_M_M1_encodermotor.stop()",'display.set_attr("txt_label.text", "geschlossen")'],
+   pairs:[[0,1],[1,2],[2,4],[4,5]],
+   ok:"Super! Einstellen → losfahren → warten bis Endlage → anhalten → melden."},
+ pz2:{fixed:["import time","from lib.controller import *","from lib.display import *",""],
+   lines:["summe = 0","for i in range(10):","    celsius = TXT_M_I1_ntc_resistor.get_temperature()","    summe = summe + celsius","    time.sleep(1)","mittelwert = summe / 10",'display.set_attr("txt_label.text", "Mittelwert: " + str(round(mittelwert, 1)) + " °C")'],
+   pairs:[[0,1],[2,3],[1,5],[5,6]],
+   ok:"Richtig! Summe vorher auf 0, im Block messen und addieren, danach teilen und anzeigen."}
+};
+function renderPuzzle(id){
+  const P = PUZZLES[id], el = $("#" + id);
+  let order = P.lines.map((_, i) => i);
+  const saved = store("pz:" + id);
+  if(saved){ try{ order = JSON.parse(saved); }catch(e){} }
+  else { do { order.sort(() => Math.random() - .5); } while(order.every((v, i) => v === i)); }
+  const draw = (state, msg) => {
+    el.innerHTML = '<pre class="code" style="margin-top:0">' + hl(P.fixed.join("\n")) + "</pre>";
+    const ul = document.createElement("ul"); ul.className = "pars" + (state === "ok" ? " ok" : "");
+    order.forEach((li, pos) => {
+      const item = document.createElement("li");
+      item.innerHTML = '<span class="c">' + hl(P.lines[li]) + '</span><button title="nach oben">▲</button><button title="nach unten">▼</button>';
+      const [up, dn] = item.querySelectorAll("button");
+      up.onclick = () => { if(pos > 0){ [order[pos-1], order[pos]] = [order[pos], order[pos-1]]; store("pz:" + id, JSON.stringify(order)); draw(); } };
+      dn.onclick = () => { if(pos < order.length - 1){ [order[pos+1], order[pos]] = [order[pos], order[pos+1]]; store("pz:" + id, JSON.stringify(order)); draw(); } };
+      ul.appendChild(item);
+    });
+    el.appendChild(ul);
+    const bar = document.createElement("div"); bar.className = "row-inline";
+    bar.innerHTML = '<button class="btn pri">Prüfen</button><button class="btn">Neu mischen</button>';
+    const fb = document.createElement("div"); fb.className = "fb" + (msg ? " show " + (state === "ok" ? "good" : "bad") : ""); fb.innerHTML = msg || "";
+    bar.children[0].onclick = () => { const r = checkPuzzle(P, order); draw(r === true ? "ok" : "bad", r === true ? "✔ " + P.ok : "✘ " + r); };
+    bar.children[1].onclick = () => { store("pz:" + id, null); do { order.sort(() => Math.random() - .5); } while(order.every((v, i) => v === i)); draw(); };
+    el.appendChild(bar); el.appendChild(fb);
+  };
+  draw();
+}
+function checkPuzzle(P, order){
+  const L = order.map(i => P.lines[i]);
+  for(let k = 0; k < L.length; k++){
+    const ind = indentOf(L[k]) > 0;
+    const prev = k > 0 ? L[k-1] : "";
+    if(ind && !(indentOf(prev) > 0 || /:$/.test(prev))) return "Eine eingerückte Zeile steht nicht direkt unter einer Zeile mit Doppelpunkt (oder unter ihren Geschwistern).";
+    if(/:$/.test(L[k]) && !(k + 1 < L.length && indentOf(L[k+1]) > 0)) return "Unter einer Zeile mit Doppelpunkt muss ein eingerückter Block folgen.";
+  }
+  const pos = {}; order.forEach((li, p) => pos[li] = p);
+  for(const [a, b] of P.pairs){ if(pos[a] > pos[b]) return "Die Struktur passt, aber die Reihenfolge noch nicht. Tipp: „" + P.lines[b].trim() + "“ ergibt erst nach „" + P.lines[a].trim() + "“ Sinn."; }
+  return true;
+}
+
+/* ============ Navigation ============ */
+function show(p){
+  if(!document.getElementById(p)) p = "start";
+  $$("section.page").forEach(s => s.classList.toggle("on", s.id === p));
+  $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.p === p));
+  if(location.hash !== "#" + p) history.replaceState(null, "", "#" + p);
+  window.scrollTo(0, 0);
+  if(p === "s5") ensurePython();
+}
+$$("#nav button").forEach(b => b.onclick = () => show(b.dataset.p));
+$$("[data-go]").forEach(b => b.onclick = () => show(b.dataset.go));
+
+/* ============ Baustein 1: Namens-Baukasten ============ */
+(function(){
+  const ps = $("#nb-port");
+  [["I",8],["M",4],["C",4],["O",8]].forEach(([k, n]) => { for(let i = 1; i <= n; i++){ const o = document.createElement("option"); o.value = k + i; o.textContent = k + i + " – " + PORTS[k] + " " + i; ps.appendChild(o); } });
+  const need = {mini_switch:"I", ultrasonic_distance_meter:"I", ntc_resistor:"I", encodermotor:"M", motor_step_counter:"C"};
+  const upd = () => {
+    const p = ps.value, t = $("#nb-type").value;
+    $("#nb-out").innerHTML = hl("TXT_M_" + p + "_" + t);
+    const ok = p[0] === need[t];
+    $("#nb-msg").innerHTML = ok ? "✔ Passt: " + TYPES[t][0] + " gehört an einen " + PORTS[need[t]] + "."
+      : '<span class="warn">✘ Passt nicht:</span> Ein ' + TYPES[t][0] + " gehört an einen <b>" + PORTS[need[t]] + "</b> (" + need[t] + "…), nicht an " + p + ".";
+  };
+  ps.onchange = upd; $("#nb-type").onchange = upd; upd();
+})();
+
+/* ============ Baustein 4: Code-Leser ============ */
+const R = {p:"P01", v:"Grund", cm:true, st:false, sel:null};
+function renderReaderControls(){
+  const gp = $("#rd-proj"), gv = $("#rd-ver");
+  gp.querySelectorAll("button").forEach(b => b.remove()); gv.querySelectorAll("button").forEach(b => b.remove());
+  PROJECTS.forEach(P => { const b = document.createElement("button"); b.className = "btn sm" + (R.p === P.id ? " on" : ""); b.textContent = P.id + " " + P.name; b.onclick = () => { R.p = P.id; R.sel = null; renderReader(); }; gp.appendChild(b); });
+  [["Grund","main.py · Grundaufgabe"],["Zusatz","main.py · Zusatz"],["controller","lib/controller.py"]].forEach(([v, l]) => { const b = document.createElement("button"); b.className = "btn sm" + (R.v === v ? " on" : ""); b.textContent = l; b.onclick = () => { R.v = v; R.sel = null; renderReader(); }; gv.appendChild(b); });
+  $("#rd-cm").textContent = "💬 Kommentare: " + (R.cm ? "an" : "aus (Übungsmodus)");
+  $("#rd-st").textContent = "🧱 Struktur: " + (R.st ? "an" : "aus");
+  $("#rd-cm").classList.toggle("on", !R.cm); $("#rd-st").classList.toggle("on", R.st);
+}
+$("#rd-cm").onclick = () => { R.cm = !R.cm; renderReader(); };
+$("#rd-st").onclick = () => { R.st = !R.st; renderReader(); };
+function renderReader(){
+  currentProjForNames = R.p;
+  renderReaderControls();
+  const P = proj(R.p);
+  $("#rd-about").innerHTML = "<b>" + P.id + " · " + P.name + "</b> <span class='muted'>(" + P.kit + ")</span> – " + (R.v === "Zusatz" ? P.aboutZ : R.v === "controller" ? "Die Stückliste dieses Projekts. Sie wird von ROBO Pro Coding erzeugt." : P.about);
+  const code = fileOf(R.p, R.v).replace(/\n+$/, "");
+  const lines = code.split("\n");
+  const fns = new Set(lines.map(l => (/^def (\w+)/.exec(l) || [])[1]).filter(Boolean));
+  const view = $("#rd-code"); view.innerHTML = "";
+  $("#reader").classList.toggle("struct", R.st);
+  lines.forEach((line, i) => {
+    const comment = isCm(line), blank = !line.trim();
+    const r = document.createElement("div"); r.className = "r" + ((!R.cm && comment) ? " hid" : "") + (R.sel === i ? " sel" : "");
+    let shown = R.cm ? line : codePart(line);
+    let body;
+    if(comment || blank){ body = hl(shown); }
+    else {
+      const lead = indentOf(shown); let g = "";
+      for(let k = 0; k < Math.floor(lead / 4); k++) g += '<span class="ig ig' + (k % 4) + '">    </span>';
+      body = g + " ".repeat(lead % 4) + hl(shown.slice(lead));
+    }
+    const bd = (!comment && !blank) ? badgeFor(line, fns) : null;
+    r.innerHTML = '<span class="ln">' + (i + 1) + '</span><span class="src">' + (body || " ") + "</span>" + (bd ? '<span class="badge ' + bd[0] + '">' + bd[1] + "</span>" : "");
+    if(!comment && !blank) r.onclick = () => { R.sel = i; $$(".r", view).forEach(x => x.classList.remove("sel")); r.classList.add("sel"); renderPanel(lines, i, fns); };
+    view.appendChild(r);
+  });
+  if(R.sel != null) renderPanel(lines, R.sel, fns);
+  else $("#rd-panel").innerHTML = '<h4>👆 Klicke auf eine Codezeile</h4><p class="small muted">Hier erscheinen dann:</p><ul class="small muted"><li>die Bauteile in dieser Zeile</li><li>die Befehle und was sie tun</li><li>„Lies so“ – die Zeile als deutscher Satz</li><li>der Kommentar aus der Musterlösung</li></ul><p class="small muted">Im <b>Übungsmodus</b> (Kommentare aus) überlegt ihr erst selbst und deckt dann auf.</p>';
+  renderChecklist();
+  renderQuiz($("#rd-quiz"), "rd:" + R.p + "_" + R.v, READQ[R.p + "_" + R.v]);
+}
+function renderPanel(lines, i, fns){
+  const line = lines[i];
+  const names = Array.from(new Set(codePart(line).match(/TXT_M\w*/g) || []));
+  const meths = Array.from(new Set((codePart(line).match(/\.(\w+)\(/g) || []).map(x => x.slice(1, -1))));
+  const bis = Array.from(new Set((codePart(line).match(/\b(str|round|range|print)\(/g) || []).map(x => x.slice(0, -1))));
+  let h = "<h4>Zeile " + (i + 1) + "</h4><pre class='code' style='margin:4px 0 8px'>" + hl(codePart(line).trim()) + "</pre>";
+  names.forEach(n => { const d = decode(n); if(d) h += '<span class="chip ' + d.cls + '">🧩 <code>' + n + "</code><br>" + d.text + "</span>"; });
+  meths.forEach(mm => { if(VOCAB[mm]) h += '<span class="chip">⚙️ <code>.' + mm + "()</code> – " + VOCAB[mm] + "</span>"; });
+  bis.forEach(b => { h += '<span class="chip">🧰 ' + BUILTIN_INFO[b] + "</span>"; });
+  const lies = readAs(line, fns), kom = commentFor(lines, i);
+  const inner = (lies ? '<div class="box lies"><b>Lies so:</b> ' + esc(lies) + "</div>" : "") + (kom ? '<div class="box kom"><b>Kommentar:</b> ' + esc(kom) + "</div>" : "");
+  if(!inner) h += '<p class="small muted">Für diese Zeile gibt es keine Erklärung.</p>';
+  else if(R.cm) h += '<div class="reveal">' + inner + "</div>";
+  else h += '<div class="reveal"><p class="small"><b>Übungsmodus:</b> Sprich die Zeile zuerst selbst als Satz aus!</p><button class="btn pri sm" id="rv">Aufdecken</button><div id="rvbox" style="display:none">' + inner + "</div></div>";
+  $("#rd-panel").innerHTML = h;
+  const rv = $("#rv"); if(rv) rv.onclick = () => { $("#rvbox").style.display = "block"; rv.remove(); };
+}
+function renderChecklist(){
+  const key = "ck:" + R.p + "_" + R.v;
+  const items = ["🔎 Überblick: Ich kann in einem Satz sagen, was das Programm tut.","🧩 Bauteile: Ich habe alle Bauteile gefunden und weiß, wo gefragt und wo befohlen wird.","🧱 Struktur: Ich weiß bei jeder Zeile, zu welchem Block sie gehört (Struktur-Ansicht zum Prüfen).","▶️ Durchspielen: Ich kann sagen, was nacheinander auf dem Display erscheint."];
+  let st = {}; try{ st = JSON.parse(store(key) || "{}"); }catch(e){}
+  const ul = $("#rd-check"); ul.innerHTML = "";
+  items.forEach((t, k) => { const li = document.createElement("li"); li.innerHTML = '<label><input type="checkbox"' + (st[k] ? " checked" : "") + "> " + t + "</label>"; li.querySelector("input").onchange = e => { st[k] = e.target.checked; store(key, JSON.stringify(st)); }; ul.appendChild(li); });
+}
+
+/* ============ Simulator ============ */
+const SIM = {
+  cfg:PROJECTS[0], comps:{}, us:40, temp:21.5, angle:0, manual:{}, label:"",
+  motor:{running:false, speed:0, dir:"CW", target:null}, pulses:0, blocked:false, warned:false,
+  scale:1, stopReq:false, running:false,
+  setProject(pid, ctlSrc){
+    this.cfg = proj(pid); this.comps = {};
+    const re = /TXT_M_(\w+?)_(\w+) = txt_factory\.\w+\.create_(\w+)\(TXT_M, (\d+)\)/g; let m;
+    while((m = re.exec(ctlSrc))){ this.comps[m[1]] = m[2]; }
+    this.angle = this.cfg.angle; this.manual = {}; this.label = ""; this.pulses = 0;
+    this.motor = {running:false, speed:0, dir:"CW", target:null}; this.blocked = false;
+    buildSimPanel();
+  },
+  switchState(n){
+    const role = this.cfg.switches[n];
+    if(role === "unten") return this.angle <= 0.001;
+    if(role === "oben") return this.angle >= 89.999;
+    return !!this.manual[n];
+  },
+  get(key){
+    const t = this.comps[key];
+    if(key === "M1.running") return this.motor.running;
+    if(/^C\d$/.test(key)) return Math.round(this.pulses);
+    if(t === "ultrasonic_distance_meter") return Math.round(this.us);
+    if(t === "ntc_resistor") return this.temp + (Math.random() - 0.5) * 0.08;
+    if(t === "mini_switch") return this.switchState(key.slice(1));
+    return 0;
+  },
+  call(target, action, arg){
+    if(target === "display"){
+      if(action === "txt_label.text"){ this.label = arg; $("#sim-label").textContent = arg; }
+      else if(this.warnOnce && this.warnOnce[action]) return;
+      else if(/^txt_label$/.test(action)) conLog("Warnung: display.set_attr(\"" + action + "\", …) – meintest du \"txt_label.text\"? Das Display bleibt unverändert.", "w"), this.warnOnce && (this.warnOnce[action] = 1);
+      else conLog("Warnung: Ein Display-Element \"" + action + "\" gibt es in diesem Projekt nicht. Erlaubt ist \"txt_label.text\".", "w"), this.warnOnce && (this.warnOnce[action] = 1);
+      return;
+    }
+    if(/^M\d$/.test(target)){
+      if(action === "set_speed"){ this.motor.speed = Number(arg[0]); this.motor.dir = String(arg[1]); }
+      if(action === "start"){ this.motor.running = true; this.motor.target = null; this.warned = false; if(this.motor.speed === 0) conLog("Hinweis: Motor gestartet, aber Geschwindigkeit ist 0 (set_speed vergessen?)", "w"); }
+      if(action === "stop"){ this.motor.running = false; this.motor.target = null; }
+      if(action === "set_distance"){ this.motor.target = Number(arg); this.motor.running = true; }
+      updSim(); return;
+    }
+    if(/^C\d$/.test(target) && action === "reset"){ this.pulses = 0; }
+  },
+  sleep(sec){
+    return new Promise((res, rej) => {
+      sec = Number(sec);
+      if(!(sec >= 0)){ rej(new Error("time.sleep() braucht eine Zahl ≥ 0")); return; }
+      const ms = sec * 1000 / this.scale, t0 = performance.now();
+      const tick = () => { if(this.stopReq) return rej(new Error("STOP")); const left = ms - (performance.now() - t0); if(left <= 0) return res(); setTimeout(tick, Math.min(40, left)); };
+      tick();
+    });
+  }
+};
+window.TXTSIM = SIM;
+function buildSimPanel(){
+  const box = $("#sim-ctrls"); box.innerHTML = "";
+  $("#sim-label").textContent = "";
+  const C = SIM.comps;
+  Object.keys(C).sort().forEach(port => {
+    const t = C[port], d = document.createElement("div"); d.className = "ctrl";
+    if(t === "ultrasonic_distance_meter"){
+      d.innerHTML = '<div class="hd"><span>📡 ' + port + ' Ultraschall</span><span class="v" id="v-us">' + SIM.us + ' cm</span></div><input type="range" min="2" max="300" value="' + SIM.us + '" id="r-us"><div class="sub">Schiebe das Hindernis näher oder weiter weg.</div>';
+      box.appendChild(d); $("#r-us").oninput = e => { SIM.us = +e.target.value; $("#v-us").textContent = SIM.us + " cm"; };
+    } else if(t === "ntc_resistor"){
+      d.innerHTML = '<div class="hd"><span>🌡️ ' + port + ' NTC</span><span class="v" id="v-nt">' + SIM.temp.toFixed(1) + ' °C</span></div><input type="range" min="-10" max="50" step="0.5" value="' + SIM.temp + '" id="r-nt"><div class="sub">Stelle die Umgebungstemperatur ein.</div>';
+      box.appendChild(d); $("#r-nt").oninput = e => { SIM.temp = +e.target.value; $("#v-nt").textContent = SIM.temp.toFixed(1) + " °C"; };
+    } else if(t === "mini_switch"){
+      const n = port.slice(1), role = SIM.cfg.switches[n];
+      if(role === "taster"){
+        d.innerHTML = '<div class="hd"><span><span class="led" id="led-' + port + '"></span>' + port + ' Bedarfstaster</span></div><div class="row-inline" style="margin-top:4px"><button class="btn sm push" id="b-' + port + '">gedrückt halten</button><label class="small"><input type="checkbox" id="k-' + port + '"> dauerhaft gedrückt</label></div>';
+        box.appendChild(d);
+        const b = $("#b-" + port), k = $("#k-" + port);
+        const set = v => { SIM.manual[n] = v || k.checked; b.classList.toggle("down", SIM.manual[n]); updSim(); };
+        b.addEventListener("pointerdown", e => { e.preventDefault(); set(true); });
+        ["pointerup","pointerleave","pointercancel"].forEach(ev => b.addEventListener(ev, () => set(false)));
+        k.onchange = () => set(false);
+      } else {
+        d.innerHTML = '<div class="hd"><span><span class="led" id="led-' + port + '"></span>' + port + ' Endlage ' + (role || "?") + '</span></div><div class="sub">Wird automatisch gedrückt, wenn die Schranke ganz ' + (role === "oben" ? "oben" : "unten") + " ist.</div>";
+        box.appendChild(d);
+      }
+    }
+  });
+  const bar = $("#sim-barrier");
+  if(Object.values(C).includes("encodermotor")){
+    bar.innerHTML = '<div class="ctrl"><div class="hd"><span>⚙️ M1 Encodermotor · Schranke</span><span class="v" id="v-ang"></span></div>' +
+      '<svg viewBox="0 0 300 150" aria-label="Schranke"><defs><pattern id="stripe" width="24" height="10" patternUnits="userSpaceOnUse"><rect width="12" height="10" fill="#e74c3c"/><rect x="12" width="12" height="10" fill="#fff"/></pattern></defs>' +
+      '<rect x="0" y="132" width="300" height="4" fill="#7b8794"/><rect x="28" y="60" width="22" height="72" rx="3" fill="#56606b"/>' +
+      '<g id="arm"><rect x="39" y="56" width="230" height="10" rx="4" fill="url(#stripe)" stroke="#444" stroke-width="1"/></g><circle cx="39" cy="61" r="7" fill="#2b2f36"/>' +
+      '<rect x="255" y="70" width="14" height="10" rx="2" id="sw-u" fill="#7b8794"/><text x="262" y="96" font-size="11" text-anchor="middle" fill="currentColor">I1</text>' +
+      '<rect x="12" y="10" width="14" height="10" rx="2" id="sw-o" fill="#7b8794"/><text x="19" y="34" font-size="11" text-anchor="middle" fill="currentColor">' + (SIM.cfg.switches[2] === "oben" ? "I2" : "") + '</text></svg>' +
+      '<div class="mstat" id="v-mot"></div><div id="v-warn" class="small warn"></div>' +
+      '<div class="sub" style="margin-top:6px">Schranke von Hand verstellen (nur wenn das Programm nicht läuft):</div><input type="range" min="0" max="90" value="' + SIM.angle + '" id="r-ang"></div>';
+    $("#r-ang").oninput = e => { if(!SIM.running){ SIM.angle = +e.target.value; updSim(); } };
+  } else bar.innerHTML = "";
+  updSim();
+}
+function updSim(){
+  Object.keys(SIM.comps).forEach(port => { const l = $("#led-" + port); if(l) l.classList.toggle("on", !!SIM.get(port)); });
+  const arm = $("#arm"); if(!arm) return;
+  arm.setAttribute("transform", "rotate(" + (-SIM.angle) + " 39 61)");
+  $("#v-ang").textContent = Math.round(SIM.angle) + "° " + (SIM.angle <= 0.001 ? "(zu)" : SIM.angle >= 89.999 ? "(ganz offen)" : "");
+  const u = $("#sw-u"), o = $("#sw-o");
+  u.setAttribute("fill", SIM.angle <= 0.001 ? "#2ecc71" : "#7b8794");
+  o.setAttribute("fill", (SIM.cfg.switches[2] === "oben" && SIM.angle >= 89.999) ? "#2ecc71" : (SIM.cfg.switches[2] === "oben" ? "#7b8794" : "transparent"));
+  const M = SIM.motor;
+  $("#v-mot").textContent = (M.running ? "▶ dreht " + (M.dir === "CW" ? "CW (zu)" : "CCW (auf)") + " · Tempo " + M.speed : "■ steht · eingestellt: " + M.speed + " " + M.dir) + " · C1: " + Math.round(SIM.pulses) + " Impulse";
+  $("#v-warn").textContent = (M.running && SIM.blocked) ? "⚠ Motor drückt gegen den Anschlag!" : "";
+  const r = $("#r-ang"); if(r && document.activeElement !== r) r.value = SIM.angle;
+}
+let lastT = performance.now();
+function simLoop(t){
+  const dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
+  const M = SIM.motor;
+  if(M.running && M.speed > 0 && Object.values(SIM.comps).includes("encodermotor")){
+    const rate = M.speed / 512 * 140 * SIM.scale;
+    let delta = rate * dt;
+    if(M.target != null){ delta = Math.min(delta, M.target); M.target -= delta; if(M.target <= 0.0001){ M.running = false; M.target = null; } }
+    const before = SIM.angle;
+    SIM.angle = Math.max(0, Math.min(90, SIM.angle + (M.dir === "CW" ? -delta : delta)));
+    SIM.pulses += Math.abs(SIM.angle - before);
+    SIM.blockT = Math.abs(SIM.angle - before) < 1e-9 ? (SIM.blockT || 0) + dt : 0;
+    SIM.blocked = SIM.blockT > 0.25;
+    if(SIM.blocked && !SIM.warned){ SIM.warned = true; conLog("⚠ Der Motor drückt gegen den Anschlag (Schranke " + (SIM.angle <= 0 ? "unten" : "oben") + ").", "w"); }
+    updSim();
+  }
+  requestAnimationFrame(simLoop);
+}
+requestAnimationFrame(simLoop);
+function conLog(txt, cls){ const c = $("#console"); const s = document.createElement("span"); if(cls) s.className = cls; s.textContent = txt.endsWith("\n") ? txt : txt + "\n"; c.appendChild(s); c.scrollTop = c.scrollHeight; }
+
+/* ============ Python (Skulpt) ============ */
+const PY_FACTORIES = `
+class Motor:
+    CW = "CW"
+    CCW = "CCW"
+
+class _Controller:
+    pass
+
+class _ControllerFactory:
+    def create_graphical_controller(self):
+        return _Controller()
+
+class _Input:
+    def __init__(self, port):
+        self._port = "I" + str(port)
+    def _raw(self):
+        return _txt_get(self._port, 0)
+
+class _Ultrasonic(_Input):
+    def get_distance(self):
+        return int(self._raw())
+
+class _NTC(_Input):
+    def get_temperature(self):
+        return float(self._raw())
+
+class _MiniSwitch(_Input):
+    def is_closed(self):
+        return bool(self._raw())
+    def is_open(self):
+        return not self.is_closed()
+
+class _InputFactory:
+    def create_ultrasonic_distance_meter(self, controller, port):
+        return _Ultrasonic(port)
+    def create_ntc_resistor(self, controller, port):
+        return _NTC(port)
+    def create_mini_switch(self, controller, port):
+        return _MiniSwitch(port)
+
+class _EncoderMotor:
+    def __init__(self, port):
+        self._id = "M" + str(port)
+    def set_speed(self, speed, direction):
+        if direction != "CW" and direction != "CCW":
+            raise ValueError("Die Richtung muss Motor.CW oder Motor.CCW sein")
+        if not isinstance(speed, (int, float)):
+            raise TypeError("Die Geschwindigkeit muss eine Zahl sein")
+        if speed < 0 or speed > 512:
+            raise ValueError("Die Geschwindigkeit muss zwischen 0 und 512 liegen (war " + str(speed) + ")")
+        _txt_call(self._id, "set_speed", [speed, direction])
+    def start(self):
+        _txt_call(self._id, "start", 0)
+    def stop(self):
+        _txt_call(self._id, "stop", 0)
+    def set_distance(self, distance, sync_to=None):
+        _txt_call(self._id, "set_distance", distance)
+    def is_running(self):
+        return bool(_txt_get(self._id + ".running", 0))
+
+class _Counter:
+    def __init__(self, port):
+        self._id = "C" + str(port)
+        self._motor = None
+    def set_motor(self, motor):
+        self._motor = motor
+    def get_count(self):
+        return int(_txt_get(self._id, 0))
+    def reset(self):
+        _txt_call(self._id, "reset", 0)
+
+class _MotorFactory:
+    def create_encodermotor(self, controller, port):
+        return _EncoderMotor(port)
+
+class _CounterFactory:
+    def create_encodermotor_counter(self, controller, port):
+        return _Counter(port)
+
+controller_factory = _ControllerFactory()
+input_factory = _InputFactory()
+motor_factory = _MotorFactory()
+counter_factory = _CounterFactory()
+
+def init():
+    pass
+def init_input_factory():
+    pass
+def init_motor_factory():
+    pass
+def init_counter_factory():
+    pass
+def initialized():
+    pass
+`;
+const PY_DISPLAY = `
+class _Display:
+    def set_attr(self, name, value):
+        _txt_call("display", str(name), str(value))
+
+display = _Display()
+`;
+function installHW(){
+  const toJs = Sk.ffi.remapToJs, toPy = Sk.ffi.remapToPy;
+  const ns = {
+    get: new Sk.builtin.func(function(key, d){ return toPy(window.TXTSIM.get(toJs(key))); }),
+    call: new Sk.builtin.func(function(t, a, v){ window.TXTSIM.call(toJs(t), toJs(a), v === undefined ? null : toJs(v)); return Sk.builtin.none.none$; })
+  };
+  Sk.builtins["_txt_get"] = ns.get;
+  Sk.builtins["_txt_call"] = ns.call;
+}
+const JS_TIME = `var $builtinmodule = function(name){
+  var mod = {};
+  mod.sleep = new Sk.builtin.func(function(s){
+    var sec = Sk.ffi.remapToJs(s);
+    return Sk.misceval.promiseToSuspension(window.TXTSIM.sleep(sec).then(function(){ return Sk.builtin.none.none$; }));
+  });
+  mod.time = new Sk.builtin.func(function(){ return new Sk.builtin.float_(Date.now() / 1000); });
+  mod.monotonic = mod.time;
+  return mod;
+};`;
+const VFS = {"/lib/__init__.py":"", "/lib/display.py":PY_DISPLAY, "/fischertechnik/__init__.py":"", "/fischertechnik/factories.py":PY_FACTORIES, "/time.js":JS_TIME};
+let CTL_SRC = "";
+function skRead(path){
+  if(path.endsWith("/lib/controller.py")) return CTL_SRC;
+  for(const k in VFS) if(path.endsWith(k)) return VFS[k];
+  if(Sk.builtinFiles === undefined || Sk.builtinFiles.files[path] === undefined) throw "File not found: '" + path + "'";
+  return Sk.builtinFiles.files[path];
+}
+function setPyStatus(cls, txt){ const s = $("#pystatus"); s.className = "status " + cls; s.querySelector(".stxt").textContent = txt; }
+function ensurePython(){
+  if(window.Sk && Sk.builtinFiles) setPyStatus("ready", "Python bereit (läuft direkt im Browser)");
+  else setPyStatus("fail", "Python konnte nicht geladen werden – Internetverbindung prüfen und Seite neu laden.");
+}
+
+/* ============ Werkstatt: Aufgaben ============ */
+const TASKS = [
+ {id:"a1", proj:"P01", from:"Grund", lvl:"basis", t:"Weniger, aber langsamer messen",
+  auftrag:"Ändere das Programm so, dass nur <b>10 Messungen</b> gemacht werden – mit <b>1 Sekunde</b> Pause.",
+  vorher:"Welche zwei Zahlen musst du ändern? Notiere die Zeilennummern, bevor du startest.",
+  tipp:"Suche die 20 (wie oft?) und die 0.5 (wie lange warten?).",
+  loes:"while zaehler < 10:\n    ...\n    time.sleep(1)"},
+ {id:"a2", proj:"P01", from:"Grund", lvl:"basis", t:"Anzeige umformulieren",
+  auftrag:"Das Display soll z. B. <b>„23 cm bis zum Hindernis“</b> anzeigen.",
+  vorher:"Welche Zeile ist für die Anzeige zuständig?",
+  tipp:"Nur die Zeile mit display.set_attr ändern. Achte auf das Leerzeichen am Anfang von \" cm …\".",
+  loes:'display.set_attr("txt_label.text", str(abstand) + " cm bis zum Hindernis")'},
+ {id:"a3", proj:"P01", from:"Zusatz", lvl:"profi", t:"Warnung bei zu kleinem Abstand",
+  auftrag:"Ist der Abstand <b>kleiner als 10 cm</b>, soll <b>„ZU NAH!“</b> angezeigt werden, sonst der normale Text. Teste mit dem Schieberegler.",
+  vorher:"Wo im Programm muss die Entscheidung stehen – vor, in oder nach der Schleife?",
+  tipp:"Ersetze die Zeile display.set_attr(...) durch ein if/else. Beide Zweige müssen eine Stufe tiefer eingerückt sein als das if.",
+  loes:'    if abstand < 10:\n        display.set_attr("txt_label.text", "ZU NAH!")\n    else:\n        display.set_attr("txt_label.text", text)'},
+ {id:"a4", proj:"P02", from:"Grund", lvl:"basis", t:"5 Messungen alle 2 Sekunden",
+  auftrag:"Ändere das Thermometer so, dass es <b>5-mal</b> im Abstand von <b>2 Sekunden</b> misst.",
+  vorher:"Wie lange läuft das Programm danach?",
+  tipp:"range(…) legt die Anzahl fest, time.sleep(…) die Pause.",
+  loes:"for i in range(5):\n    ...\n    time.sleep(2)"},
+ {id:"a5", proj:"P02", from:"Grund", lvl:"basis", t:"Kelvin anzeigen",
+  auftrag:"Zeige die Temperatur zusätzlich in <b>Kelvin</b> an, z. B. „21.5 °C = 294.6 K“. Formel: K = °C + 273.15",
+  vorher:"Brauchst du eine neue Variable? Wo muss sie berechnet werden?",
+  tipp:"Berechne in der Schleife kelvin = temp + 273.15 und hänge den Text an. Jede Zahl braucht str(round(…, 1)).",
+  loes:'    kelvin = temp + 273.15\n    display.set_attr("txt_label.text", str(round(temp, 1)) + " °C = " + str(round(kelvin, 1)) + " K")'},
+ {id:"a6", proj:"P02", from:"Zusatz", lvl:"profi", t:"Höchstwert finden",
+  auftrag:"Nach den 10 Messungen soll zusätzlich der <b>höchste</b> gemessene Wert angezeigt werden. Verändere während des Laufs den Temperatur-Regler!",
+  vorher:"Welches Muster aus Baustein 3 ist ähnlich? (Tipp: Aufsummieren)",
+  tipp:"Vor der Schleife: hoechst = -100. In der Schleife: if celsius > hoechst: hoechst = celsius. Danach anzeigen.",
+  loes:'hoechst = -100\nfor i in range(10):\n    celsius = TXT_M_I1_ntc_resistor.get_temperature()\n    if celsius > hoechst:\n        hoechst = celsius\n    ...\ndisplay.set_attr("txt_label.text", "Max: " + str(round(hoechst, 1)) + " °C")'},
+ {id:"a7", proj:"P03", from:"Grund", lvl:"basis", t:"Sanfter schließen",
+  auftrag:"Die Schranke soll mit Geschwindigkeit <b>100</b> schließen. Während sie fährt, soll <b>„schliesse ...“</b> angezeigt werden.",
+  vorher:"In welche Zeile gehört die neue Anzeige – vor oder nach der Warte-Schleife?",
+  tipp:"Die Anzeige muss VOR der while-Schleife stehen, sonst sieht man sie erst, wenn alles vorbei ist. Stelle die Schranke vorher mit dem Regler nach oben.",
+  loes:'TXT_M_M1_encodermotor.set_speed(100, Motor.CW)\ndisplay.set_attr("txt_label.text", "schliesse ...")\nTXT_M_M1_encodermotor.start()'},
+ {id:"a8", proj:"P03", from:"Zusatz", lvl:"basis", t:"Mehr Zeit zum Durchfahren",
+  auftrag:"Nach dem Öffnen soll die Schranke <b>5 Sekunden</b> offen bleiben und <b>„Gute Fahrt!“</b> anzeigen. Drücke im Simulator den Bedarfstaster I2.",
+  vorher:"Welche Zeile legt die Durchfahrtszeit fest?",
+  tipp:"Suche time.sleep(3) und die Anzeige „offen - bitte einfahren“.",
+  loes:'TXT_M_M1_encodermotor.stop()\ndisplay.set_attr("txt_label.text", "Gute Fahrt!")\ntime.sleep(5)'},
+ {id:"a9", proj:"P03", from:"Zusatz", lvl:"profi", t:"Drei Autos nacheinander",
+  auftrag:"Nach dem Schließen soll das Programm wieder auf den Bedarfstaster warten – insgesamt für <b>3 Autos</b>.",
+  vorher:"Welche Teile (1–4) müssen wiederholt werden, welche nur einmal?",
+  tipp:"Schreibe for auto in range(3): vor Teil 2 und rücke die Teile 2, 3 und 4 komplett um 4 Leerzeichen ein. Tipp: Zeilen markieren und Tab drücken.",
+  loes:'for auto in range(3):\n    while not TXT_M_I2_mini_switch.is_closed():\n        time.sleep(0.01)\n    ...   # öffnen, warten, schließen – alles eingerückt'},
+ {id:"a10", proj:"P04", from:"Grund", lvl:"basis", t:"5 Zyklen, kürzere Pausen",
+  auftrag:"Die Schranke soll <b>5-mal</b> öffnen. Sie bleibt jeweils <b>2 s</b> zu und <b>1 s</b> offen.",
+  vorher:"Welche drei Zahlen änderst du?",
+  tipp:"range(…) und die beiden time.sleep(…) in der Schleife.",
+  loes:"for zyklus in range(5):\n    time.sleep(2)\n    oeffnen()\n    time.sleep(1)\n    schliessen()"},
+ {id:"a11", proj:"P04", from:"Grund", lvl:"basis", t:"Zyklus anzeigen",
+  auftrag:"Zeige auf dem Display <b>„Zyklus 1/3“</b>, „Zyklus 2/3“ … an.",
+  vorher:"Welchen Wert hat zyklus im ersten Durchlauf? Was fehlt oben, damit display bekannt ist?",
+  tipp:"In der Grundaufgabe fehlt from lib.display import *. zyklus beginnt bei 0 – also zyklus + 1 anzeigen.",
+  loes:'from lib.display import *\n...\nfor zyklus in range(3):\n    display.set_attr("txt_label.text", "Zyklus " + str(zyklus + 1) + "/3")\n    ...'},
+ {id:"a12", proj:"P04", from:"Zusatz", lvl:"profi", t:"Kleines Parkhaus",
+  auftrag:"Das Parkhaus hat nur <b>3 Plätze</b>. Am Ende soll <b>„Bitte warten – voll“</b> erscheinen. Zusatz: Lass die Schranke im Zustand OFFEN <b>4 s</b> offen.",
+  vorher:"Welche Zeilen musst du finden? Spiele den Zustandsautomaten mit MAX_DURCHFAHRTEN = 3 durch.",
+  tipp:"MAX_DURCHFAHRTEN oben, die letzte Zeile nach der Schleife und time.sleep(2) im Zustand OFFEN.",
+  loes:'MAX_DURCHFAHRTEN = 3\n...\n    elif zustand == "OFFEN":\n        time.sleep(4)\n...\ndisplay.set_attr("txt_label.text", "Bitte warten – voll")'}
+];
+const BUGS = [
+ {id:"b1", proj:"P01", lvl:"bug", t:"Das Programm hört nie auf",
+  sym:"Eigentlich sollen es 20 Messungen sein – aber das Programm läuft und läuft. Stoppe es mit ■.",
+  tipp:"Schaue dir die Bedingung der while-Schleife an. Welche Variable müsste sich ändern, damit sie irgendwann falsch wird?",
+  loes:"In der Schleife fehlt <code>zaehler = zaehler + 1</code> (eingerückt, z. B. vor time.sleep).",
+  code:'import time\nfrom lib.controller import *\nfrom lib.display import *\n\nzaehler = 0\nwhile zaehler < 20:\n    abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()\n    display.set_attr("txt_label.text", "Abstand: " + str(abstand) + " cm")\n    print(abstand, "cm")\n    time.sleep(0.5)\n'},
+ {id:"b2", proj:"P01", lvl:"bug", t:"TypeError beim Anzeigen",
+  sym:"Das Programm bricht sofort mit einem TypeError ab.",
+  tipp:"Lies die Fehlermeldung: In welcher Zeile? Welche Datentypen werden mit + verbunden?",
+  loes:"<code>abstand</code> ist eine Zahl. Richtig: <code>\"Abstand: \" + str(abstand) + \" cm\"</code>",
+  code:'import time\nfrom lib.controller import *\nfrom lib.display import *\n\nzaehler = 0\nwhile zaehler < 20:\n    abstand = TXT_M_I2_ultrasonic_distance_meter.get_distance()\n    display.set_attr("txt_label.text", "Abstand: " + abstand + " cm")\n    zaehler = zaehler + 1\n    time.sleep(0.5)\n'},
+ {id:"b3", proj:"P02", lvl:"bug", t:"Display bleibt leer",
+  sym:"Das Programm läuft ohne Absturz, aber auf dem Display erscheint nichts. Schau in die Konsole!",
+  tipp:"Vergleiche den ersten Wert in display.set_attr(...) mit dem aus Baustein 2.",
+  loes:"Es muss <code>\"txt_label.text\"</code> heißen – nur <code>\"txt_label\"</code> ist das Label selbst, nicht sein Text.",
+  code:'import time\nfrom lib.controller import *\nfrom lib.display import *\n\nfor i in range(10):\n    temp = TXT_M_I1_ntc_resistor.get_temperature()\n    display.set_attr("txt_label", str(round(temp, 1)) + " °C")\n    time.sleep(1)\n'},
+ {id:"b4", proj:"P02", lvl:"bug", t:"Falscher Mittelwert",
+  sym:"Bei 21 °C zeigt das Programm am Ende „Mittelwert: 2.1 °C“. (Tipp: Zeitraffer einschalten.)",
+  tipp:"Spiele die Variable summe Durchlauf für Durchlauf durch. Was passiert mit ihr am Anfang jedes Durchlaufs?",
+  loes:"<code>summe = 0</code> steht IN der Schleife und löscht die Summe jedes Mal. Die Zeile gehört VOR die Schleife (nicht eingerückt).",
+  code:'import time\nfrom lib.controller import *\nfrom lib.display import *\n\nfor i in range(10):\n    summe = 0\n    celsius = TXT_M_I1_ntc_resistor.get_temperature()\n    summe = summe + celsius\n    display.set_attr("txt_label.text", str(round(celsius, 1)) + " °C")\n    time.sleep(1)\n\nmittelwert = summe / 10\ndisplay.set_attr("txt_label.text", "Mittelwert: " + str(round(mittelwert, 1)) + " °C")\n'},
+ {id:"b5", proj:"P03", lvl:"bug", t:"Schranke bleibt offen",
+  sym:"Die Schranke steht offen. Das Display meldet sofort „geschlossen“ – aber die Schranke hat sich kaum bewegt.",
+  tipp:"Lies die while-Zeile als Satz vor. Stimmt der Satz mit dem überein, was passieren soll?",
+  loes:"Es fehlt das <code>not</code>: <code>while not TXT_M_I1_mini_switch.is_closed():</code> – sonst wartet das Programm, solange der Taster gedrückt ist.",
+  code:'import time\nfrom lib.controller import *\nfrom lib.display import *\n\nTXT_M_M1_encodermotor.set_speed(200, Motor.CW)\nTXT_M_M1_encodermotor.start()\nwhile TXT_M_I1_mini_switch.is_closed():\n    time.sleep(0.01)\nTXT_M_M1_encodermotor.stop()\ndisplay.set_attr("txt_label.text", "geschlossen")\n'},
+ {id:"b6", proj:"P03", lvl:"bug", t:"IndentationError",
+  sym:"Python startet gar nicht erst und meldet einen Einrückungsfehler.",
+  tipp:"Welche Zeilen gehören zum if? Woran erkennt Python das?",
+  loes:"Die Zeile unter <code>if …:</code> muss mit 4 Leerzeichen eingerückt sein.",
+  code:'import time\nfrom lib.controller import *\nfrom lib.display import *\n\nif TXT_M_I1_mini_switch.is_closed():\ndisplay.set_attr("txt_label.text", "bereits geschlossen")\nelse:\n    display.set_attr("txt_label.text", "schliesse ...")\n    TXT_M_M1_encodermotor.set_speed(200, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n    display.set_attr("txt_label.text", "geschlossen")\n'},
+ {id:"b7", proj:"P04", lvl:"bug", t:"NameError in der Funktion",
+  sym:"Das Programm bricht direkt am Anfang mit einem NameError ab.",
+  tipp:"Vergleiche den Namen in der Fehlerzeile Buchstabe für Buchstabe mit lib/controller.py (Reiter oben).",
+  loes:"Tippfehler: <code>TXT_M_I1_miniswitch</code> → richtig <code>TXT_M_I1_mini_switch</code>.",
+  code:'import time\nfrom lib.controller import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_miniswitch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I2_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\nschliessen()\nfor zyklus in range(3):\n    time.sleep(3)\n    oeffnen()\n    time.sleep(2)\n    schliessen()\n'},
+ {id:"b8", proj:"P04", lvl:"bug", t:"Schranke öffnet nie",
+  sym:"Kein Fehler, das Programm läuft durch – aber die Schranke geht nie auf.",
+  tipp:"Lies die Funktion oeffnen() mit der Lesemethode. Auf welchen Taster wartet sie? Wo steht die Schranke, wenn oeffnen() beginnt?",
+  loes:"In <code>oeffnen()</code> wird auf I1 (Endlage unten) gewartet – der ist sofort gedrückt. Richtig ist <code>TXT_M_I2_mini_switch</code> (Endlage oben).",
+  code:'import time\nfrom lib.controller import *\n\ndef schliessen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\ndef oeffnen():\n    TXT_M_M1_encodermotor.set_speed(300, Motor.CCW)\n    TXT_M_M1_encodermotor.start()\n    while not TXT_M_I1_mini_switch.is_closed():\n        time.sleep(0.01)\n    TXT_M_M1_encodermotor.stop()\n\nschliessen()\nfor zyklus in range(3):\n    time.sleep(3)\n    oeffnen()\n    time.sleep(2)\n    schliessen()\n'}
+];
+const FREE = [];
+PROJECTS.forEach(P => { ["Grund","Zusatz"].forEach(v => FREE.push({id:"f-" + P.id + "-" + v, proj:P.id, from:v, free:true, t:P.id + " " + (v === "Grund" ? "Grundaufgabe" : "Zusatz")})); });
+const ALLTASKS = TASKS.concat(BUGS, FREE);
+const W = {task:null, tab:"main"};
+function taskOriginal(T){ return T.code ? T.code : fileOf(T.proj, T.from); }
+function renderTaskLists(){
+  const mk = (box, list) => { box.innerHTML = ""; list.forEach(T => { const b = document.createElement("button"); b.className = "btn" + (W.task && W.task.id === T.id ? " on" : ""); b.innerHTML = (T.free ? "" : T.proj + " · ") + T.t + (T.lvl ? '<span class="lvl ' + T.lvl + '">' + (T.lvl === "bug" ? "Bug" : T.lvl === "profi" ? "Profi" : "Basis") + "</span>" : ""); b.onclick = () => selectTask(T.id); box.appendChild(b); }); };
+  mk($("#tl-mod"), TASKS); mk($("#tl-bug"), BUGS); mk($("#tl-free"), FREE);
+}
+function selectTask(id){
+  if(SIM.running) stopRun();
+  const T = ALLTASKS.find(x => x.id === id) || TASKS[0];
+  W.task = T; store("task", T.id);
+  renderTaskLists();
+  const P = proj(T.proj);
+  let h = "";
+  if(T.free) h = '<h3>🧪 Frei üben: ' + P.id + " " + P.name + "</h3><p>" + (T.from === "Zusatz" ? P.aboutZ : P.about) + "</p><p class='small muted'>Lies den Code zuerst mit der 4-Schritte-Methode. Verändere dann eine Sache, sage voraus, was passiert, und teste.</p>";
+  else if(T.lvl === "bug") h = '<h3>🐞 ' + T.t + '</h3><p><b>Symptom:</b> ' + T.sym + '</p><p class="small"><b>Vorgehen:</b> 1. Starten und beobachten · 2. Code lesen und Fehler suchen · 3. Vermutung aufschreiben · 4. Reparieren und erneut testen.</p><details><summary>💡 Tipp</summary><p>' + T.tipp + "</p></details><details><summary>✅ Lösung</summary><p>" + T.loes + "</p></details>";
+  else h = '<h3>🔧 ' + T.t + ' <span class="lvl ' + T.lvl + '">' + (T.lvl === "profi" ? "Profi" : "Basis") + '</span></h3><p class="small muted">Ausgangscode: ' + P.id + " " + P.name + " · " + (T.from === "Grund" ? "Grundaufgabe" : "Zusatz") + "</p><p><b>Auftrag:</b> " + T.auftrag + "</p><p><b>Vorher überlegen:</b> " + T.vorher + "</p><details><summary>💡 Tipp</summary><p>" + T.tipp + "</p></details><details><summary>✅ Lösungsvorschlag</summary><pre class='code'>" + hl(T.loes) + "</pre></details>";
+  $("#taskcard").innerHTML = h;
+  CTL_SRC = fileOf(T.proj, "controller");
+  currentProjForNames = T.proj;
+  SIM.setProject(T.proj, CTL_SRC);
+  const saved = store("code:" + T.id);
+  W.tab = "main"; setTab();
+  $("#ed").value = saved != null ? saved : taskOriginal(T);
+  clearMarks(); renderEditor();
+  $("#console").innerHTML = "";
+  $("#errbox").className = "errbox"; $("#errbox").innerHTML = "";
+}
+$("#reset").onclick = () => { if(!W.task) return; if(confirm("Den Original-Code laden? Deine Änderungen an dieser Aufgabe gehen verloren.")){ store("code:" + W.task.id, null); selectTask(W.task.id); } };
+$("#copy").onclick = () => { const txt = $("#ed").value; (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => conLog("Code in die Zwischenablage kopiert.", "i"), () => { $("#ed").select(); document.execCommand("copy"); conLog("Code kopiert.", "i"); }); };
+
+/* ============ Editor ============ */
+const ed = $("#ed"), edhl = $("#edhl"), gut = $("#gutter");
+let MARK = {cur:-1, err:-1};
+let mainBuf = "";
+function setTab(){
+  $("#tab-main").classList.toggle("on", W.tab === "main"); $("#tab-ctl").classList.toggle("on", W.tab === "ctl");
+  ed.readOnly = W.tab === "ctl";
+}
+$("#tab-main").onclick = () => { if(W.tab === "main") return; W.tab = "main"; setTab(); ed.value = mainBuf; renderEditor(); };
+$("#tab-ctl").onclick = () => { if(W.tab === "ctl") return; mainBuf = ed.value; W.tab = "ctl"; setTab(); ed.value = CTL_SRC; renderEditor(); };
+function mainCode(){ return W.tab === "main" ? ed.value : mainBuf; }
+function clearMarks(){ MARK = {cur:-1, err:-1}; }
+function renderEditor(){
+  const lines = ed.value.split("\n");
+  const showMarks = W.tab === "main";
+  edhl.innerHTML = lines.map((l, i) => '<span class="L' + (showMarks && i === MARK.cur ? " cur" : "") + (showMarks && i === MARK.err ? " err" : "") + '">' + (hl(l) || " ") + "</span>").join("") + "<span class='L'> </span>";
+  gut.innerHTML = lines.map((_, i) => '<div class="' + (showMarks && i === MARK.err ? "err" : showMarks && i === MARK.cur ? "cur" : "") + '">' + (i + 1) + "</div>").join("");
+  syncScroll();
+}
+function syncScroll(){ edhl.scrollTop = ed.scrollTop; edhl.scrollLeft = ed.scrollLeft; gut.scrollTop = ed.scrollTop; }
+ed.addEventListener("scroll", syncScroll);
+ed.addEventListener("input", () => { if(W.tab === "main" && W.task){ store("code:" + W.task.id, ed.value); MARK.err = -1; } renderEditor(); });
+function insertText(t){ if(!document.execCommand("insertText", false, t)){ ed.setRangeText(t, ed.selectionStart, ed.selectionEnd, "end"); ed.dispatchEvent(new Event("input")); } }
+ed.addEventListener("keydown", e => {
+  if(ed.readOnly) return;
+  const v = ed.value, s = ed.selectionStart, en = ed.selectionEnd;
+  if(e.key === "Tab"){
+    e.preventDefault();
+    const ls = v.lastIndexOf("\n", s - 1) + 1;
+    if(s === en && !e.shiftKey){ insertText("    "); return; }
+    let le = v.indexOf("\n", en - (en > s && v[en-1] === "\n" ? 1 : 0)); if(le < 0) le = v.length;
+    const block = v.slice(ls, le).split("\n");
+    const nb = block.map(l => e.shiftKey ? l.replace(/^ {1,4}/, "") : "    " + l).join("\n");
+    ed.setSelectionRange(ls, le); insertText(nb); ed.setSelectionRange(ls, ls + nb.length);
+    return;
+  }
+  if(e.key === "Enter"){
+    e.preventDefault();
+    const ls = v.lastIndexOf("\n", s - 1) + 1;
+    const cur = v.slice(ls, s);
+    let ind = (cur.match(/^ */) || [""])[0];
+    if(/:\s*(#.*)?$/.test(cur)) ind += "    ";
+    insertText("\n" + ind);
+    return;
+  }
+  if(e.key === "Backspace" && s === en){
+    const ls = v.lastIndexOf("\n", s - 1) + 1; const cur = v.slice(ls, s);
+    if(cur.length >= 4 && /^ +$/.test(cur) && cur.length % 4 === 0){ e.preventDefault(); ed.setSelectionRange(s - 4, s); insertText(""); }
+  }
+});
+
+/* ============ Programm ausführen ============ */
+const PRELUDE = "from fischertechnik.factories import Motor\n";
+function errHelp(name, msg){
+  if(name === "NameError") return "Python kennt diesen Namen nicht. Prüfe: Tippfehler? Groß-/Kleinschreibung? Steht der Bauteilname genau so in lib/controller.py? Fehlt ein <code>import</code> (z. B. <code>from lib.display import *</code>)? Wurde die Variable vorher angelegt?";
+  if(name === "TypeError" && /concatenate|unsupported operand|must be str|can only/.test(msg)) return "Text und Zahl lassen sich nicht mit <code>+</code> verbinden. Wandle die Zahl mit <code>str(…)</code> in Text um.";
+  if(name === "TypeError") return "Ein Befehl hat Werte vom falschen Typ oder in falscher Anzahl bekommen. Vergleiche mit dem Wortschatz (Baustein 2).";
+  if(name === "IndentationError" || /indent/i.test(msg)) return "Einrückungsfehler: Nach einer Zeile mit Doppelpunkt muss der Block mit 4 Leerzeichen eingerückt sein – und alle Zeilen eines Blocks gleich weit.";
+  if(name === "SyntaxError" || name === "ParseError") return "Schreibfehler im Code (\u201ebad input\u201c): Ist die Zeile richtig eingerückt? Fehlt ein Doppelpunkt nach <code>if/while/for/def</code>? Sind alle Klammern und Anführungszeichen geschlossen? Manchmal steckt der Fehler in der Zeile <b>davor</b>.";
+  if(name === "AttributeError") return "Diesen Befehl kennt das Objekt nicht. Prüfe die Schreibweise nach dem Punkt (z. B. <code>is_closed</code>, <code>get_distance</code>).";
+  if(name === "ValueError") return "Ein Wert liegt außerhalb des erlaubten Bereichs.";
+  if(name === "ZeroDivisionError") return "Division durch 0.";
+  return "";
+}
+function lineOfError(err){
+  let ln = null;
+  if(err && err.traceback && err.traceback.length){
+    for(const tb of err.traceback){ if(String(tb.filename).indexOf("<stdin>") >= 0){ ln = tb.lineno; break; } }
+  }
+  if(ln == null){ const m = /line (\d+)/.exec(String(err)); if(m) ln = +m[1]; }
+  return ln == null ? null : ln - 1; // Prelude-Zeile abziehen
+}
+let runId = 0;
+function stopRun(){ SIM.stopReq = true; }
+$("#stop").onclick = stopRun;
+$("#fast").onchange = e => { SIM.scale = e.target.checked ? 5 : 1; };
+$("#run").onclick = () => {
+  if(SIM.running) return;
+  if(!(window.Sk && Sk.builtinFiles)){ ensurePython(); return; }
+  if(W.tab === "ctl"){ W.tab = "main"; setTab(); ed.value = mainBuf; }
+  const myId = ++runId;
+  const code = PRELUDE + mainCode();
+  $("#console").innerHTML = ""; $("#errbox").className = "errbox"; $("#errbox").innerHTML = ""; SIM.warnOnce = {};
+  clearMarks(); renderEditor();
+  SIM.label = ""; $("#sim-label").textContent = ""; SIM.motor.running = false; SIM.motor.speed = 0; SIM.pulses = 0; SIM.warned = false;
+  SIM.stopReq = false; SIM.running = true; SIM.scale = $("#fast").checked ? 5 : 1;
+  $("#run").disabled = true; $("#stop").disabled = false;
+  conLog("▶ Programm gestartet", "i");
+  const slow = () => $("#slow").checked;
+  Sk.configure({
+    output: t => conLog(t), read: skRead, __future__: Sk.python3,
+    yieldLimit: 60, killableWhile: true, killableFor: true,
+    debugging: true, breakpoints: (fn) => slow() && String(fn).indexOf("<stdin>") >= 0,
+    inputfun: () => "", inputfunTakesPrompt: true
+  });
+  try{ Sk.sysmodules = new Sk.builtin.dict([]); }catch(e){}
+  installHW();
+  const check = () => { if(SIM.stopReq) throw new Error("STOP"); };
+  const handlers = {
+    "*": () => { check(); },
+    "Sk.debug": susp => {
+      check();
+      let s = susp, lno = 0;
+      while(s){ if(s.$lineno && String(s.$filename).indexOf("<stdin>") >= 0) lno = s.$lineno; s = s.child; }
+      const ln = lno - 2;
+      if(ln >= 0){ MARK.cur = ln; renderEditor(); scrollToLine(ln); }
+      return new Promise((res, rej) => setTimeout(() => { if(SIM.stopReq) return rej(new Error("STOP")); try{ res(susp.resume()); }catch(e){ rej(e); } }, 450 / SIM.scale));
+    }
+  };
+  Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true), handlers)
+  .then(() => { if(myId === runId) finish(null); })
+  .catch(err => { if(myId === runId) finish(err); });
+};
+function scrollToLine(ln){ const top = ln * 21, h = ed.clientHeight; if(top < ed.scrollTop + 10 || top > ed.scrollTop + h - 40){ ed.scrollTop = Math.max(0, top - h / 2); syncScroll(); } }
+function finish(err){
+  SIM.running = false; SIM.motor.running = false; MARK.cur = -1;
+  $("#run").disabled = false; $("#stop").disabled = true;
+  const stopped = SIM.stopReq || (err && /STOP/.test(String(err && (err.message || err))) );
+  if(err && !stopped){
+    const ln = lineOfError(err);
+    const name = (err.tp$name) || (err.constructor && err.constructor.name) || "Fehler";
+    let msg = String(err.toString ? err.toString() : err).replace(/ on line \d+/, "");
+    if(/STOP/.test(msg)){ conLog("■ Programm gestoppt", "i"); renderEditor(); updSim(); return; }
+    conLog(msg, "e");
+    MARK.err = ln != null ? ln - 1 : -1;
+    const help = errHelp(name, msg);
+    const eb = $("#errbox"); eb.className = "errbox show";
+    eb.innerHTML = "<b>" + esc(msg) + "</b>" + (ln != null ? "<br>➜ Schau dir <b>Zeile " + ln + "</b> an (rot markiert)." : "") + (help ? "<br><span class='small'>" + help + "</span>" : "");
+    if(ln != null) scrollToLine(ln - 1);
+  } else if(stopped){ conLog("■ Programm gestoppt", "i"); }
+  else conLog("✔ Programm beendet – alle Motoren aus.", "i");
+  renderEditor(); updSim();
+}
+
+/* ============ Start ============ */
+function renderMuster(){
+  $("#muster").innerHTML = MUSTER.map(m => '<div class="card muster"><h4>' + m.t + '</h4><div class="erk">Erkennungszeichen: <code>' + esc(m.erk) + '</code></div><pre class="code">' + hl(m.code) + '</pre><div class="liesso"><b>Lies so:</b> ' + m.lies + '</div><div class="vork">kommt vor in: ' + m.vork + "</div></div>").join("");
+}
+function init(){
+  $("#ctl-demo").textContent = fileOf("P03", "controller").replace(/\n+$/, "");
+  currentProjForNames = "P03"; hlAll(); currentProjForNames = "P01";
+  $$("[data-quiz]").forEach(el => renderQuiz(el, el.dataset.quiz, QUIZ[el.dataset.quiz]));
+  renderMuster(); renderPuzzle("pz1"); renderPuzzle("pz2");
+  renderReader();
+  selectTask(store("task") || "a1");
+  show((location.hash || "#start").slice(1));
+}
+init();
+</script>
+</body>
+</html>

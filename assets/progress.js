@@ -82,10 +82,9 @@
     while ((m = re.exec(text))) {
       var d; try { d = JSON.parse(unb64u(m[1])); } catch (e) { continue; }
       if (hash(SALT + m[1], 9) !== m[2] || !d || d.c !== COURSE) { wrong++; continue; }
-      if (d.p !== fp) { wrong++; continue; }
       if (!best || d.t > best.t) best = d;
     }
-    if (!best) return { ok: false, msg: wrong ? "Diese Datei gehört zu einem anderen Namen/Kurs oder das Passwort stimmt nicht." : "In dieser Datei wurde kein Fortschritt gefunden. Nimm die PDF, die beim Abgeben gespeichert wurde." };
+    if (!best) return { ok: false, msg: wrong ? "Diese Datei gehört zu einem anderen Kurs." : "In dieser Datei wurde kein Fortschritt gefunden. Nimm die PDF, die beim Abgeben gespeichert wurde." };
     var pre = "u:" + uid + ":" + PREFIX + ":", n = 0;
     Object.keys(best.s || {}).forEach(function (k) {
       var cur = ls(pre + k);
@@ -130,26 +129,24 @@
 
   function loginDialog() {
     var f = el("form", { autocomplete: "off" });
-    f.innerHTML = "<h2>Anmelden</h2><p>" + TITLE + ": Melde dich an, damit dein Fortschritt dir gehört. Merke dir dein Passwort – du brauchst es jedes Mal.</p>" +
+    f.innerHTML = "<h2>Anmelden</h2><p>" + TITLE + ": Melde dich an, damit dein Fortschritt dir gehört.</p>" +
       '<label for="rp-n">Vor- und Nachname</label><input id="rp-n" required maxlength="60">' +
       '<label for="rp-k">Klasse</label><input id="rp-k" maxlength="20" placeholder="z. B. 10a">' +
-      '<label for="rp-p">Passwort (mind. 4 Zeichen)</label><input id="rp-p" type="password" required minlength="4" maxlength="40">' +
       '<label for="rp-f">Fortschritt von letztem Mal laden <span style="font-weight:400">(nur an einem anderen Computer nötig)</span></label>' +
       '<input id="rp-f" type="file" accept=".pdf,.txt,application/pdf,text/plain" style="font-size:14px;padding:7px">' +
       '<p style="margin:4px 0 0;font-size:12px">Wähle deine letzte Abgabe-Datei (Fortschritt_….pdf). Dann sind deine gelösten Aufgaben und Programme wieder da.</p>' +
       '<div class="rp-err" aria-live="polite"></div><div class="rp-row"><button class="rp-btn" type="submit">Anmelden</button></div>' +
-      '<p style="margin-top:12px;font-size:12px">Am gleichen Computer bleibt dein Fortschritt gespeichert – einfach wieder mit Name, Klasse und Passwort anmelden. Bewahre deine Abgabe-PDF auf (z. B. in deinem OneDrive), dann kannst du an jedem Computer weitermachen.</p>';
+      '<p style="margin-top:12px;font-size:12px">Am gleichen Computer bleibt dein Fortschritt gespeichert – einfach wieder mit Name und Klasse anmelden. Bewahre deine Abgabe-PDF auf (z. B. in deinem OneDrive), dann kannst du an jedem Computer weitermachen.</p>';
     var ov = overlay(f, false);
     var err = f.querySelector(".rp-err");
     setTimeout(function () { f.querySelector("#rp-n").focus(); }, 50);
     f.addEventListener("submit", function (e) {
       e.preventDefault();
-      var name = norm(f.querySelector("#rp-n").value), kl = norm(f.querySelector("#rp-k").value), pw = f.querySelector("#rp-p").value;
+      var name = norm(f.querySelector("#rp-n").value), kl = norm(f.querySelector("#rp-k").value), pw = "";
       if (name.length < 3 || name.indexOf(" ") < 0) { err.textContent = "Bitte Vor- und Nachname eingeben."; return; }
-      if (pw.length < 4) { err.textContent = "Das Passwort braucht mindestens 4 Zeichen."; return; }
       var id = hash(nkey(name, kl), 1), ph = hash(SALT + "|" + id + "|" + pw, 3), P = profiles();
-      if (P[id] && P[id].ph !== ph) { err.textContent = "Falsches Passwort für diesen Namen in dieser Klasse."; return; }
-      var fp = hash(nkey(name, kl) + "|" + pw, 5), file = f.querySelector("#rp-f").files[0];
+      // ohne Passwort: bestehende Profile (früher mit Passwort angelegt) werden einfach weiterverwendet
+      var fp = P[id] ? P[id].fp : hash(nkey(name, kl) + "|" + pw, 5), file = f.querySelector("#rp-f").files[0];
       function finish() {
         if (!P[id]) P[id] = { name: name, klasse: kl, ph: ph, fp: fp, since: Date.now() };
         ls("rprog:profiles", JSON.stringify(P));
